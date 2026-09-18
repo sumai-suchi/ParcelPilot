@@ -7,6 +7,7 @@ import express, {
 	type Response,
 } from "express";
 import httpStatus from "http-status";
+import { AuthRoutes } from "./app/module/auth/auth.router";
 
 const app: Application = express();
 
@@ -24,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// app.use("/api/v1/auth", AuthRoutes);
+app.use("/api/v1/auth", AuthRoutes);
 // app.use("/api/v1/user", UserRoutes);
 // app.use("/api/v1/appointment", AppointementRoutes);
 // app.use("/api/v1/doctor", DoctorRoutes);

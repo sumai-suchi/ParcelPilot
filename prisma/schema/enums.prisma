@@ -64,3 +64,8 @@ enum PaymentStatus {
   REFUNDED
   @@map("payment_status")
 }
+
+enum AuthProvider {
+  GOOGLE
+  CREDENTIALS
+}

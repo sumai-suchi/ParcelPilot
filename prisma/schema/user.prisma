@@ -2,8 +2,11 @@ model User {
   id        BigInt     @id @default(autoincrement())
   name      String     @db.VarChar(255)
   email     String     @unique @db.VarChar(255)
-  password  String     @db.VarChar(255)
-  phone     String     @unique @db.VarChar(50)
+  password  String?    @db.VarChar(255)
+  googleId String?    @unique @map("google_id") 
+  authProvider AuthProvider @default(CREDENTIALS)
+  emailVerified Boolean?    @default(false) @map("email_verified")
+  phone     String?     @unique @db.VarChar(50)
   role      UserRole
   status    UserStatus @default(ACTIVE)
   createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz

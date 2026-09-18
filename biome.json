@@ -17,13 +17,22 @@
 		"rules": {
 			"preset": "recommended",
 			"suspicious":{
-				"noExplicitAny" :"warn"
+				"noExplicitAny" :"warn",
+				"noDebugger": "off"
+				
 			},
 			"complexity":{
 				"noCommaOperator": "warn"
 			},
 			"style": {
-                 "noNonNullAssertion": "error"
+                 "noNonNullAssertion": "error",
+				  "useImportType": {
+          "level": "on",
+          "options": {
+            "style": "auto"
+          }
+        }
+			
       }
 		}
 	},
@@ -33,11 +42,10 @@
 		}
 	},
 	"assist": {
-		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
-		}
-	}
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
 }
