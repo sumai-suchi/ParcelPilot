@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import httpStatus from "http-status";
+import { AuthRoutes } from "./app/module/auth/auth.router";
 const app = express();
 app.use(cors({
     // origin: config.frontend_url,
@@ -12,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(cookieParser());
-// app.use("/api/v1/auth", AuthRoutes);
+app.use("/api/v1/auth", AuthRoutes);
 // app.use("/api/v1/user", UserRoutes);
 // app.use("/api/v1/appointment", AppointementRoutes);
 // app.use("/api/v1/doctor", DoctorRoutes);

@@ -2,12 +2,16 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, {
 	type Application,
-	
 	type Request,
 	type Response,
 } from "express";
 import httpStatus from "http-status";
 import { AuthRoutes } from "./app/module/auth/auth.router";
+
+// Enable BigInt serialization in JSON (res.json, JSON.stringify)
+(BigInt.prototype as any).toJSON = function () {
+	return this.toString();
+};
 
 const app: Application = express();
 
@@ -26,32 +30,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/v1/auth", AuthRoutes);
-// app.use("/api/v1/user", UserRoutes);
-// app.use("/api/v1/appointment", AppointementRoutes);
-// app.use("/api/v1/doctor", DoctorRoutes);
-// app.use("/api/v1/schedule", ScheduleRoutes);
-// app.use("/api/v1/payment", PaymentRoutes);
-// app.use("/api/v1/prescription", PrescriptionRoutes);
-// app.use("/api/v1/analytics", AnalyticsRoutes);
 
-// app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
-// 	try {
-// 		const grantIdTokenResult = await getBkashIdToken();
-
-// 		console.log(grantIdTokenResult);
-
-// 		res.status(httpStatus.OK).json({
-// 			success: true,
-// 			message: "Welcome to ParcelPilot",
-// 			data: null,
-// 		});
-// 	} catch (error) {
-// 		console.log(error);
-// 		next(error);
-// 	}
-// });
-
-// Basic route
 app.get("/", async (req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({
 		success: true,

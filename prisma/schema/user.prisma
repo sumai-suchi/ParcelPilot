@@ -7,7 +7,7 @@ model User {
   authProvider AuthProvider @default(CREDENTIALS)
   emailVerified Boolean?    @default(false) @map("email_verified")
   phone     String?     @unique @db.VarChar(50)
-  role      UserRole
+  role      UserRole    @default(CUSTOMER)
   status    UserStatus @default(ACTIVE)
   createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
