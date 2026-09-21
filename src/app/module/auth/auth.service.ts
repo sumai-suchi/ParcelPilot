@@ -22,6 +22,7 @@ import type {
 	IGoogleLoginPayload,
 	ILoginUserPayload,
 	IRegisterCustomerPayload,
+	IRequestUser,
 	IResetPasswordPayload,
 	IVerifyEmailPayload,
 } from "./auth.interface";
@@ -539,6 +540,27 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 // 	};
 // };
 
+const getMe = async (user: IRequestUser) => {
+
+	  
+	const isUserExists = await prisma.user.findUnique({
+		where: {
+			id: BigInt(user.userId),
+		},
+		
+		omit: {
+			password: true,
+		},
+	});
+
+	if (!isUserExists) {
+		throw new AppError(httpStatus.NOT_FOUND, "User not found");
+	}
+
+	return isUserExists;
+};
+
+
 const forgotPassword = async (payload: IForgotPasswordPayload) => {
 	const { email } = payload;
 
@@ -689,4 +711,5 @@ export const AuthService = {
 	resetPassword,
 	loginUser,
 	refreshToken,
+    getMe,
 };

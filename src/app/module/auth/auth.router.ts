@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { UserRole } from "../../../generated/prisma/browser";
+import { auth } from "../../middleware/checkAuth";
 import { validateRequest } from "../../middleware/validationRequest";
 import { AuthController } from "./auth.controller";
 import { UserValidation } from "./auth.validation";
@@ -23,6 +25,18 @@ router.post(
 	AuthController.loginUser,
 );
 
+router.get(
+	"/me",
+	auth(
+		UserRole.ADMIN,
+		UserRole.CUSTOMER,
+		UserRole.HUB_MANAGER,
+		UserRole.OPERATIONS_MANAGER,
+		UserRole.COURIER,
+	),
+	// validateRequest
+	AuthController.getMe,
+);
 router.post("/refresh-token", AuthController.refreshToken);
 router.post("/google", AuthController.googleLogin);
 router.post(

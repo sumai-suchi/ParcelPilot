@@ -3,7 +3,7 @@ import httpStatus from "http-status";
 import { AppError } from "../../utils/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import type { IGoogleLoginPayload } from "./auth.interface";
+import type { IGoogleLoginPayload, IRequestUser } from "./auth.interface";
 import { AuthService } from "./auth.service";
 
 const registerCustomerController = catchAsync(
@@ -114,6 +114,24 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getMe = catchAsync(async (req: Request, res: Response) => {
+	const user = req.user as unknown as IRequestUser;
+
+	if (!user) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"User information is missing in the request",
+		);
+	}
+
+	const result = await AuthService.getMe(user);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User profile fetched successfully",
+		data: result,
+	});
+});
 const googleLogin = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
 
@@ -179,4 +197,5 @@ export const AuthController = {
 	forgotPassword,
 	resetPassword,
 	refreshToken,
+	getMe,
 };
