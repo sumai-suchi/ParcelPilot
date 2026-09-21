@@ -3,7 +3,7 @@ const CustomerRegistrationZodSchema = z.object({
     name: z
         .string("Not A String!!!!!")
         .min(3, "Name must atleast 3 characters long!!!")
-        .max(10),
+        .max(100, "Name must be less than 100 characters long!!!"),
     email: z.email("Not email!!"),
     password: z
         .string()

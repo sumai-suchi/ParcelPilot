@@ -20,7 +20,9 @@ enum CourierAvailability {
   @@map("courier_availability")
 }
 enum ShipmentStatus {
+  PENDING_APPROVAL
   CREATED
+  COURIER_ASSIGNED
   PICKUP_ASSIGNED
   PICKED_UP
   AT_ORIGIN_HUB

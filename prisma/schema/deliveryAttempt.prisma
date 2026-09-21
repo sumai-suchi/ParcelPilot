@@ -1,7 +1,7 @@
 model DeliveryAttempt {
-  id            BigInt        @id @default(autoincrement())
-  shipmentId    BigInt        @map("shipment_id")
-  courierId     BigInt        @map("courier_id")
+  id            String        @id @default(uuid()) @db.Uuid
+  shipmentId    String        @map("shipment_id") @db.Uuid
+  courierId     String        @map("courier_id") @db.Uuid
   attemptNumber Int           @default(1) @map("attempt_number")
   status        AttemptStatus
   failureReason String?       @map("failure_reason") @db.VarChar(255)

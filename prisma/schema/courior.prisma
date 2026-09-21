@@ -1,7 +1,7 @@
 model Courier {
-  id                 BigInt              @id @default(autoincrement())
-  userId             BigInt              @unique @map("user_id")
-  hubId              BigInt              @map("hub_id")
+  id                 String              @id @default(uuid()) @db.Uuid
+  userId             String              @unique @map("user_id") @db.Uuid
+  hubId              String              @map("hub_id") @db.Uuid
   vehicleType        String              @map("vehicle_type") @db.VarChar(50)
   vehicleNumber      String              @map("vehicle_number") @db.VarChar(50)
   availabilityStatus CourierAvailability @default(AVAILABLE) @map("availability_status")

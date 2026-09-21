@@ -7,6 +7,8 @@ import express, {
 } from "express";
 import httpStatus from "http-status";
 import { AuthRoutes } from "./app/module/auth/auth.router";
+import { OperationsManagerRoutes } from "./app/module/operationsManager/operationsManager.router";
+import { UserRoutes } from "./app/module/user/user.router";
 
 // Enable BigInt serialization in JSON (res.json, JSON.stringify)
 (BigInt.prototype as any).toJSON = function () {
@@ -31,7 +33,11 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", AuthRoutes);
 
-app.get("/", async (req: Request, res: Response) => {
+app.use("/api/v1/user", UserRoutes);
+app.use("/api/v1/operations", OperationsManagerRoutes);
+app.use("/api/v1/operations-manager", OperationsManagerRoutes);
+
+app.get("/", async (_req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({
 		success: true,
 		message: "Welcome to ParcelPilot",

@@ -1,8 +1,8 @@
 model Hub {
-  id        BigInt   @id @default(autoincrement())
+  id        String   @id @default(uuid()) @db.Uuid
   name      String   @db.VarChar(150)
   code      String   @unique @db.VarChar(50)
-  zoneId    BigInt   @map("zone_id")
+  zoneId    String   @map("zone_id") @db.Uuid
   address   String   @db.Text
   phone     String?  @db.VarChar(50)
   isActive  Boolean  @default(true) @map("is_active")

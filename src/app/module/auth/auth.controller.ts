@@ -11,7 +11,6 @@ const registerCustomerController = catchAsync(
 		const payload = req.body;
 		await AuthService.registerCustomer(payload);
 
-	
 		sendResponse(res, {
 			statusCode: httpStatus.CREATED,
 			success: true,

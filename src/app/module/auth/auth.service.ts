@@ -541,13 +541,11 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 // };
 
 const getMe = async (user: IRequestUser) => {
-
-	  
 	const isUserExists = await prisma.user.findUnique({
 		where: {
-			id: BigInt(user.userId),
+			id: user.userId,
 		},
-		
+
 		omit: {
 			password: true,
 		},
@@ -559,7 +557,6 @@ const getMe = async (user: IRequestUser) => {
 
 	return isUserExists;
 };
-
 
 const forgotPassword = async (payload: IForgotPasswordPayload) => {
 	const { email } = payload;
@@ -711,5 +708,5 @@ export const AuthService = {
 	resetPassword,
 	loginUser,
 	refreshToken,
-    getMe,
+	getMe,
 };
