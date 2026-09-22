@@ -7,8 +7,10 @@ import { OperationsManagerValidation } from "./operationsManager.validation";
 
 const router = Router();
 
-// Protect all operations manager routes with OPERATIONS_MANAGER and ADMIN roles
-router.use(auth(UserRole.OPERATIONS_MANAGER, UserRole.ADMIN));
+// Protect operations manager routes with OPERATIONS_MANAGER, ADMIN, and HUB_MANAGER roles
+router.use(
+	auth(UserRole.OPERATIONS_MANAGER, UserRole.ADMIN, UserRole.HUB_MANAGER),
+);
 
 // ==========================================
 // Operational Shipment Review & Routing
@@ -24,6 +26,47 @@ router.patch(
 	"/shipments/:id/reject",
 	validateRequest(OperationsManagerValidation.RejectShipmentZodSchema),
 	OperationsManagerController.rejectShipment,
+);
+
+// Delivery Courier Assignment (Same-Hub or Destination Hub)
+router.patch(
+	"/shipments/:id/assign-delivery",
+	validateRequest(OperationsManagerValidation.AssignDeliveryCourierZodSchema),
+	OperationsManagerController.assignDeliveryCourier,
+);
+router.post(
+	"/shipments/:id/assign-delivery",
+	validateRequest(OperationsManagerValidation.AssignDeliveryCourierZodSchema),
+	OperationsManagerController.assignDeliveryCourier,
+);
+
+// Inter-Hub Transfer Operations
+router.post(
+	"/shipments/:id/transfer",
+	validateRequest(OperationsManagerValidation.CreateHubTransferZodSchema),
+	OperationsManagerController.createHubTransfer,
+);
+router.patch(
+	"/transfers/:id/receive",
+	validateRequest(OperationsManagerValidation.ReceiveHubTransferZodSchema),
+	OperationsManagerController.receiveHubTransfer,
+);
+
+// Return & Cancellation Lifecycle
+router.patch(
+	"/shipments/:id/return-initiate",
+	validateRequest(OperationsManagerValidation.ReturnInitiateZodSchema),
+	OperationsManagerController.initiateReturn,
+);
+router.patch(
+	"/shipments/:id/return-in-transit",
+	validateRequest(OperationsManagerValidation.ReturnInTransitZodSchema),
+	OperationsManagerController.returnInTransit,
+);
+router.patch(
+	"/shipments/:id/cancel",
+	validateRequest(OperationsManagerValidation.CancelShipmentZodSchema),
+	OperationsManagerController.cancelShipment,
 );
 
 // ==========================================
