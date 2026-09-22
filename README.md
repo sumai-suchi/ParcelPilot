@@ -263,7 +263,7 @@ When you run `npm run seed`, the database is populated with sample accounts for 
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| **Super Admin** | `admin@parcelpilot.com` | `Admin@123456` |
+| **Super Admin** | `superadmin@gmail.com` | `Super@admin12345` |
 | **Operations Manager**| `ops@parcelpilot.com` | `Ops@123456` |
 | **Hub Manager** | `hubmgr@parcelpilot.com` | `Hub@123456` |
 | **Courier Rider** | `courier@parcelpilot.com` | `Rider@123456` |
