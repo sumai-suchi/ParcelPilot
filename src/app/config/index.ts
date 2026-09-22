@@ -18,10 +18,9 @@ export default {
 	super_admin_name: process.env.SUPER_ADMIN_NAME,
 	super_admin_email: process.env.SUPER_ADMIN_EMAIL,
 	super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
-	admin_name: process.env.ADMIN_NAME || process.env.SUPER_ADMIN_NAME,
-	admin_email: process.env.ADMIN_EMAIL || process.env.SUPER_ADMIN_EMAIL,
-	admin_password:
-		process.env.ADMIN_PASSWORD || process.env.SUPER_ADMIN_PASSWORD,
+	admin_name: process.env.SUPER_ADMIN_NAME,
+	admin_email:process.env.SUPER_ADMIN_EMAIL,
+	admin_password:process.env.SUPER_ADMIN_PASSWORD,
 	admin_phone: process.env.ADMIN_PHONE,
 	operations_manager_name: process.env.OPERATIONS_MANAGER_NAME,
 	operations_manager_email: process.env.OPERATIONS_MANAGER_EMAIL,

@@ -58,10 +58,10 @@ export const seedUsers = async () => {
 		const usersToSeed = [
 			{
 				name: config.admin_name || "System Admin",
-				email: (config.admin_email || "admin@parcelpilot.com")
+				email: (config.admin_email || "superadmin@gmail.com")
 					.toLowerCase()
 					.trim(),
-				password: config.admin_password || "Admin@123456",
+				password: config.admin_password || "Super@admin12345",
 				phone: config.admin_phone || "+8801700000001",
 				role: UserRole.ADMIN,
 			},

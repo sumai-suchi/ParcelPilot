@@ -70,6 +70,90 @@ const getHubs = catchAsync(async (_req, res) => {
         data: result,
     });
 });
+const assignDeliveryCourier = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.assignDeliveryCourier(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Delivery courier assigned and parcel is Out for Delivery.",
+        data: result,
+    });
+});
+const createHubTransfer = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.createHubTransfer(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Inter-hub transfer initiated successfully. Parcel is In Transit.",
+        data: result,
+    });
+});
+const receiveHubTransfer = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.receiveHubTransfer(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Hub transfer received successfully. Parcel is At Destination Hub.",
+        data: result,
+    });
+});
+const initiateReturn = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.initiateReturn(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Return process initiated successfully.",
+        data: result,
+    });
+});
+const returnInTransit = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.returnInTransit(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Return in transit updated successfully.",
+        data: result,
+    });
+});
+const cancelShipment = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.cancelShipment(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Shipment cancelled successfully.",
+        data: result,
+    });
+});
 export const OperationsManagerController = {
     getAllShipments,
     getShipmentDetails,
@@ -77,4 +161,10 @@ export const OperationsManagerController = {
     rejectShipment,
     getCouriers,
     getHubs,
+    assignDeliveryCourier,
+    createHubTransfer,
+    receiveHubTransfer,
+    initiateReturn,
+    returnInTransit,
+    cancelShipment,
 };

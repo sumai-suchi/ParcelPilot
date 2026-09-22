@@ -6,6 +6,7 @@ import express, {
 	type Response,
 } from "express";
 import httpStatus from "http-status";
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { AdminRoutes } from "./app/module/admin/admin.router";
 import { AuthRoutes } from "./app/module/auth/auth.router";
 import { CourierRoutes } from "./app/module/courier/courier.router";
@@ -55,7 +56,6 @@ app.get("/", async (_req: Request, res: Response) => {
 	});
 });
 
-// app.use(globalErrorHandler);
-// app.use(notFound);
+app.use(globalErrorHandler);
 
 export default app;

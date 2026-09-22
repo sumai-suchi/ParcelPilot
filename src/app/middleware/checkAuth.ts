@@ -6,7 +6,7 @@ import config from "../config";
 import { prisma } from "../lib/prisma";
 import { AppError } from "../utils/AppError";
 import { catchAsync } from "../utils/catchAsync";
-import { jwtUtils } from "../utils/jwtutils"
+import { jwtUtils } from "../utils/jwtutils";
 
 export interface RequestUser {
 	email: string;

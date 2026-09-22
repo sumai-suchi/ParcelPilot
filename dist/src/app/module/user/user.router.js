@@ -30,7 +30,6 @@ router.delete("/addresses/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN), UserCon
 // ==========================================
 router.post("/shipment-request", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateShipmentRequestZodSchema), UserController.createShipmentRequest);
 router.post("/create-shipment-request", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateShipmentRequestZodSchema), UserController.createShipmentRequest);
-router.post("/shipments", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateShipmentRequestZodSchema), UserController.createShipmentRequest);
 router.get("/shipments", auth(UserRole.CUSTOMER), UserController.getMyShipments);
 router.get("/shipments/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER, UserRole.HUB_MANAGER), UserController.getShipmentById);
 // ==========================================
