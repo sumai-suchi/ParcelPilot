@@ -32,3 +32,30 @@ export interface ICourierFilterQuery {
 	page?: number;
 	limit?: number;
 }
+
+export interface IAssignDeliveryCourierPayload {
+	courierId: string;
+	note?: string;
+}
+
+export interface ICreateHubTransferPayload {
+	toHubId?: string;
+	note?: string;
+}
+
+export interface IReceiveHubTransferPayload {
+	note?: string;
+}
+
+export interface IReturnInitiatePayload {
+	reason: string;
+	notes?: string;
+}
+
+export interface IReturnInTransitPayload {
+	note?: string;
+}
+
+export interface ICancelShipmentPayload {
+	reason: string;
+}
