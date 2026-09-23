@@ -36,7 +36,6 @@ router.get("/delivery-issues", auth(UserRole.CUSTOMER), UserController.getMyRepo
 // ==========================================
 // Customer Shipment Management & Lifecycle
 // ==========================================
-router.post("/shipment-request", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateShipmentRequestZodSchema), UserController.createShipmentRequest);
 router.post("/create-shipment-request", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateShipmentRequestZodSchema), UserController.createShipmentRequest);
 // Track shipments (placed before /shipments/:id to avoid parameter clash)
 router.get("/shipments/track/:trackingNumber", UserController.trackShipment);

@@ -154,6 +154,34 @@ const cancelShipment = catchAsync(async (req, res) => {
         data: result,
     });
 });
+const updateOutForDelivery = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.updateOutForDelivery(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Shipment status updated to OUT_FOR_DELIVERY successfully.",
+        data: result,
+    });
+});
+const updateDelivered = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User context missing from request.");
+    }
+    const { id } = req.params;
+    const result = await OperationsManagerService.updateDelivered(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Shipment verified and status updated to DELIVERED successfully.",
+        data: result,
+    });
+});
 export const OperationsManagerController = {
     getAllShipments,
     getShipmentDetails,
@@ -167,4 +195,6 @@ export const OperationsManagerController = {
     initiateReturn,
     returnInTransit,
     cancelShipment,
+    updateOutForDelivery,
+    updateDelivered,
 };

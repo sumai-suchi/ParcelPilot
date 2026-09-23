@@ -59,3 +59,12 @@ export interface IReturnInTransitPayload {
 export interface ICancelShipmentPayload {
 	reason: string;
 }
+
+export interface IUpdateOutForDeliveryPayload {
+	courierId?: string;
+	note?: string;
+}
+
+export interface IUpdateDeliveredPayload {
+	note?: string;
+}

@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { AssignmentStatus, ShipmentStatus, TransferStatus, } from "../../../generated/prisma/enums";
+import { AssignmentStatus, PaymentStatus, ShipmentStatus, TransferStatus, } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 // ==========================================
@@ -688,6 +688,214 @@ const cancelShipment = async (managerUserId, shipmentId, payload) => {
     });
     return result;
 };
+/**
+ * Operations Manager updates shipment status to OUT_FOR_DELIVERY
+ * Triggered after delivery is handed over to transit by hub manager
+ */
+const updateOutForDelivery = async (managerUserId, shipmentId, payload) => {
+    const shipment = await prisma.shipment.findUnique({
+        where: { id: shipmentId },
+        include: {
+            originHub: true,
+            destinationHub: true,
+            customer: true,
+            courierAssignments: {
+                orderBy: { assignedAt: "desc" },
+                take: 1,
+                include: { courier: { include: { user: true } } },
+            },
+        },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
+    }
+    const allowableStatuses = [
+        ShipmentStatus.IN_TRANSIT,
+        ShipmentStatus.AT_DESTINATION_HUB,
+        ShipmentStatus.AT_ORIGIN_HUB,
+        ShipmentStatus.RESCHEDULED,
+    ];
+    if (!allowableStatuses.includes(shipment.status)) {
+        throw new AppError(httpStatus.BAD_REQUEST, `Shipment cannot be updated to OUT_FOR_DELIVERY from status '${shipment.status}'. Expected status to be IN_TRANSIT, AT_DESTINATION_HUB, or AT_ORIGIN_HUB.`);
+    }
+    const courierId = payload.courierId;
+    let assignedCourierName = shipment.courierAssignments[0]?.courier?.user?.name;
+    if (courierId) {
+        const courier = await prisma.courier.findUnique({
+            where: { id: courierId },
+            include: { user: true },
+        });
+        if (!courier) {
+            throw new AppError(httpStatus.NOT_FOUND, "Courier rider not found.");
+        }
+        assignedCourierName = courier.user.name;
+    }
+    const result = await prisma.$transaction(async (tx) => {
+        if (courierId) {
+            await tx.courierParcel.create({
+                data: {
+                    shipmentId,
+                    courierId,
+                    assignedBy: managerUserId,
+                    status: AssignmentStatus.ACCEPTED,
+                    acceptedAt: new Date(),
+                },
+            });
+        }
+        const updatedShipment = await tx.shipment.update({
+            where: { id: shipmentId },
+            data: {
+                status: ShipmentStatus.OUT_FOR_DELIVERY,
+            },
+            include: {
+                pickupAddress: true,
+                deliveryAddress: true,
+                originHub: true,
+                destinationHub: true,
+                courierAssignments: {
+                    orderBy: { assignedAt: "desc" },
+                    include: {
+                        courier: {
+                            include: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        phone: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        await tx.shipmentStatusHistory.create({
+            data: {
+                shipmentId,
+                status: ShipmentStatus.OUT_FOR_DELIVERY,
+                location: shipment.destinationHub?.name ||
+                    shipment.originHub?.name ||
+                    "Distribution Hub",
+                note: payload.note ||
+                    (assignedCourierName
+                        ? `Parcel is out for delivery with courier rider ${assignedCourierName}.`
+                        : "Parcel is out for delivery in the recipient zone."),
+                updatedBy: managerUserId,
+            },
+        });
+        await tx.notification.create({
+            data: {
+                userId: shipment.customer.userId,
+                shipmentId,
+                title: "Shipment Out For Delivery",
+                message: `Your shipment ${shipment.trackingNumber} is now out for delivery!`,
+                type: "OUT_FOR_DELIVERY",
+            },
+        });
+        return updatedShipment;
+    });
+    return result;
+};
+/**
+ * Operations Manager updates shipment status to DELIVERED
+ * Prerequisite 1: Courier assignment status must be COMPLETED
+ * Prerequisite 2: Shipment paymentStatus must be PAID
+ */
+const updateDelivered = async (managerUserId, shipmentId, payload) => {
+    const shipment = await prisma.shipment.findUnique({
+        where: { id: shipmentId },
+        include: {
+            courierAssignments: {
+                orderBy: { assignedAt: "desc" },
+                include: {
+                    courier: {
+                        include: {
+                            user: true,
+                        },
+                    },
+                },
+            },
+            payment: true,
+            customer: true,
+            deliveryAddress: true,
+            proofOfDelivery: true,
+        },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
+    }
+    if (shipment.status === ShipmentStatus.DELIVERED) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Shipment has already been marked as DELIVERED.");
+    }
+    // 1. Verify that the courier assignment status is COMPLETED
+    const hasCompletedAssignment = shipment.courierAssignments.some((assignment) => assignment.status === AssignmentStatus.COMPLETED);
+    if (!hasCompletedAssignment) {
+        const latestAssignment = shipment.courierAssignments[0];
+        throw new AppError(httpStatus.BAD_REQUEST, `Cannot mark shipment as DELIVERED. The courier assignment has not been set to COMPLETED yet (current assignment status: '${latestAssignment?.status || "NO_COURIER_ASSIGNMENT"}').`);
+    }
+    // 2. Verify that the shipment payment is PAID
+    const isPaymentPaid = shipment.paymentStatus === PaymentStatus.PAID ||
+        shipment.payment?.status === PaymentStatus.PAID;
+    if (!isPaymentPaid) {
+        throw new AppError(httpStatus.BAD_REQUEST, `Cannot mark shipment as DELIVERED. The shipment payment must be 'PAID' (current payment status: '${shipment.paymentStatus}').`);
+    }
+    const result = await prisma.$transaction(async (tx) => {
+        const updatedShipment = await tx.shipment.update({
+            where: { id: shipmentId },
+            data: {
+                status: ShipmentStatus.DELIVERED,
+                paymentStatus: PaymentStatus.PAID,
+            },
+            include: {
+                pickupAddress: true,
+                deliveryAddress: true,
+                originHub: true,
+                destinationHub: true,
+                proofOfDelivery: true,
+                payment: true,
+                courierAssignments: {
+                    include: {
+                        courier: {
+                            include: {
+                                user: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        phone: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        await tx.shipmentStatusHistory.create({
+            data: {
+                shipmentId,
+                status: ShipmentStatus.DELIVERED,
+                location: shipment.deliveryAddress?.area || "Destination Address",
+                note: payload.note ||
+                    "Shipment confirmed and marked DELIVERED by Operations Manager after verifying courier completion and payment confirmation.",
+                updatedBy: managerUserId,
+            },
+        });
+        await tx.notification.create({
+            data: {
+                userId: shipment.customer.userId,
+                shipmentId,
+                title: "Shipment Delivered",
+                message: `Your shipment ${shipment.trackingNumber} has been successfully delivered and confirmed by Operations.`,
+                type: "SHIPMENT_DELIVERED",
+            },
+        });
+        return updatedShipment;
+    });
+    return result;
+};
 export const OperationsManagerService = {
     getAllShipments,
     getShipmentDetails,
@@ -701,4 +909,6 @@ export const OperationsManagerService = {
     initiateReturn,
     returnInTransit,
     cancelShipment,
+    updateOutForDelivery,
+    updateDelivered,
 };

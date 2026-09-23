@@ -4268,6 +4268,210 @@ var cancelShipment = async (managerUserId, shipmentId, payload) => {
   });
   return result;
 };
+var updateOutForDelivery = async (managerUserId, shipmentId, payload) => {
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    include: {
+      originHub: true,
+      destinationHub: true,
+      customer: true,
+      courierAssignments: {
+        orderBy: { assignedAt: "desc" },
+        take: 1,
+        include: { courier: { include: { user: true } } }
+      }
+    }
+  });
+  if (!shipment) {
+    throw new AppError(httpStatus10.NOT_FOUND, "Shipment not found.");
+  }
+  const allowableStatuses = [
+    ShipmentStatus.IN_TRANSIT,
+    ShipmentStatus.AT_DESTINATION_HUB,
+    ShipmentStatus.AT_ORIGIN_HUB,
+    ShipmentStatus.RESCHEDULED
+  ];
+  if (!allowableStatuses.includes(shipment.status)) {
+    throw new AppError(
+      httpStatus10.BAD_REQUEST,
+      `Shipment cannot be updated to OUT_FOR_DELIVERY from status '${shipment.status}'. Expected status to be IN_TRANSIT, AT_DESTINATION_HUB, or AT_ORIGIN_HUB.`
+    );
+  }
+  const courierId = payload.courierId;
+  let assignedCourierName = shipment.courierAssignments[0]?.courier?.user?.name;
+  if (courierId) {
+    const courier = await prisma.courier.findUnique({
+      where: { id: courierId },
+      include: { user: true }
+    });
+    if (!courier) {
+      throw new AppError(httpStatus10.NOT_FOUND, "Courier rider not found.");
+    }
+    assignedCourierName = courier.user.name;
+  }
+  const result = await prisma.$transaction(async (tx) => {
+    if (courierId) {
+      await tx.courierParcel.create({
+        data: {
+          shipmentId,
+          courierId,
+          assignedBy: managerUserId,
+          status: AssignmentStatus.ACCEPTED,
+          acceptedAt: /* @__PURE__ */ new Date()
+        }
+      });
+    }
+    const updatedShipment = await tx.shipment.update({
+      where: { id: shipmentId },
+      data: {
+        status: ShipmentStatus.OUT_FOR_DELIVERY
+      },
+      include: {
+        pickupAddress: true,
+        deliveryAddress: true,
+        originHub: true,
+        destinationHub: true,
+        courierAssignments: {
+          orderBy: { assignedAt: "desc" },
+          include: {
+            courier: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    phone: true,
+                    email: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+    await tx.shipmentStatusHistory.create({
+      data: {
+        shipmentId,
+        status: ShipmentStatus.OUT_FOR_DELIVERY,
+        location: shipment.destinationHub?.name || shipment.originHub?.name || "Distribution Hub",
+        note: payload.note || (assignedCourierName ? `Parcel is out for delivery with courier rider ${assignedCourierName}.` : "Parcel is out for delivery in the recipient zone."),
+        updatedBy: managerUserId
+      }
+    });
+    await tx.notification.create({
+      data: {
+        userId: shipment.customer.userId,
+        shipmentId,
+        title: "Shipment Out For Delivery",
+        message: `Your shipment ${shipment.trackingNumber} is now out for delivery!`,
+        type: "OUT_FOR_DELIVERY"
+      }
+    });
+    return updatedShipment;
+  });
+  return result;
+};
+var updateDelivered = async (managerUserId, shipmentId, payload) => {
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    include: {
+      courierAssignments: {
+        orderBy: { assignedAt: "desc" },
+        include: {
+          courier: {
+            include: {
+              user: true
+            }
+          }
+        }
+      },
+      payment: true,
+      customer: true,
+      deliveryAddress: true,
+      proofOfDelivery: true
+    }
+  });
+  if (!shipment) {
+    throw new AppError(httpStatus10.NOT_FOUND, "Shipment not found.");
+  }
+  if (shipment.status === ShipmentStatus.DELIVERED) {
+    throw new AppError(
+      httpStatus10.BAD_REQUEST,
+      "Shipment has already been marked as DELIVERED."
+    );
+  }
+  const hasCompletedAssignment = shipment.courierAssignments.some(
+    (assignment) => assignment.status === AssignmentStatus.COMPLETED
+  );
+  if (!hasCompletedAssignment) {
+    const latestAssignment = shipment.courierAssignments[0];
+    throw new AppError(
+      httpStatus10.BAD_REQUEST,
+      `Cannot mark shipment as DELIVERED. The courier assignment has not been set to COMPLETED yet (current assignment status: '${latestAssignment?.status || "NO_COURIER_ASSIGNMENT"}').`
+    );
+  }
+  const isPaymentPaid = shipment.paymentStatus === PaymentStatus.PAID || shipment.payment?.status === PaymentStatus.PAID;
+  if (!isPaymentPaid) {
+    throw new AppError(
+      httpStatus10.BAD_REQUEST,
+      `Cannot mark shipment as DELIVERED. The shipment payment must be 'PAID' (current payment status: '${shipment.paymentStatus}').`
+    );
+  }
+  const result = await prisma.$transaction(async (tx) => {
+    const updatedShipment = await tx.shipment.update({
+      where: { id: shipmentId },
+      data: {
+        status: ShipmentStatus.DELIVERED,
+        paymentStatus: PaymentStatus.PAID
+      },
+      include: {
+        pickupAddress: true,
+        deliveryAddress: true,
+        originHub: true,
+        destinationHub: true,
+        proofOfDelivery: true,
+        payment: true,
+        courierAssignments: {
+          include: {
+            courier: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    phone: true,
+                    email: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+    await tx.shipmentStatusHistory.create({
+      data: {
+        shipmentId,
+        status: ShipmentStatus.DELIVERED,
+        location: shipment.deliveryAddress?.area || "Destination Address",
+        note: payload.note || "Shipment confirmed and marked DELIVERED by Operations Manager after verifying courier completion and payment confirmation.",
+        updatedBy: managerUserId
+      }
+    });
+    await tx.notification.create({
+      data: {
+        userId: shipment.customer.userId,
+        shipmentId,
+        title: "Shipment Delivered",
+        message: `Your shipment ${shipment.trackingNumber} has been successfully delivered and confirmed by Operations.`,
+        type: "SHIPMENT_DELIVERED"
+      }
+    });
+    return updatedShipment;
+  });
+  return result;
+};
 var OperationsManagerService = {
   getAllShipments: getAllShipments3,
   getShipmentDetails,
@@ -4280,7 +4484,9 @@ var OperationsManagerService = {
   receiveHubTransfer,
   initiateReturn,
   returnInTransit,
-  cancelShipment
+  cancelShipment,
+  updateOutForDelivery,
+  updateDelivered
 };
 
 // src/app/module/operationsManager/operationsManager.controller.ts
@@ -4495,6 +4701,48 @@ var cancelShipment2 = catchAsync(async (req, res) => {
     data: result
   });
 });
+var updateOutForDelivery2 = catchAsync(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new AppError(
+      httpStatus11.UNAUTHORIZED,
+      "User context missing from request."
+    );
+  }
+  const { id } = req.params;
+  const result = await OperationsManagerService.updateOutForDelivery(
+    user.userId,
+    id,
+    req.body
+  );
+  sendResponse(res, {
+    statusCode: httpStatus11.OK,
+    success: true,
+    message: "Shipment status updated to OUT_FOR_DELIVERY successfully.",
+    data: result
+  });
+});
+var updateDelivered2 = catchAsync(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new AppError(
+      httpStatus11.UNAUTHORIZED,
+      "User context missing from request."
+    );
+  }
+  const { id } = req.params;
+  const result = await OperationsManagerService.updateDelivered(
+    user.userId,
+    id,
+    req.body
+  );
+  sendResponse(res, {
+    statusCode: httpStatus11.OK,
+    success: true,
+    message: "Shipment verified and status updated to DELIVERED successfully.",
+    data: result
+  });
+});
 var OperationsManagerController = {
   getAllShipments: getAllShipments4,
   getShipmentDetails: getShipmentDetails2,
@@ -4507,7 +4755,9 @@ var OperationsManagerController = {
   receiveHubTransfer: receiveHubTransfer2,
   initiateReturn: initiateReturn2,
   returnInTransit: returnInTransit2,
-  cancelShipment: cancelShipment2
+  cancelShipment: cancelShipment2,
+  updateOutForDelivery: updateOutForDelivery2,
+  updateDelivered: updateDelivered2
 };
 
 // src/app/module/operationsManager/operationsManager.validation.ts
@@ -4542,6 +4792,13 @@ var ReturnInTransitZodSchema = z4.object({
 var CancelShipmentZodSchema = z4.object({
   reason: z4.string().min(3, "Cancellation reason must be at least 3 characters long").max(500)
 });
+var UpdateOutForDeliveryZodSchema = z4.object({
+  courierId: z4.string().uuid("Invalid courier ID").optional(),
+  note: z4.string().max(255).optional()
+});
+var UpdateDeliveredZodSchema = z4.object({
+  note: z4.string().max(255).optional()
+});
 var OperationsManagerValidation = {
   AssignHubAndCourierZodSchema,
   RejectShipmentZodSchema,
@@ -4550,7 +4807,9 @@ var OperationsManagerValidation = {
   ReceiveHubTransferZodSchema,
   ReturnInitiateZodSchema,
   ReturnInTransitZodSchema,
-  CancelShipmentZodSchema
+  CancelShipmentZodSchema,
+  UpdateOutForDeliveryZodSchema,
+  UpdateDeliveredZodSchema
 };
 
 // src/app/module/operationsManager/operationsManager.router.ts
@@ -4579,6 +4838,21 @@ router4.post(
   "/shipments/:id/assign-delivery",
   validateRequest(OperationsManagerValidation.AssignDeliveryCourierZodSchema),
   OperationsManagerController.assignDeliveryCourier
+);
+router4.patch(
+  "/shipments/:id/out-for-delivery",
+  validateRequest(OperationsManagerValidation.UpdateOutForDeliveryZodSchema),
+  OperationsManagerController.updateOutForDelivery
+);
+router4.patch(
+  "/shipments/:id/delivered",
+  validateRequest(OperationsManagerValidation.UpdateDeliveredZodSchema),
+  OperationsManagerController.updateDelivered
+);
+router4.patch(
+  "/shipments/:id/mark-delivered",
+  validateRequest(OperationsManagerValidation.UpdateDeliveredZodSchema),
+  OperationsManagerController.updateDelivered
 );
 router4.post(
   "/shipments/:id/transfer",
@@ -6909,12 +7183,6 @@ router6.get(
   UserController.getMyReportedIssues
 );
 router6.post(
-  "/shipment-request",
-  auth(UserRole.CUSTOMER),
-  validateRequest(UserValidation2.CreateShipmentRequestZodSchema),
-  UserController.createShipmentRequest
-);
-router6.post(
   "/create-shipment-request",
   auth(UserRole.CUSTOMER),
   validateRequest(UserValidation2.CreateShipmentRequestZodSchema),
@@ -7021,7 +7289,6 @@ app.use(
 app.use(cookieParser());
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/users", UserRoutes);
-app.use("/api/v1/user", UserRoutes);
 app.use("/api/v1/operations-manager", OperationsManagerRoutes);
 app.use("/api/v1/courier", CourierRoutes);
 app.use("/api/v1/payment", PaymentRoutes);

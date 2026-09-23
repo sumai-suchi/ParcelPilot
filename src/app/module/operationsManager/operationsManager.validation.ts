@@ -50,6 +50,15 @@ const CancelShipmentZodSchema = z.object({
 		.max(500),
 });
 
+const UpdateOutForDeliveryZodSchema = z.object({
+	courierId: z.string().uuid("Invalid courier ID").optional(),
+	note: z.string().max(255).optional(),
+});
+
+const UpdateDeliveredZodSchema = z.object({
+	note: z.string().max(255).optional(),
+});
+
 export const OperationsManagerValidation = {
 	AssignHubAndCourierZodSchema,
 	RejectShipmentZodSchema,
@@ -59,4 +68,7 @@ export const OperationsManagerValidation = {
 	ReturnInitiateZodSchema,
 	ReturnInTransitZodSchema,
 	CancelShipmentZodSchema,
+	UpdateOutForDeliveryZodSchema,
+	UpdateDeliveredZodSchema,
 };
+

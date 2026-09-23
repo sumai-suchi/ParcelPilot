@@ -17,6 +17,10 @@ router.patch("/shipments/:id/reject", validateRequest(OperationsManagerValidatio
 // Delivery Courier Assignment (Same-Hub or Destination Hub)
 router.patch("/shipments/:id/assign-delivery", validateRequest(OperationsManagerValidation.AssignDeliveryCourierZodSchema), OperationsManagerController.assignDeliveryCourier);
 router.post("/shipments/:id/assign-delivery", validateRequest(OperationsManagerValidation.AssignDeliveryCourierZodSchema), OperationsManagerController.assignDeliveryCourier);
+// Delivery Dispatch & Status Updates
+router.patch("/shipments/:id/out-for-delivery", validateRequest(OperationsManagerValidation.UpdateOutForDeliveryZodSchema), OperationsManagerController.updateOutForDelivery);
+router.patch("/shipments/:id/delivered", validateRequest(OperationsManagerValidation.UpdateDeliveredZodSchema), OperationsManagerController.updateDelivered);
+router.patch("/shipments/:id/mark-delivered", validateRequest(OperationsManagerValidation.UpdateDeliveredZodSchema), OperationsManagerController.updateDelivered);
 // Inter-Hub Transfer Operations
 router.post("/shipments/:id/transfer", validateRequest(OperationsManagerValidation.CreateHubTransferZodSchema), OperationsManagerController.createHubTransfer);
 router.patch("/transfers/:id/receive", validateRequest(OperationsManagerValidation.ReceiveHubTransferZodSchema), OperationsManagerController.receiveHubTransfer);

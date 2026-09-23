@@ -40,6 +40,23 @@ router.post(
 	OperationsManagerController.assignDeliveryCourier,
 );
 
+// Delivery Dispatch & Status Updates
+router.patch(
+	"/shipments/:id/out-for-delivery",
+	validateRequest(OperationsManagerValidation.UpdateOutForDeliveryZodSchema),
+	OperationsManagerController.updateOutForDelivery,
+);
+router.patch(
+	"/shipments/:id/delivered",
+	validateRequest(OperationsManagerValidation.UpdateDeliveredZodSchema),
+	OperationsManagerController.updateDelivered,
+);
+router.patch(
+	"/shipments/:id/mark-delivered",
+	validateRequest(OperationsManagerValidation.UpdateDeliveredZodSchema),
+	OperationsManagerController.updateDelivered,
+);
+
 // Inter-Hub Transfer Operations
 router.post(
 	"/shipments/:id/transfer",
