@@ -19,19 +19,39 @@ router.get("/address", auth(UserRole.CUSTOMER), UserController.getMyAddresses);
 router.get("/address/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER), UserController.getAddressById);
 router.patch("/address/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN), validateRequest(UserValidation.UpdateAddressZodSchema), UserController.updateAddress);
 router.delete("/address/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN), UserController.deleteAddress);
-// Address plural aliases
-router.post("/addresses", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateAddressZodSchema), UserController.addAddress);
-router.get("/addresses", auth(UserRole.CUSTOMER), UserController.getMyAddresses);
-router.get("/addresses/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER), UserController.getAddressById);
-router.patch("/addresses/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN), validateRequest(UserValidation.UpdateAddressZodSchema), UserController.updateAddress);
-router.delete("/addresses/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN), UserController.deleteAddress);
 // ==========================================
-// Customer Shipment Request
+// Customer Pricing & Rate Calculation
+// ==========================================
+router.get("/pricing", UserController.getPricingRules);
+router.post("/pricing/calculate", validateRequest(UserValidation.CalculatePricingZodSchema), UserController.calculatePricing);
+// ==========================================
+// Customer Invoices & Billing
+// ==========================================
+router.get("/invoices", auth(UserRole.CUSTOMER), UserController.getMyInvoices);
+router.get("/invoices/:id", auth(UserRole.CUSTOMER), UserController.getInvoiceById);
+// ==========================================
+// Customer Delivery Issues Reporting
+// ==========================================
+router.get("/delivery-issues", auth(UserRole.CUSTOMER), UserController.getMyReportedIssues);
+// ==========================================
+// Customer Shipment Management & Lifecycle
 // ==========================================
 router.post("/shipment-request", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateShipmentRequestZodSchema), UserController.createShipmentRequest);
 router.post("/create-shipment-request", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CreateShipmentRequestZodSchema), UserController.createShipmentRequest);
+// Track shipments (placed before /shipments/:id to avoid parameter clash)
+router.get("/shipments/track/:trackingNumber", UserController.trackShipment);
+router.get("/track/:trackingNumber", UserController.trackShipment);
+// Delivery history (placed before /shipments/:id)
+router.get("/shipments/history", auth(UserRole.CUSTOMER), UserController.getDeliveryHistory);
+router.get("/delivery-history", auth(UserRole.CUSTOMER), UserController.getDeliveryHistory);
 router.get("/shipments", auth(UserRole.CUSTOMER), UserController.getMyShipments);
 router.get("/shipments/:id", auth(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER, UserRole.HUB_MANAGER), UserController.getShipmentById);
+// Specific shipment actions
+router.patch("/shipments/:id/schedule-pickup", auth(UserRole.CUSTOMER), validateRequest(UserValidation.SchedulePickupZodSchema), UserController.schedulePickup);
+router.patch("/shipments/:id/cancel", auth(UserRole.CUSTOMER), validateRequest(UserValidation.CancelShipmentZodSchema), UserController.cancelShipment);
+router.post("/shipments/:id/report-issue", auth(UserRole.CUSTOMER), validateRequest(UserValidation.ReportDeliveryIssueZodSchema), UserController.reportDeliveryIssue);
+router.get("/shipments/:id/issues", auth(UserRole.CUSTOMER), UserController.getShipmentIssues);
+router.get("/shipments/:id/invoice", auth(UserRole.CUSTOMER), UserController.getInvoiceById);
 // ==========================================
 // User Administration
 // ==========================================

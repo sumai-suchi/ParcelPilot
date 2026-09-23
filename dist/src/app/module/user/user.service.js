@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import httpStatus from "http-status";
-import { PaymentStatus, ShipmentStatus, UserRole, } from "../../../generated/prisma/enums";
+import { AssignmentStatus, PaymentStatus, ShipmentStatus, UserRole, } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 /**
@@ -302,41 +302,176 @@ const deleteAddress = async (userId, addressId, role) => {
 const createShipmentRequest = async (userId, payload) => {
     // 1. Ensure user has an active Customer profile
     const customer = await getCustomerByUserId(userId);
-    // 2. Validate pickup address requirement
+    // 2. Edge Case: Weight Validation (Zero, Negative, NaN, or Excessively Large)
+    if (typeof payload.weight !== "number" ||
+        Number.isNaN(payload.weight) ||
+        !Number.isFinite(payload.weight)) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Invalid parcel weight. Weight must be a valid positive number.");
+    }
+    if (payload.weight <= 0) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Invalid parcel weight. Zero or negative weight is not allowed. Weight must be greater than zero.");
+    }
+    if (payload.weight < 0.05) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Minimum parcel weight is 0.05 kg (50 grams).");
+    }
+    if (payload.weight > 500) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Maximum parcel weight allowed is 500 kg. For heavier cargo, please contact freight support.");
+    }
+    // 3. Edge Case: Recipient Phone Validation
+    if (payload.recipientPhone) {
+        const phoneRegex = /^(?:\+?8801[3-9]\d{8}|01[3-9]\d{8}|\+?[1-9]\d{7,14})$/;
+        if (!phoneRegex.test(payload.recipientPhone.trim())) {
+            throw new AppError(httpStatus.BAD_REQUEST, "Invalid recipient phone number format. Please provide a valid phone number (e.g., +8801XXXXXXXXX or 01XXXXXXXXX).");
+        }
+    }
+    // 4. Edge Case: Missing Addresses Validation
     if (!payload.pickupAddress && !payload.pickupAddressId) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Pickup address is required. Please fill in pickup address details to add the address for your account.");
+        throw new AppError(httpStatus.BAD_REQUEST, "Missing pickup address. Please provide either 'pickupAddress' details or a saved 'pickupAddressId'.");
     }
-    // 3. Validate delivery address requirement
     if (!payload.deliveryAddress && !payload.deliveryAddressId) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Delivery address is required. Please fill in delivery address details.");
+        throw new AppError(httpStatus.BAD_REQUEST, "Missing delivery address. Please provide either 'deliveryAddress' details or a saved 'deliveryAddressId'.");
     }
-    // 4. Validate existing address IDs if provided
+    // Validate incomplete address fields if full address object was provided
+    if (payload.pickupAddress) {
+        if (!payload.pickupAddress.addressLine?.trim() ||
+            !payload.pickupAddress.city?.trim() ||
+            !payload.pickupAddress.area?.trim()) {
+            throw new AppError(httpStatus.BAD_REQUEST, "Incomplete pickup address. 'addressLine', 'city', and 'area' are required fields.");
+        }
+    }
+    if (payload.deliveryAddress) {
+        if (!payload.deliveryAddress.addressLine?.trim() ||
+            !payload.deliveryAddress.city?.trim() ||
+            !payload.deliveryAddress.area?.trim()) {
+            throw new AppError(httpStatus.BAD_REQUEST, "Incomplete delivery address. 'addressLine', 'city', and 'area' are required fields.");
+        }
+    }
+    // 5. Resolve and validate existing saved address IDs if passed
+    let pickupCity = "";
+    let pickupArea = "";
+    let pickupLine = "";
     if (payload.pickupAddressId) {
         const existingPickup = await prisma.address.findUnique({
             where: { id: payload.pickupAddressId },
         });
         if (!existingPickup) {
-            throw new AppError(httpStatus.NOT_FOUND, "Pickup address not found.");
+            throw new AppError(httpStatus.NOT_FOUND, "Specified pickup address ID not found.");
         }
         if (existingPickup.customerId !== customer.id) {
             throw new AppError(httpStatus.FORBIDDEN, "Specified pickup address does not belong to your account.");
         }
+        pickupCity = existingPickup.city.trim();
+        pickupArea = existingPickup.area.trim();
+        pickupLine = existingPickup.addressLine.trim();
     }
+    else if (payload.pickupAddress) {
+        pickupCity = payload.pickupAddress.city.trim();
+        pickupArea = payload.pickupAddress.area.trim();
+        pickupLine = payload.pickupAddress.addressLine.trim();
+    }
+    let deliveryCity = "";
+    let deliveryArea = "";
+    let deliveryLine = "";
     if (payload.deliveryAddressId) {
         const existingDelivery = await prisma.address.findUnique({
             where: { id: payload.deliveryAddressId },
         });
         if (!existingDelivery) {
-            throw new AppError(httpStatus.NOT_FOUND, "Delivery address not found.");
+            throw new AppError(httpStatus.NOT_FOUND, "Specified delivery address ID not found.");
+        }
+        deliveryCity = existingDelivery.city.trim();
+        deliveryArea = existingDelivery.area.trim();
+        deliveryLine = existingDelivery.addressLine.trim();
+    }
+    else if (payload.deliveryAddress) {
+        deliveryCity = payload.deliveryAddress.city.trim();
+        deliveryArea = payload.deliveryAddress.area.trim();
+        deliveryLine = payload.deliveryAddress.addressLine.trim();
+    }
+    // Edge Case: Identical Pickup & Delivery Address
+    if (pickupCity.toLowerCase() === deliveryCity.toLowerCase() &&
+        pickupArea.toLowerCase() === deliveryArea.toLowerCase() &&
+        pickupLine.toLowerCase() === deliveryLine.toLowerCase()) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Pickup address and delivery address cannot be identical. Parcel cannot be delivered to the exact same location.");
+    }
+    // 6. Edge Case: Unsupported Delivery Zone Check
+    const activeZones = await prisma.zone.findMany({
+        where: { isActive: true },
+        include: {
+            hubs: {
+                where: { isActive: true },
+                select: { id: true, name: true, address: true, code: true },
+            },
+        },
+    });
+    if (activeZones.length > 0) {
+        const targetCity = deliveryCity.toLowerCase();
+        const targetArea = deliveryArea.toLowerCase();
+        const isSupported = activeZones.some((zone) => {
+            const zoneNameMatch = zone.name.toLowerCase().includes(targetCity);
+            const zoneCodeMatch = zone.code.toLowerCase().includes(targetCity);
+            const hubMatch = zone.hubs.some((hub) => hub.address.toLowerCase().includes(targetCity) ||
+                hub.address.toLowerCase().includes(targetArea) ||
+                hub.name.toLowerCase().includes(targetCity));
+            return zoneNameMatch || zoneCodeMatch || hubMatch;
+        });
+        if (!isSupported) {
+            const supportedZoneNames = activeZones.map((z) => z.name).join(", ");
+            throw new AppError(httpStatus.BAD_REQUEST, `Unsupported delivery zone: '${deliveryCity}'. ParcelPilot currently only delivers to serviced regions: ${supportedZoneNames}.`);
         }
     }
-    // 5. Generate Tracking Number: PP-YYYYMMDD-XXXXXX
+    // 7. Edge Case: Duplicate Shipment Submission Detection (within last 2 minutes)
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+    const duplicateShipment = await prisma.shipment.findFirst({
+        where: {
+            customerId: customer.id,
+            parcelType: payload.parcelType,
+            weight: payload.weight,
+            status: {
+                in: [ShipmentStatus.PENDING_APPROVAL, ShipmentStatus.CREATED],
+            },
+            createdAt: {
+                gte: twoMinutesAgo,
+            },
+            deliveryAddress: {
+                city: { equals: deliveryCity, mode: "insensitive" },
+                addressLine: { equals: deliveryLine, mode: "insensitive" },
+            },
+        },
+    });
+    if (duplicateShipment) {
+        throw new AppError(httpStatus.CONFLICT, `Duplicate shipment submission detected. An identical shipment request was just submitted within the last 2 minutes (Tracking Number: ${duplicateShipment.trackingNumber}). Please wait before submitting again.`);
+    }
+    // 8. Generate Tracking Number: PP-YYYYMMDD-XXXXXX
     const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const randomPart = crypto.randomBytes(3).toString("hex").toUpperCase();
     const trackingNumber = `PP-${datePart}-${randomPart}`;
     const deliveryType = payload.deliveryType || "STANDARD";
-    const deliveryCharge = 60.0; // Default baseline charge
-    // 6. Execute transactional creation
+    let deliveryCharge = 60.0; // Default baseline charge
+    const matchingRule = await prisma.pricingRule.findFirst({
+        where: {
+            isActive: true,
+            deliveryType,
+            minWeight: { lte: payload.weight },
+            maxWeight: { gte: payload.weight },
+        },
+    });
+    if (matchingRule) {
+        const base = Number(matchingRule.baseCharge);
+        const perKg = Number(matchingRule.perKgCharge);
+        const minW = Number(matchingRule.minWeight);
+        const extra = Math.max(0, payload.weight - minW);
+        deliveryCharge = Number((base + extra * perKg).toFixed(2));
+    }
+    // Format description with recipient info if provided
+    let formattedDescription = payload.description?.trim() || "";
+    if (payload.recipientPhone || payload.recipientName) {
+        const recipientTag = `[Recipient: ${payload.recipientName?.trim() || "N/A"}, Phone: ${payload.recipientPhone?.trim() || "N/A"}]`;
+        formattedDescription = formattedDescription
+            ? `${recipientTag} ${formattedDescription}`
+            : recipientTag;
+    }
+    // 9. Execute transactional creation
     const result = await prisma.$transaction(async (tx) => {
         // Save pickup address for this customer if address details are filled
         let pickupAddressId;
@@ -345,9 +480,9 @@ const createShipmentRequest = async (userId, payload) => {
                 data: {
                     customerId: customer.id,
                     label: payload.pickupAddress.label || "Pickup Address",
-                    addressLine: payload.pickupAddress.addressLine,
-                    city: payload.pickupAddress.city,
-                    area: payload.pickupAddress.area,
+                    addressLine: payload.pickupAddress.addressLine.trim(),
+                    city: payload.pickupAddress.city.trim(),
+                    area: payload.pickupAddress.area.trim(),
                     postalCode: payload.pickupAddress.postalCode || null,
                     latitude: payload.pickupAddress.latitude !== undefined
                         ? payload.pickupAddress.latitude
@@ -372,9 +507,9 @@ const createShipmentRequest = async (userId, payload) => {
                 data: {
                     customerId: customer.id,
                     label: payload.deliveryAddress.label || "Delivery Address",
-                    addressLine: payload.deliveryAddress.addressLine,
-                    city: payload.deliveryAddress.city,
-                    area: payload.deliveryAddress.area,
+                    addressLine: payload.deliveryAddress.addressLine.trim(),
+                    city: payload.deliveryAddress.city.trim(),
+                    area: payload.deliveryAddress.area.trim(),
                     postalCode: payload.deliveryAddress.postalCode || null,
                     latitude: payload.deliveryAddress.latitude !== undefined
                         ? payload.deliveryAddress.latitude
@@ -401,9 +536,9 @@ const createShipmentRequest = async (userId, payload) => {
                 deliveryAddressId,
                 originHubId: null,
                 destinationHubId: null,
-                parcelType: payload.parcelType,
+                parcelType: payload.parcelType.trim(),
                 weight: payload.weight,
-                description: payload.description || null,
+                description: formattedDescription || null,
                 deliveryType,
                 deliveryCharge,
                 status: ShipmentStatus.PENDING_APPROVAL,
@@ -431,13 +566,17 @@ const createShipmentRequest = async (userId, payload) => {
                 },
             },
         });
-        // Create initial status history entry
+        // Create initial status history entry with recipient details if present
+        const historyNote = "Shipment request created by customer, awaiting operational review" +
+            (payload.recipientPhone
+                ? ` (Recipient: ${payload.recipientName?.trim() || "N/A"}, Phone: ${payload.recipientPhone?.trim()})`
+                : "");
         await tx.shipmentStatusHistory.create({
             data: {
                 shipmentId: createdShipment.id,
                 status: ShipmentStatus.PENDING_APPROVAL,
                 location: null,
-                note: "Shipment request created by customer, awaiting operational review",
+                note: historyNote,
                 updatedBy: userId,
             },
         });
@@ -534,6 +673,659 @@ const getShipmentById = async (userId, shipmentId, role) => {
     }
     return shipment;
 };
+// ==========================================
+// Customer Tracking Services
+// ==========================================
+const trackShipment = async (trackingNumber, userId) => {
+    const shipment = await prisma.shipment.findUnique({
+        where: { trackingNumber },
+        include: {
+            pickupAddress: true,
+            deliveryAddress: true,
+            originHub: {
+                select: { id: true, name: true, code: true, address: true, phone: true },
+            },
+            destinationHub: {
+                select: { id: true, name: true, code: true, address: true, phone: true },
+            },
+            statusHistory: {
+                orderBy: { createdAt: "asc" },
+                select: {
+                    id: true,
+                    status: true,
+                    location: true,
+                    note: true,
+                    createdAt: true,
+                },
+            },
+            courierAssignments: {
+                where: {
+                    status: { in: [AssignmentStatus.ACCEPTED, AssignmentStatus.COMPLETED] },
+                },
+                orderBy: { assignedAt: "desc" },
+                take: 1,
+                include: {
+                    courier: {
+                        include: {
+                            user: {
+                                select: { name: true, phone: true },
+                            },
+                        },
+                    },
+                },
+            },
+            deliveryAttempts: {
+                orderBy: { attemptNumber: "asc" },
+                select: {
+                    attemptNumber: true,
+                    status: true,
+                    failureReason: true,
+                    notes: true,
+                    attemptedAt: true,
+                },
+            },
+            proofOfDelivery: {
+                select: {
+                    recipientName: true,
+                    imageUrl: true,
+                    signatureUrl: true,
+                    notes: true,
+                    createdAt: true,
+                },
+            },
+        },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Shipment tracking number not found.");
+    }
+    const activeAssignment = shipment.courierAssignments[0] || null;
+    return {
+        trackingNumber: shipment.trackingNumber,
+        status: shipment.status,
+        deliveryType: shipment.deliveryType,
+        parcelType: shipment.parcelType,
+        weight: Number(shipment.weight),
+        scheduledPickupAt: shipment.scheduledPickupAt,
+        createdAt: shipment.createdAt,
+        updatedAt: shipment.updatedAt,
+        pickupAddress: {
+            area: shipment.pickupAddress.area,
+            city: shipment.pickupAddress.city,
+        },
+        deliveryAddress: {
+            area: shipment.deliveryAddress.area,
+            city: shipment.deliveryAddress.city,
+        },
+        originHub: shipment.originHub,
+        destinationHub: shipment.destinationHub,
+        assignedCourier: activeAssignment?.courier?.user
+            ? {
+                name: activeAssignment.courier.user.name,
+                phone: activeAssignment.courier.user.phone,
+            }
+            : null,
+        timeline: shipment.statusHistory,
+        deliveryAttempts: shipment.deliveryAttempts,
+        proofOfDelivery: shipment.proofOfDelivery,
+    };
+};
+// ==========================================
+// Customer Pickup Scheduling Services
+// ==========================================
+const schedulePickup = async (userId, shipmentId, payload) => {
+    const customer = await getCustomerByUserId(userId);
+    const shipment = await prisma.shipment.findUnique({
+        where: { id: shipmentId },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
+    }
+    if (shipment.customerId !== customer.id) {
+        throw new AppError(httpStatus.FORBIDDEN, "You can only schedule pickup for your own shipments.");
+    }
+    const eligibleStatuses = [
+        ShipmentStatus.PENDING_APPROVAL,
+        ShipmentStatus.CREATED,
+        ShipmentStatus.PICKUP_ASSIGNED,
+    ];
+    if (!eligibleStatuses.includes(shipment.status)) {
+        throw new AppError(httpStatus.BAD_REQUEST, `Cannot schedule or reschedule pickup. Current shipment status is '${shipment.status}'.`);
+    }
+    const scheduledDate = new Date(payload.scheduledPickupAt);
+    if (Number.isNaN(scheduledDate.getTime())) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Invalid date format for scheduledPickupAt.");
+    }
+    if (scheduledDate.getTime() < Date.now() - 5 * 60 * 1000) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Scheduled pickup time must be in the future.");
+    }
+    const updatedShipment = await prisma.$transaction(async (tx) => {
+        const updated = await tx.shipment.update({
+            where: { id: shipmentId },
+            data: {
+                scheduledPickupAt: scheduledDate,
+            },
+            include: {
+                pickupAddress: true,
+                deliveryAddress: true,
+            },
+        });
+        await tx.shipmentStatusHistory.create({
+            data: {
+                shipmentId,
+                status: shipment.status,
+                location: "Customer Portal",
+                note: `Pickup scheduled for ${scheduledDate.toISOString()}`,
+                updatedBy: userId,
+            },
+        });
+        await tx.notification.create({
+            data: {
+                userId,
+                shipmentId,
+                title: "Pickup Scheduled",
+                message: `Pickup for shipment ${shipment.trackingNumber} is scheduled for ${scheduledDate.toLocaleString()}.`,
+                type: "PICKUP_SCHEDULED",
+            },
+        });
+        return updated;
+    });
+    return updatedShipment;
+};
+// ==========================================
+// Customer Shipment Cancellation Services
+// ==========================================
+const cancelShipment = async (userId, shipmentId, payload) => {
+    const customer = await getCustomerByUserId(userId);
+    const shipment = await prisma.shipment.findUnique({
+        where: { id: shipmentId },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
+    }
+    if (shipment.customerId !== customer.id) {
+        throw new AppError(httpStatus.FORBIDDEN, "You can only cancel your own shipments.");
+    }
+    if (shipment.status === ShipmentStatus.CANCELLED) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Shipment is already cancelled.");
+    }
+    const postPickupStatuses = [
+        ShipmentStatus.PICKED_UP,
+        ShipmentStatus.AT_ORIGIN_HUB,
+        ShipmentStatus.IN_TRANSIT,
+        ShipmentStatus.AT_DESTINATION_HUB,
+        ShipmentStatus.OUT_FOR_DELIVERY,
+        ShipmentStatus.DELIVERED,
+        ShipmentStatus.DELIVERY_FAILED,
+        ShipmentStatus.RESCHEDULED,
+        ShipmentStatus.RETURN_INITIATED,
+        ShipmentStatus.RETURN_IN_TRANSIT,
+        ShipmentStatus.RETURNED,
+    ];
+    if (postPickupStatuses.includes(shipment.status)) {
+        throw new AppError(httpStatus.BAD_REQUEST, `Shipment cannot be cancelled after pickup has occurred. Current status is '${shipment.status}'. The package is already in transit with our logistics network. Please contact customer support to request a return or hold.`);
+    }
+    const cancellableStatuses = [
+        ShipmentStatus.PENDING_APPROVAL,
+        ShipmentStatus.CREATED,
+        ShipmentStatus.COURIER_ASSIGNED,
+        ShipmentStatus.PICKUP_ASSIGNED,
+    ];
+    if (!cancellableStatuses.includes(shipment.status)) {
+        throw new AppError(httpStatus.BAD_REQUEST, `Shipment cannot be cancelled in its current state ('${shipment.status}').`);
+    }
+    const cancellationReason = payload.reason?.trim() || "Shipment cancelled by customer.";
+    const cancelledShipment = await prisma.$transaction(async (tx) => {
+        const updated = await tx.shipment.update({
+            where: { id: shipmentId },
+            data: {
+                status: ShipmentStatus.CANCELLED,
+            },
+            include: {
+                pickupAddress: true,
+                deliveryAddress: true,
+            },
+        });
+        await tx.courierParcel.updateMany({
+            where: {
+                shipmentId,
+                status: {
+                    in: [AssignmentStatus.PENDING, AssignmentStatus.ACCEPTED],
+                },
+            },
+            data: {
+                status: AssignmentStatus.CANCELLED,
+            },
+        });
+        await tx.shipmentStatusHistory.create({
+            data: {
+                shipmentId,
+                status: ShipmentStatus.CANCELLED,
+                location: "Customer Portal",
+                note: `Cancelled by customer. Reason: ${cancellationReason}`,
+                updatedBy: userId,
+            },
+        });
+        await tx.notification.create({
+            data: {
+                userId,
+                shipmentId,
+                title: "Shipment Cancelled",
+                message: `Shipment ${shipment.trackingNumber} has been successfully cancelled.`,
+                type: "SHIPMENT_CANCELLED",
+            },
+        });
+        return updated;
+    });
+    return cancelledShipment;
+};
+// ==========================================
+// Customer Pricing Services
+// ==========================================
+const getPricingRules = async () => {
+    const rules = await prisma.pricingRule.findMany({
+        where: {
+            isActive: true,
+        },
+        include: {
+            zone: {
+                select: {
+                    id: true,
+                    name: true,
+                    code: true,
+                },
+            },
+        },
+        orderBy: [
+            { deliveryType: "asc" },
+            { minWeight: "asc" },
+        ],
+    });
+    return rules;
+};
+const calculatePricing = async (payload) => {
+    const weight = Number(payload.weight);
+    const deliveryType = (payload.deliveryType || "STANDARD").toUpperCase();
+    const whereConditions = {
+        isActive: true,
+        deliveryType,
+        minWeight: { lte: weight },
+        maxWeight: { gte: weight },
+    };
+    if (payload.zoneId) {
+        whereConditions.zoneId = payload.zoneId;
+    }
+    const matchedRule = await prisma.pricingRule.findFirst({
+        where: whereConditions,
+        include: {
+            zone: true,
+        },
+    });
+    if (matchedRule) {
+        const baseCharge = Number(matchedRule.baseCharge);
+        const perKgCharge = Number(matchedRule.perKgCharge);
+        const minWeight = Number(matchedRule.minWeight);
+        const extraWeight = Math.max(0, weight - minWeight);
+        const additionalWeightCharge = Number((extraWeight * perKgCharge).toFixed(2));
+        const totalEstimatedCost = Number((baseCharge + additionalWeightCharge).toFixed(2));
+        return {
+            weight,
+            deliveryType,
+            currency: "BDT",
+            matchedRuleId: matchedRule.id,
+            zone: matchedRule.zone?.name || null,
+            baseCharge,
+            perKgCharge,
+            additionalWeightCharge,
+            totalEstimatedCost,
+        };
+    }
+    let baseCharge = 60.0;
+    let perKgCharge = 20.0;
+    if (deliveryType === "EXPRESS") {
+        baseCharge = 120.0;
+        perKgCharge = 35.0;
+    }
+    else if (deliveryType === "SAME_DAY") {
+        baseCharge = 180.0;
+        perKgCharge = 50.0;
+    }
+    const extraWeight = Math.max(0, weight - 1.0);
+    const additionalWeightCharge = Number((extraWeight * perKgCharge).toFixed(2));
+    const totalEstimatedCost = Number((baseCharge + additionalWeightCharge).toFixed(2));
+    return {
+        weight,
+        deliveryType,
+        currency: "BDT",
+        matchedRuleId: null,
+        zone: payload.pickupCity &&
+            payload.deliveryCity &&
+            payload.pickupCity.toLowerCase() === payload.deliveryCity.toLowerCase()
+            ? "Same City"
+            : "Inter-City Standard",
+        baseCharge,
+        perKgCharge,
+        additionalWeightCharge,
+        totalEstimatedCost,
+        note: "Standard baseline rate estimate.",
+    };
+};
+// ==========================================
+// Customer Delivery History Services
+// ==========================================
+const getDeliveryHistory = async (userId, query) => {
+    const customer = await getCustomerByUserId(userId);
+    const page = Number(query.page) > 0 ? Number(query.page) : 1;
+    const limit = Number(query.limit) > 0 ? Number(query.limit) : 10;
+    const skip = (page - 1) * limit;
+    const whereConditions = {
+        customerId: customer.id,
+    };
+    if (query.status) {
+        whereConditions.status = query.status;
+    }
+    else {
+        whereConditions.status = {
+            in: [
+                ShipmentStatus.DELIVERED,
+                ShipmentStatus.RETURNED,
+                ShipmentStatus.CANCELLED,
+            ],
+        };
+    }
+    if (query.startDate || query.endDate) {
+        whereConditions.createdAt = {};
+        if (query.startDate) {
+            whereConditions.createdAt.gte = new Date(query.startDate);
+        }
+        if (query.endDate) {
+            whereConditions.createdAt.lte = new Date(query.endDate);
+        }
+    }
+    const sortBy = query.sortBy || "updatedAt";
+    const sortOrder = query.sortOrder || "desc";
+    const [history, total] = await Promise.all([
+        prisma.shipment.findMany({
+            where: whereConditions,
+            skip,
+            take: limit,
+            orderBy: {
+                [sortBy]: sortOrder,
+            },
+            include: {
+                pickupAddress: true,
+                deliveryAddress: true,
+                originHub: { select: { id: true, name: true, code: true } },
+                destinationHub: { select: { id: true, name: true, code: true } },
+                proofOfDelivery: true,
+                payment: true,
+                deliveryAttempts: {
+                    orderBy: { attemptNumber: "desc" },
+                    take: 1,
+                },
+                statusHistory: {
+                    orderBy: { createdAt: "desc" },
+                    take: 3,
+                },
+            },
+        }),
+        prisma.shipment.count({
+            where: whereConditions,
+        }),
+    ]);
+    return {
+        data: history,
+        meta: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+        },
+    };
+};
+// ==========================================
+// Customer Invoice Services
+// ==========================================
+const getMyInvoices = async (userId, query) => {
+    const customer = await getCustomerByUserId(userId);
+    const page = Number(query.page) > 0 ? Number(query.page) : 1;
+    const limit = Number(query.limit) > 0 ? Number(query.limit) : 10;
+    const skip = (page - 1) * limit;
+    const whereConditions = {
+        customerId: customer.id,
+    };
+    if (query.paymentStatus) {
+        whereConditions.paymentStatus = query.paymentStatus;
+    }
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = query.sortOrder || "desc";
+    const [shipments, total] = await Promise.all([
+        prisma.shipment.findMany({
+            where: whereConditions,
+            skip,
+            take: limit,
+            orderBy: { [sortBy]: sortOrder },
+            include: {
+                payment: true,
+                deliveryAddress: true,
+            },
+        }),
+        prisma.shipment.count({
+            where: whereConditions,
+        }),
+    ]);
+    const invoices = shipments.map((s) => ({
+        invoiceNumber: `INV-${s.trackingNumber}`,
+        shipmentId: s.id,
+        trackingNumber: s.trackingNumber,
+        parcelType: s.parcelType,
+        weight: Number(s.weight),
+        deliveryType: s.deliveryType,
+        amount: Number(s.deliveryCharge),
+        currency: s.payment?.currency || "BDT",
+        paymentStatus: s.paymentStatus,
+        paymentProvider: s.payment?.provider || "N/A",
+        transactionId: s.payment?.transactionId || null,
+        paidAt: s.payment?.paidAt || null,
+        invoiceDate: s.createdAt,
+        destinationCity: s.deliveryAddress.city,
+    }));
+    return {
+        data: invoices,
+        meta: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+        },
+    };
+};
+const getInvoiceById = async (userId, identifier) => {
+    const customer = await getCustomerByUserId(userId);
+    const shipment = await prisma.shipment.findFirst({
+        where: {
+            customerId: customer.id,
+            OR: [{ id: identifier }, { trackingNumber: identifier }],
+        },
+        include: {
+            customer: {
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true,
+                            phone: true,
+                        },
+                    },
+                },
+            },
+            pickupAddress: true,
+            deliveryAddress: true,
+            payment: true,
+        },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Invoice not found for this shipment.");
+    }
+    const deliveryCharge = Number(shipment.deliveryCharge);
+    const currency = shipment.payment?.currency || "BDT";
+    return {
+        invoiceNumber: `INV-${shipment.trackingNumber}`,
+        invoiceDate: shipment.createdAt,
+        company: {
+            name: "ParcelPilot Logistics Ltd.",
+            address: "Dhaka, Bangladesh",
+            email: "support@parcelpilot.com",
+            phone: "+880 1700-000000",
+        },
+        customer: {
+            name: shipment.customer.user.name,
+            email: shipment.customer.user.email,
+            phone: shipment.customer.user.phone,
+        },
+        shipmentDetails: {
+            shipmentId: shipment.id,
+            trackingNumber: shipment.trackingNumber,
+            parcelType: shipment.parcelType,
+            weight: Number(shipment.weight),
+            deliveryType: shipment.deliveryType,
+            status: shipment.status,
+            pickupAddress: `${shipment.pickupAddress.addressLine}, ${shipment.pickupAddress.area}, ${shipment.pickupAddress.city}`,
+            deliveryAddress: `${shipment.deliveryAddress.addressLine}, ${shipment.deliveryAddress.area}, ${shipment.deliveryAddress.city}`,
+        },
+        billing: {
+            baseDeliveryCharge: deliveryCharge,
+            tax: 0.0,
+            totalAmount: deliveryCharge,
+            currency,
+            paymentStatus: shipment.paymentStatus,
+            paymentProvider: shipment.payment?.provider || "Pending Provider",
+            transactionId: shipment.payment?.transactionId || null,
+            paidAt: shipment.payment?.paidAt || null,
+        },
+    };
+};
+// ==========================================
+// Customer Delivery Issue Services
+// ==========================================
+const reportDeliveryIssue = async (userId, shipmentId, payload) => {
+    const customer = await getCustomerByUserId(userId);
+    const shipment = await prisma.shipment.findUnique({
+        where: { id: shipmentId },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
+    }
+    if (shipment.customerId !== customer.id) {
+        throw new AppError(httpStatus.FORBIDDEN, "You can only report issues for your own shipments.");
+    }
+    const contactInfo = payload.contactPhone ? ` (Contact: ${payload.contactPhone})` : "";
+    const issueNote = `[ISSUE_REPORTED:${payload.issueType}] ${payload.description}${contactInfo}`;
+    const result = await prisma.$transaction(async (tx) => {
+        const historyEntry = await tx.shipmentStatusHistory.create({
+            data: {
+                shipmentId,
+                status: shipment.status,
+                location: "Customer Issue Report",
+                note: issueNote,
+                updatedBy: userId,
+            },
+        });
+        await tx.notification.create({
+            data: {
+                userId,
+                shipmentId,
+                title: `Delivery Issue Reported: ${shipment.trackingNumber}`,
+                message: `Your issue regarding '${payload.issueType}' has been logged and escalated to customer support.`,
+                type: "DELIVERY_ISSUE",
+            },
+        });
+        return historyEntry;
+    });
+    return {
+        issueId: result.id,
+        shipmentId,
+        trackingNumber: shipment.trackingNumber,
+        issueType: payload.issueType,
+        description: payload.description,
+        contactPhone: payload.contactPhone || null,
+        reportedAt: result.createdAt,
+        status: "OPEN",
+        message: "Issue successfully recorded and escalated to operations team.",
+    };
+};
+const getShipmentIssues = async (userId, shipmentId) => {
+    const customer = await getCustomerByUserId(userId);
+    const shipment = await prisma.shipment.findUnique({
+        where: { id: shipmentId },
+    });
+    if (!shipment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
+    }
+    if (shipment.customerId !== customer.id) {
+        throw new AppError(httpStatus.FORBIDDEN, "You can only view issues for your own shipments.");
+    }
+    const statusHistories = await prisma.shipmentStatusHistory.findMany({
+        where: {
+            shipmentId,
+            note: {
+                startsWith: "[ISSUE_REPORTED:",
+            },
+        },
+        orderBy: { createdAt: "desc" },
+    });
+    return statusHistories.map((h) => {
+        const match = h.note?.match(/\[ISSUE_REPORTED:([A-Z_]+)\]\s*(.*)/);
+        const issueType = match ? match[1] : "UNKNOWN";
+        const description = match ? match[2] : h.note;
+        return {
+            id: h.id,
+            shipmentId: h.shipmentId,
+            trackingNumber: shipment.trackingNumber,
+            issueType,
+            description,
+            reportedAt: h.createdAt,
+        };
+    });
+};
+const getMyReportedIssues = async (userId) => {
+    const customer = await getCustomerByUserId(userId);
+    const issues = await prisma.shipmentStatusHistory.findMany({
+        where: {
+            note: {
+                startsWith: "[ISSUE_REPORTED:",
+            },
+            shipment: {
+                customerId: customer.id,
+            },
+        },
+        include: {
+            shipment: {
+                select: {
+                    id: true,
+                    trackingNumber: true,
+                    status: true,
+                    deliveryType: true,
+                },
+            },
+        },
+        orderBy: { createdAt: "desc" },
+    });
+    return issues.map((h) => {
+        const match = h.note?.match(/\[ISSUE_REPORTED:([A-Z_]+)\]\s*(.*)/);
+        const issueType = match ? match[1] : "UNKNOWN";
+        const description = match ? match[2] : h.note;
+        return {
+            id: h.id,
+            shipmentId: h.shipmentId,
+            trackingNumber: h.shipment.trackingNumber,
+            shipmentStatus: h.shipment.status,
+            deliveryType: h.shipment.deliveryType,
+            issueType,
+            description,
+            reportedAt: h.createdAt,
+        };
+    });
+};
 export const UserService = {
     getProfile,
     updateProfile,
@@ -548,4 +1340,15 @@ export const UserService = {
     createShipmentRequest,
     getMyShipments,
     getShipmentById,
+    trackShipment,
+    schedulePickup,
+    cancelShipment,
+    getPricingRules,
+    calculatePricing,
+    getDeliveryHistory,
+    getMyInvoices,
+    getInvoiceById,
+    reportDeliveryIssue,
+    getShipmentIssues,
+    getMyReportedIssues,
 };

@@ -177,6 +177,149 @@ const getShipmentById = catchAsync(async (req, res) => {
         data: result,
     });
 });
+// ==========================================
+// Customer Additional Feature Controllers
+// ==========================================
+const trackShipment = catchAsync(async (req, res) => {
+    const { trackingNumber } = req.params;
+    const user = req.user;
+    const result = await UserService.trackShipment(trackingNumber, user?.userId);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Shipment tracking details retrieved successfully.",
+        data: result,
+    });
+});
+const schedulePickup = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const { id } = req.params;
+    const result = await UserService.schedulePickup(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Pickup scheduled successfully.",
+        data: result,
+    });
+});
+const cancelShipment = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const { id } = req.params;
+    const result = await UserService.cancelShipment(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Shipment cancelled successfully.",
+        data: result,
+    });
+});
+const getPricingRules = catchAsync(async (_req, res) => {
+    const result = await UserService.getPricingRules();
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Active pricing rules retrieved successfully.",
+        data: result,
+    });
+});
+const calculatePricing = catchAsync(async (req, res) => {
+    const result = await UserService.calculatePricing(req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Estimated pricing calculated successfully.",
+        data: result,
+    });
+});
+const getDeliveryHistory = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const result = await UserService.getDeliveryHistory(user.userId, req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Delivery history retrieved successfully.",
+        data: result.data,
+        meta: result.meta,
+    });
+});
+const getMyInvoices = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const result = await UserService.getMyInvoices(user.userId, req.query);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Invoices retrieved successfully.",
+        data: result.data,
+        meta: result.meta,
+    });
+});
+const getInvoiceById = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const { id } = req.params;
+    const result = await UserService.getInvoiceById(user.userId, id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Invoice retrieved successfully.",
+        data: result,
+    });
+});
+const reportDeliveryIssue = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const { id } = req.params;
+    const result = await UserService.reportDeliveryIssue(user.userId, id, req.body);
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "Delivery issue reported successfully.",
+        data: result,
+    });
+});
+const getShipmentIssues = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const { id } = req.params;
+    const result = await UserService.getShipmentIssues(user.userId, id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Shipment issues retrieved successfully.",
+        data: result,
+    });
+});
+const getMyReportedIssues = catchAsync(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing from request context.");
+    }
+    const result = await UserService.getMyReportedIssues(user.userId);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "All reported delivery issues retrieved successfully.",
+        data: result,
+    });
+});
 export const UserController = {
     getProfile,
     updateProfile,
@@ -191,4 +334,15 @@ export const UserController = {
     createShipmentRequest,
     getMyShipments,
     getShipmentById,
+    trackShipment,
+    schedulePickup,
+    cancelShipment,
+    getPricingRules,
+    calculatePricing,
+    getDeliveryHistory,
+    getMyInvoices,
+    getInvoiceById,
+    reportDeliveryIssue,
+    getShipmentIssues,
+    getMyReportedIssues,
 };

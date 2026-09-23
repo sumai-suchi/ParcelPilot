@@ -45,6 +45,8 @@ export interface ICreateShipmentRequestPayload {
 	pickupAddressId?: string;
 	deliveryAddress?: ICreateAddressPayload;
 	deliveryAddressId?: string;
+	recipientName?: string;
+	recipientPhone?: string;
 	parcelType: string;
 	weight: number;
 	description?: string;
@@ -59,3 +61,52 @@ export interface IShipmentFilterQuery {
 	sortBy?: string;
 	sortOrder?: "asc" | "desc";
 }
+
+export interface ISchedulePickupPayload {
+	scheduledPickupAt: string;
+}
+
+export interface ICancelShipmentPayload {
+	reason?: string;
+}
+
+export interface ICalculatePricingPayload {
+	weight: number;
+	deliveryType?: string;
+	zoneId?: string;
+	pickupCity?: string;
+	deliveryCity?: string;
+}
+
+export interface IDeliveryHistoryQuery {
+	page?: number;
+	limit?: number;
+	status?: string;
+	startDate?: string;
+	endDate?: string;
+	sortBy?: string;
+	sortOrder?: "asc" | "desc";
+}
+
+export interface IReportDeliveryIssuePayload {
+	issueType:
+		| "DELAYED_DELIVERY"
+		| "DAMAGED_PARCEL"
+		| "WRONG_ADDRESS"
+		| "COURIER_UNREACHABLE"
+		| "PACKAGE_LOST"
+		| "INCORRECT_STATUS"
+		| "BILLING_ISSUE"
+		| "OTHER";
+	description: string;
+	contactPhone?: string;
+}
+
+export interface IInvoiceQuery {
+	page?: number;
+	limit?: number;
+	paymentStatus?: string;
+	sortBy?: string;
+	sortOrder?: "asc" | "desc";
+}
+
