@@ -203,6 +203,20 @@ const createHub = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const bulkCreateHubs = catchAsync(async (req: Request, res: Response) => {
+	const items = Array.isArray(req.body)
+		? req.body
+		: req.body.hubs || req.body.data || [];
+	const result = await AdminService.bulkCreateHubs(items);
+
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: `Successfully processed ${result.totalProcessed} hubs (${result.createdCount} created, ${result.updatedCount} updated).`,
+		data: result,
+	});
+});
+
 const updateHub = catchAsync(async (req: Request, res: Response) => {
 	const { id } = req.params;
 	const result = await AdminService.updateHub(id as string, req.body);
@@ -369,6 +383,7 @@ export const AdminController = {
 	deleteZone,
 	getAllHubs,
 	createHub,
+	bulkCreateHubs,
 	updateHub,
 	deleteHub,
 	getAllPricingRules,

@@ -28,7 +28,7 @@ import type {
 } from "./auth.interface";
 
 const registerCustomer = async (payload: IRegisterCustomerPayload) => {
-	const { name, password } = payload;
+	const { name, password, profilePicture } = payload;
 
 	const email = payload.email.trim().toLowerCase();
 
@@ -63,6 +63,7 @@ const registerCustomer = async (payload: IRegisterCustomerPayload) => {
 		name,
 		email,
 		password: hashedPassword,
+		profilePicture,
 	};
 
 	await redisClient.set(
@@ -102,6 +103,7 @@ const registerCustomer = async (payload: IRegisterCustomerPayload) => {
 const verifyCustomerEmail = async (payload: IVerifyEmailPayload) => {
 	const otp = payload.otp;
 	const email = payload.email.trim().toLowerCase();
+	console.log(email, otp, "email and otp in verifyCustomerEmail");
 
 	const isUserExist = await prisma.user.findUnique({
 		where: { email },
@@ -122,6 +124,7 @@ const verifyCustomerEmail = async (payload: IVerifyEmailPayload) => {
 	const otpKey = `customer-registration-otp:${email}`;
 
 	const redisOtp = await redisClient.get(otpKey);
+	console.log(redisOtp, "redisOtp in verifyCustomerEmail");
 
 	if (!redisOtp) {
 		throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP");
@@ -150,6 +153,7 @@ const verifyCustomerEmail = async (payload: IVerifyEmailPayload) => {
 			name: customerPayload.name,
 			email: customerPayload.email,
 			password: customerPayload.password,
+			profilePicture: customerPayload.profilePicture,
 			role: UserRole.CUSTOMER,
 			status: UserStatus.ACTIVE,
 			emailVerified: true,

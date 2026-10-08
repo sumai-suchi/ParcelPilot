@@ -524,10 +524,15 @@ const assignDeliveryCourier = async (
 			},
 		});
 
+		const deliveryOtp =
+			shipment.deliveryOtp ||
+			Math.floor(100000 + Math.random() * 900000).toString();
+
 		const updatedShipment = await tx.shipment.update({
 			where: { id: shipmentId },
 			data: {
 				status: ShipmentStatus.OUT_FOR_DELIVERY,
+				deliveryOtp,
 			},
 			include: {
 				pickupAddress: true,
@@ -736,6 +741,77 @@ const receiveHubTransfer = async (
 	});
 
 	return result;
+};
+
+const getAllHubTransfers = async (query: any) => {
+	const page = Number(query.page) > 0 ? Number(query.page) : 1;
+	const limit = Number(query.limit) > 0 ? Number(query.limit) : 20;
+	const skip = (page - 1) * limit;
+
+	const whereConditions: Prisma.HubTransferWhereInput = {};
+
+	if (query.status) {
+		whereConditions.status = query.status as TransferStatus;
+	}
+
+	if (query.fromHubId) {
+		whereConditions.fromHubId = query.fromHubId;
+	}
+
+	if (query.toHubId) {
+		whereConditions.toHubId = query.toHubId;
+	}
+
+	if (query.hubId) {
+		whereConditions.OR = [
+			{ fromHubId: query.hubId },
+			{ toHubId: query.hubId },
+		];
+	}
+
+	const [transfers, total] = await Promise.all([
+		prisma.hubTransfer.findMany({
+			where: whereConditions,
+			skip,
+			take: limit,
+			orderBy: {
+				createdAt: "desc",
+			},
+			include: {
+				shipment: {
+					select: {
+						id: true,
+						trackingNumber: true,
+						parcelType: true,
+						weight: true,
+						status: true,
+					},
+				},
+				fromHub: true,
+				toHub: true,
+				creator: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+					},
+				},
+			},
+		}),
+		prisma.hubTransfer.count({
+			where: whereConditions,
+		}),
+	]);
+
+	return {
+		data: transfers,
+		meta: {
+			page,
+			limit,
+			total,
+			totalPages: Math.ceil(total / limit),
+		},
+	};
 };
 
 /**
@@ -959,10 +1035,15 @@ const updateOutForDelivery = async (
 			});
 		}
 
+		const deliveryOtp =
+			shipment.deliveryOtp ||
+			Math.floor(100000 + Math.random() * 900000).toString();
+
 		const updatedShipment = await tx.shipment.update({
 			where: { id: shipmentId },
 			data: {
 				status: ShipmentStatus.OUT_FOR_DELIVERY,
+				deliveryOtp,
 			},
 			include: {
 				pickupAddress: true,
@@ -1011,7 +1092,7 @@ const updateOutForDelivery = async (
 				userId: shipment.customer.userId,
 				shipmentId,
 				title: "Shipment Out For Delivery",
-				message: `Your shipment ${shipment.trackingNumber} is now out for delivery!`,
+				message: `Your shipment ${shipment.trackingNumber} is now out for delivery! Your delivery verification OTP is ${deliveryOtp}.`,
 				type: "OUT_FOR_DELIVERY",
 			},
 		});
@@ -1159,6 +1240,7 @@ export const OperationsManagerService = {
 	assignDeliveryCourier,
 	createHubTransfer,
 	receiveHubTransfer,
+	getAllHubTransfers,
 	initiateReturn,
 	returnInTransit,
 	cancelShipment,

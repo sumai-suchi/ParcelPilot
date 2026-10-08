@@ -21,6 +21,10 @@ const CompleteDeliveryZodSchema = z.object({
 		.string()
 		.min(6, "Recipient phone must be at least 6 characters long")
 		.max(50),
+	otp: z
+		.string()
+		.min(4, "Delivery OTP must be at least 4 digits")
+		.max(10),
 	imageUrl: z.string().url("Invalid image URL").optional().or(z.literal("")),
 	signatureUrl: z
 		.string()
@@ -55,6 +59,10 @@ const RejectAssignmentZodSchema = z.object({
 	reason: z.string().max(255).optional(),
 });
 
+const UpdateAvailabilityZodSchema = z.object({
+	availabilityStatus: z.enum(["AVAILABLE", "BUSY", "OFFLINE"]),
+});
+
 export const CourierValidation = {
 	PickupShipmentZodSchema,
 	DeliverToHubZodSchema,
@@ -64,4 +72,5 @@ export const CourierValidation = {
 	RescheduleZodSchema,
 	ReturnedZodSchema,
 	RejectAssignmentZodSchema,
+	UpdateAvailabilityZodSchema,
 };

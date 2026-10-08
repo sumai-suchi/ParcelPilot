@@ -35,6 +35,7 @@ export type UserMinAggregateOutputType = {
   phone: string | null
   role: $Enums.UserRole | null
   status: $Enums.UserStatus | null
+  profilePicture: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +51,7 @@ export type UserMaxAggregateOutputType = {
   phone: string | null
   role: $Enums.UserRole | null
   status: $Enums.UserStatus | null
+  profilePicture: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -65,6 +67,7 @@ export type UserCountAggregateOutputType = {
   phone: number
   role: number
   status: number
+  profilePicture: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -82,6 +85,7 @@ export type UserMinAggregateInputType = {
   phone?: true
   role?: true
   status?: true
+  profilePicture?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -97,6 +101,7 @@ export type UserMaxAggregateInputType = {
   phone?: true
   role?: true
   status?: true
+  profilePicture?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +117,7 @@ export type UserCountAggregateInputType = {
   phone?: true
   role?: true
   status?: true
+  profilePicture?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -200,6 +206,7 @@ export type UserGroupByOutputType = {
   phone: string | null
   role: $Enums.UserRole
   status: $Enums.UserStatus
+  profilePicture: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -236,10 +243,12 @@ export type UserWhereInput = {
   phone?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
+  profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   courier?: Prisma.XOR<Prisma.CourierNullableScalarRelationFilter, Prisma.CourierWhereInput> | null
+  roleApplications?: Prisma.RoleApplicationListRelationFilter
   statusUpdates?: Prisma.ShipmentStatusHistoryListRelationFilter
   assignedCouriers?: Prisma.CourierParcelListRelationFilter
   createdTransfers?: Prisma.HubTransferListRelationFilter
@@ -257,10 +266,12 @@ export type UserOrderByWithRelationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
   courier?: Prisma.CourierOrderByWithRelationInput
+  roleApplications?: Prisma.RoleApplicationOrderByRelationAggregateInput
   statusUpdates?: Prisma.ShipmentStatusHistoryOrderByRelationAggregateInput
   assignedCouriers?: Prisma.CourierParcelOrderByRelationAggregateInput
   createdTransfers?: Prisma.HubTransferOrderByRelationAggregateInput
@@ -281,10 +292,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.BoolNullableFilter<"User"> | boolean | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
+  profilePicture?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   courier?: Prisma.XOR<Prisma.CourierNullableScalarRelationFilter, Prisma.CourierWhereInput> | null
+  roleApplications?: Prisma.RoleApplicationListRelationFilter
   statusUpdates?: Prisma.ShipmentStatusHistoryListRelationFilter
   assignedCouriers?: Prisma.CourierParcelListRelationFilter
   createdTransfers?: Prisma.HubTransferListRelationFilter
@@ -302,6 +315,7 @@ export type UserOrderByWithAggregationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -323,6 +337,7 @@ export type UserScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumUserStatusWithAggregatesFilter<"User"> | $Enums.UserStatus
+  profilePicture?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -338,10 +353,12 @@ export type UserCreateInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferCreateNestedManyWithoutCreatorInput
@@ -359,10 +376,12 @@ export type UserUncheckedCreateInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierUncheckedCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferUncheckedCreateNestedManyWithoutCreatorInput
@@ -380,10 +399,12 @@ export type UserUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUpdateManyWithoutCreatorNestedInput
@@ -401,10 +422,12 @@ export type UserUncheckedUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUncheckedUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUncheckedUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUncheckedUpdateManyWithoutCreatorNestedInput
@@ -422,6 +445,7 @@ export type UserCreateManyInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -437,6 +461,7 @@ export type UserUpdateManyMutationInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -452,6 +477,7 @@ export type UserUncheckedUpdateManyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -477,6 +503,7 @@ export type UserCountOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -492,6 +519,7 @@ export type UserMaxOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -507,6 +535,7 @@ export type UserMinOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  profilePicture?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -585,6 +614,20 @@ export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
 }
 
+export type UserCreateNestedOneWithoutRoleApplicationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRoleApplicationsInput, Prisma.UserUncheckedCreateWithoutRoleApplicationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRoleApplicationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRoleApplicationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRoleApplicationsInput, Prisma.UserUncheckedCreateWithoutRoleApplicationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRoleApplicationsInput
+  upsert?: Prisma.UserUpsertWithoutRoleApplicationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRoleApplicationsInput, Prisma.UserUpdateWithoutRoleApplicationsInput>, Prisma.UserUncheckedUpdateWithoutRoleApplicationsInput>
+}
+
 export type UserCreateNestedOneWithoutStatusUpdatesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutStatusUpdatesInput, Prisma.UserUncheckedCreateWithoutStatusUpdatesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutStatusUpdatesInput
@@ -609,10 +652,6 @@ export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
 }
 
-export type EnumUserRoleFieldUpdateOperationsInput = {
-  set?: $Enums.UserRole
-}
-
 export type EnumUserStatusFieldUpdateOperationsInput = {
   set?: $Enums.UserStatus
 }
@@ -628,9 +667,11 @@ export type UserCreateWithoutCourierInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferCreateNestedManyWithoutCreatorInput
@@ -648,9 +689,11 @@ export type UserUncheckedCreateWithoutCourierInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferUncheckedCreateNestedManyWithoutCreatorInput
@@ -684,9 +727,11 @@ export type UserUpdateWithoutCourierInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUpdateManyWithoutCreatorNestedInput
@@ -704,9 +749,11 @@ export type UserUncheckedUpdateWithoutCourierInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUncheckedUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUncheckedUpdateManyWithoutCreatorNestedInput
@@ -724,10 +771,12 @@ export type UserCreateWithoutAssignedCouriersInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryCreateNestedManyWithoutUpdaterInput
   createdTransfers?: Prisma.HubTransferCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -744,10 +793,12 @@ export type UserUncheckedCreateWithoutAssignedCouriersInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierUncheckedCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutUpdaterInput
   createdTransfers?: Prisma.HubTransferUncheckedCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -780,10 +831,12 @@ export type UserUpdateWithoutAssignedCouriersInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUpdateManyWithoutUpdaterNestedInput
   createdTransfers?: Prisma.HubTransferUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -800,10 +853,12 @@ export type UserUncheckedUpdateWithoutAssignedCouriersInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUncheckedUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutUpdaterNestedInput
   createdTransfers?: Prisma.HubTransferUncheckedUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -820,9 +875,11 @@ export type UserCreateWithoutCustomerInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   courier?: Prisma.CourierCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferCreateNestedManyWithoutCreatorInput
@@ -840,9 +897,11 @@ export type UserUncheckedCreateWithoutCustomerInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   courier?: Prisma.CourierUncheckedCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferUncheckedCreateNestedManyWithoutCreatorInput
@@ -876,9 +935,11 @@ export type UserUpdateWithoutCustomerInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courier?: Prisma.CourierUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUpdateManyWithoutCreatorNestedInput
@@ -896,9 +957,11 @@ export type UserUncheckedUpdateWithoutCustomerInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courier?: Prisma.CourierUncheckedUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUncheckedUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUncheckedUpdateManyWithoutCreatorNestedInput
@@ -916,10 +979,12 @@ export type UserCreateWithoutCreatedTransfersInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelCreateNestedManyWithoutAssignerInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -936,10 +1001,12 @@ export type UserUncheckedCreateWithoutCreatedTransfersInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierUncheckedCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutAssignerInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -972,10 +1039,12 @@ export type UserUpdateWithoutCreatedTransfersInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUpdateManyWithoutAssignerNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -992,10 +1061,12 @@ export type UserUncheckedUpdateWithoutCreatedTransfersInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUncheckedUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUncheckedUpdateManyWithoutAssignerNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1012,10 +1083,12 @@ export type UserCreateWithoutNotificationsInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferCreateNestedManyWithoutCreatorInput
@@ -1032,10 +1105,12 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierUncheckedCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutUserInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutUpdaterInput
   assignedCouriers?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferUncheckedCreateNestedManyWithoutCreatorInput
@@ -1068,10 +1143,12 @@ export type UserUpdateWithoutNotificationsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutUserNestedInput
   statusUpdates?: Prisma.ShipmentStatusHistoryUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUpdateManyWithoutCreatorNestedInput
@@ -1088,6 +1165,111 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUserNestedInput
+  courier?: Prisma.CourierUncheckedUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutUserNestedInput
+  statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutUpdaterNestedInput
+  assignedCouriers?: Prisma.CourierParcelUncheckedUpdateManyWithoutAssignerNestedInput
+  createdTransfers?: Prisma.HubTransferUncheckedUpdateManyWithoutCreatorNestedInput
+}
+
+export type UserCreateWithoutRoleApplicationsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  authProvider?: $Enums.AuthProvider
+  emailVerified?: boolean | null
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  profilePicture?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer?: Prisma.CustomerCreateNestedOneWithoutUserInput
+  courier?: Prisma.CourierCreateNestedOneWithoutUserInput
+  statusUpdates?: Prisma.ShipmentStatusHistoryCreateNestedManyWithoutUpdaterInput
+  assignedCouriers?: Prisma.CourierParcelCreateNestedManyWithoutAssignerInput
+  createdTransfers?: Prisma.HubTransferCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRoleApplicationsInput = {
+  id?: string
+  name: string
+  email: string
+  password?: string | null
+  googleId?: string | null
+  authProvider?: $Enums.AuthProvider
+  emailVerified?: boolean | null
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  profilePicture?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUserInput
+  courier?: Prisma.CourierUncheckedCreateNestedOneWithoutUserInput
+  statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutUpdaterInput
+  assignedCouriers?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutAssignerInput
+  createdTransfers?: Prisma.HubTransferUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRoleApplicationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRoleApplicationsInput, Prisma.UserUncheckedCreateWithoutRoleApplicationsInput>
+}
+
+export type UserUpsertWithoutRoleApplicationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRoleApplicationsInput, Prisma.UserUncheckedUpdateWithoutRoleApplicationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRoleApplicationsInput, Prisma.UserUncheckedCreateWithoutRoleApplicationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRoleApplicationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRoleApplicationsInput, Prisma.UserUncheckedUpdateWithoutRoleApplicationsInput>
+}
+
+export type UserUpdateWithoutRoleApplicationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+  emailVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerUpdateOneWithoutUserNestedInput
+  courier?: Prisma.CourierUpdateOneWithoutUserNestedInput
+  statusUpdates?: Prisma.ShipmentStatusHistoryUpdateManyWithoutUpdaterNestedInput
+  assignedCouriers?: Prisma.CourierParcelUpdateManyWithoutAssignerNestedInput
+  createdTransfers?: Prisma.HubTransferUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRoleApplicationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authProvider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+  emailVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUserNestedInput
@@ -1095,6 +1277,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   statusUpdates?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutUpdaterNestedInput
   assignedCouriers?: Prisma.CourierParcelUncheckedUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutStatusUpdatesInput = {
@@ -1108,10 +1291,12 @@ export type UserCreateWithoutStatusUpdatesInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutUserInput
   assignedCouriers?: Prisma.CourierParcelCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -1128,10 +1313,12 @@ export type UserUncheckedCreateWithoutStatusUpdatesInput = {
   phone?: string | null
   role?: $Enums.UserRole
   status?: $Enums.UserStatus
+  profilePicture?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUserInput
   courier?: Prisma.CourierUncheckedCreateNestedOneWithoutUserInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutUserInput
   assignedCouriers?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutAssignerInput
   createdTransfers?: Prisma.HubTransferUncheckedCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1164,10 +1351,12 @@ export type UserUpdateWithoutStatusUpdatesInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutUserNestedInput
   assignedCouriers?: Prisma.CourierParcelUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -1184,10 +1373,12 @@ export type UserUncheckedUpdateWithoutStatusUpdatesInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUserNestedInput
   courier?: Prisma.CourierUncheckedUpdateOneWithoutUserNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutUserNestedInput
   assignedCouriers?: Prisma.CourierParcelUncheckedUpdateManyWithoutAssignerNestedInput
   createdTransfers?: Prisma.HubTransferUncheckedUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1199,6 +1390,7 @@ export type UserUncheckedUpdateWithoutStatusUpdatesInput = {
  */
 
 export type UserCountOutputType = {
+  roleApplications: number
   statusUpdates: number
   assignedCouriers: number
   createdTransfers: number
@@ -1206,6 +1398,7 @@ export type UserCountOutputType = {
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  roleApplications?: boolean | UserCountOutputTypeCountRoleApplicationsArgs
   statusUpdates?: boolean | UserCountOutputTypeCountStatusUpdatesArgs
   assignedCouriers?: boolean | UserCountOutputTypeCountAssignedCouriersArgs
   createdTransfers?: boolean | UserCountOutputTypeCountCreatedTransfersArgs
@@ -1220,6 +1413,13 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
    * Select specific fields to fetch from the UserCountOutputType
    */
   select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRoleApplicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RoleApplicationWhereInput
 }
 
 /**
@@ -1262,10 +1462,12 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   phone?: boolean
   role?: boolean
   status?: boolean
+  profilePicture?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.User$customerArgs<ExtArgs>
   courier?: boolean | Prisma.User$courierArgs<ExtArgs>
+  roleApplications?: boolean | Prisma.User$roleApplicationsArgs<ExtArgs>
   statusUpdates?: boolean | Prisma.User$statusUpdatesArgs<ExtArgs>
   assignedCouriers?: boolean | Prisma.User$assignedCouriersArgs<ExtArgs>
   createdTransfers?: boolean | Prisma.User$createdTransfersArgs<ExtArgs>
@@ -1284,6 +1486,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   phone?: boolean
   role?: boolean
   status?: boolean
+  profilePicture?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1299,6 +1502,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   phone?: boolean
   role?: boolean
   status?: boolean
+  profilePicture?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1314,14 +1518,16 @@ export type UserSelectScalar = {
   phone?: boolean
   role?: boolean
   status?: boolean
+  profilePicture?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "authProvider" | "emailVerified" | "phone" | "role" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "googleId" | "authProvider" | "emailVerified" | "phone" | "role" | "status" | "profilePicture" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.User$customerArgs<ExtArgs>
   courier?: boolean | Prisma.User$courierArgs<ExtArgs>
+  roleApplications?: boolean | Prisma.User$roleApplicationsArgs<ExtArgs>
   statusUpdates?: boolean | Prisma.User$statusUpdatesArgs<ExtArgs>
   assignedCouriers?: boolean | Prisma.User$assignedCouriersArgs<ExtArgs>
   createdTransfers?: boolean | Prisma.User$createdTransfersArgs<ExtArgs>
@@ -1336,6 +1542,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     customer: Prisma.$CustomerPayload<ExtArgs> | null
     courier: Prisma.$CourierPayload<ExtArgs> | null
+    roleApplications: Prisma.$RoleApplicationPayload<ExtArgs>[]
     statusUpdates: Prisma.$ShipmentStatusHistoryPayload<ExtArgs>[]
     assignedCouriers: Prisma.$CourierParcelPayload<ExtArgs>[]
     createdTransfers: Prisma.$HubTransferPayload<ExtArgs>[]
@@ -1352,6 +1559,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     phone: string | null
     role: $Enums.UserRole
     status: $Enums.UserStatus
+    profilePicture: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1750,6 +1958,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.User$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   courier<T extends Prisma.User$courierArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$courierArgs<ExtArgs>>): Prisma.Prisma__CourierClient<runtime.Types.Result.GetResult<Prisma.$CourierPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  roleApplications<T extends Prisma.User$roleApplicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$roleApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoleApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   statusUpdates<T extends Prisma.User$statusUpdatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$statusUpdatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShipmentStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedCouriers<T extends Prisma.User$assignedCouriersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedCouriersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CourierParcelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdTransfers<T extends Prisma.User$createdTransfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HubTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1793,6 +2002,7 @@ export interface UserFieldRefs {
   readonly phone: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
   readonly status: Prisma.FieldRef<"User", 'UserStatus'>
+  readonly profilePicture: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -2223,6 +2433,30 @@ export type User$courierArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   include?: Prisma.CourierInclude<ExtArgs> | null
   where?: Prisma.CourierWhereInput
+}
+
+/**
+ * User.roleApplications
+ */
+export type User$roleApplicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RoleApplication
+   */
+  select?: Prisma.RoleApplicationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RoleApplication
+   */
+  omit?: Prisma.RoleApplicationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoleApplicationInclude<ExtArgs> | null
+  where?: Prisma.RoleApplicationWhereInput
+  orderBy?: Prisma.RoleApplicationOrderByWithRelationInput | Prisma.RoleApplicationOrderByWithRelationInput[]
+  cursor?: Prisma.RoleApplicationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RoleApplicationScalarFieldEnum | Prisma.RoleApplicationScalarFieldEnum[]
 }
 
 /**

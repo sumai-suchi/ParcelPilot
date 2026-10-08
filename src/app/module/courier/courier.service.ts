@@ -3,6 +3,7 @@ import type { Prisma } from "../../../generated/prisma/client";
 import {
 	AssignmentStatus,
 	AttemptStatus,
+	CourierAvailability,
 	PaymentStatus,
 	ShipmentStatus,
 } from "../../../generated/prisma/enums";
@@ -506,10 +507,15 @@ const startDelivery = async (
 	}
 
 	const updatedShipment = await prisma.$transaction(async (tx) => {
+		const deliveryOtp =
+			shipment.deliveryOtp ||
+			Math.floor(100000 + Math.random() * 900000).toString();
+
 		const updated = await tx.shipment.update({
 			where: { id: shipmentId },
 			data: {
 				status: ShipmentStatus.OUT_FOR_DELIVERY,
+				deliveryOtp,
 			},
 			include: {
 				pickupAddress: true,
@@ -579,6 +585,16 @@ const completeDelivery = async (
 		);
 	}
 
+	// Verify Delivery OTP provided by receiver
+	if (shipment.deliveryOtp) {
+		if (!payload.otp || shipment.deliveryOtp.trim() !== payload.otp.trim()) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"Invalid delivery OTP provided by receiver. Handover cannot be completed without the correct security OTP.",
+			);
+		}
+	}
+
 	const result = await prisma.$transaction(async (tx) => {
 		// 1. Calculate attempt count
 		const previousAttempts = await tx.deliveryAttempt.count({
@@ -593,7 +609,7 @@ const completeDelivery = async (
 				courierId: courier.id,
 				attemptNumber,
 				status: AttemptStatus.SUCCESS,
-				notes: payload.notes || "Delivered successfully",
+				notes: payload.notes || "Delivered successfully with receiver OTP",
 				attemptedAt: new Date(),
 			},
 		});
@@ -654,11 +670,10 @@ const completeDelivery = async (
 			},
 		});
 
-		// 6. Update Shipment status
+		// 6. Update Shipment payment status (courier completed assignment; operations manager will mark DELIVERED)
 		const updatedShipment = await tx.shipment.update({
 			where: { id: shipmentId },
 			data: {
-				status: ShipmentStatus.DELIVERED,
 				paymentStatus:
 					payload.paymentCollected ||
 					shipment.paymentStatus === PaymentStatus.PENDING
@@ -677,9 +692,9 @@ const completeDelivery = async (
 		await tx.shipmentStatusHistory.create({
 			data: {
 				shipmentId,
-				status: ShipmentStatus.DELIVERED,
+				status: ShipmentStatus.OUT_FOR_DELIVERY,
 				location: shipment.deliveryAddress?.area || "Destination Address",
-				note: `Successfully delivered to ${payload.recipientName} (${payload.recipientPhone})`,
+				note: `Courier ${courier.user.name} completed handover to ${payload.recipientName} with receiver OTP verification. Courier assignment marked COMPLETED. Awaiting Operations Manager final delivery sign-off.`,
 				updatedBy: userId,
 			},
 		});
@@ -893,7 +908,37 @@ const returnShipment = async (
 	return updatedShipment;
 };
 
+const getMyProfile = async (userId: string) => {
+	return getCourierByUserId(userId);
+};
+
+const updateAvailability = async (
+	userId: string,
+	availabilityStatus: CourierAvailability,
+) => {
+	const courier = await getCourierByUserId(userId);
+	const updated = await prisma.courier.update({
+		where: { id: courier.id },
+		data: { availabilityStatus },
+		include: {
+			hub: true,
+			user: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					phone: true,
+				},
+			},
+		},
+	});
+
+	return updated;
+};
+
 export const CourierService = {
+	getMyProfile,
+	updateAvailability,
 	getMyTasks,
 	getTaskById,
 	acceptAssignment,

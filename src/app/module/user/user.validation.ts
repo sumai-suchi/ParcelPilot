@@ -41,6 +41,7 @@ const UpdateProfileZodSchema = z.object({
 		.min(6, "Phone must be at least 6 characters")
 		.max(50)
 		.optional(),
+	profilePicture: z.string().optional(),
 });
 
 const UpdateUserStatusZodSchema = z.object({

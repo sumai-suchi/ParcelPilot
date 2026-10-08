@@ -8,6 +8,22 @@ import { CourierValidation } from "./courier.validation";
 const router = Router();
 
 // ==========================================
+// Courier Profile & Availability Operations
+// ==========================================
+router.get(
+	"/me",
+	auth(UserRole.COURIER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER),
+	CourierController.getMyProfile,
+);
+
+router.patch(
+	"/availability",
+	auth(UserRole.COURIER),
+	validateRequest(CourierValidation.UpdateAvailabilityZodSchema),
+	CourierController.updateAvailability,
+);
+
+// ==========================================
 // Task & Assignment Operations
 // ==========================================
 router.get(

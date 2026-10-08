@@ -23,6 +23,7 @@ export interface IUpdateAddressPayload {
 export interface IUpdateProfilePayload {
 	name?: string;
 	phone?: string;
+	profilePicture?: string;
 }
 
 export interface IUpdateUserStatusPayload {

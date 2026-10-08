@@ -6,12 +6,15 @@ import express, {
 	type Response,
 } from "express";
 import httpStatus from "http-status";
+import config from "./app/config";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { AdminRoutes } from "./app/module/admin/admin.router";
 import { AuthRoutes } from "./app/module/auth/auth.router";
 import { CourierRoutes } from "./app/module/courier/courier.router";
 import { OperationsManagerRoutes } from "./app/module/operationsManager/operationsManager.router";
 import { PaymentRoutes } from "./app/module/payment/payment.router";
+import { RoleApplicationRoutes } from "./app/module/roleApplication/roleApplication.router";
+import { UploadRoutes } from "./app/module/upload/upload.router";
 import { UserRoutes } from "./app/module/user/user.router";
 
 // Enable BigInt serialization in JSON (res.json, JSON.stringify)
@@ -23,7 +26,7 @@ const app: Application = express();
 
 app.use(
 	cors({
-		// origin: config.frontend_url,
+		origin: config.frontend_url,
 		credentials: true,
 	}),
 );
@@ -47,6 +50,8 @@ app.use("/api/v1/operations-manager", OperationsManagerRoutes);
 app.use("/api/v1/courier", CourierRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/admin", AdminRoutes);
+app.use("/api/v1/upload", UploadRoutes);
+app.use("/api/v1/role-applications", RoleApplicationRoutes);
 
 app.get("/", async (_req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({

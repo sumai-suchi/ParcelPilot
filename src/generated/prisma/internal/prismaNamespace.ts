@@ -408,6 +408,7 @@ export const ModelName = {
   Payment: 'Payment',
   PricingRule: 'PricingRule',
   ProofOfDelivery: 'ProofOfDelivery',
+  RoleApplication: 'RoleApplication',
   Shipment: 'Shipment',
   ShipmentStatusHistory: 'ShipmentStatusHistory',
   User: 'User',
@@ -427,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "address" | "courier" | "courierParcel" | "customer" | "deliveryAttempt" | "hub" | "hubTransfer" | "notification" | "payment" | "pricingRule" | "proofOfDelivery" | "shipment" | "shipmentStatusHistory" | "user" | "zone"
+    modelProps: "address" | "courier" | "courierParcel" | "customer" | "deliveryAttempt" | "hub" | "hubTransfer" | "notification" | "payment" | "pricingRule" | "proofOfDelivery" | "roleApplication" | "shipment" | "shipmentStatusHistory" | "user" | "zone"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1245,6 +1246,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RoleApplication: {
+      payload: Prisma.$RoleApplicationPayload<ExtArgs>
+      fields: Prisma.RoleApplicationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RoleApplicationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RoleApplicationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>
+        }
+        findFirst: {
+          args: Prisma.RoleApplicationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RoleApplicationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>
+        }
+        findMany: {
+          args: Prisma.RoleApplicationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>[]
+        }
+        create: {
+          args: Prisma.RoleApplicationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>
+        }
+        createMany: {
+          args: Prisma.RoleApplicationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RoleApplicationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>[]
+        }
+        delete: {
+          args: Prisma.RoleApplicationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>
+        }
+        update: {
+          args: Prisma.RoleApplicationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>
+        }
+        deleteMany: {
+          args: Prisma.RoleApplicationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RoleApplicationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RoleApplicationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>[]
+        }
+        upsert: {
+          args: Prisma.RoleApplicationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RoleApplicationPayload>
+        }
+        aggregate: {
+          args: Prisma.RoleApplicationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRoleApplication>
+        }
+        groupBy: {
+          args: Prisma.RoleApplicationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoleApplicationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RoleApplicationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RoleApplicationCountAggregateOutputType> | number
+        }
+      }
+    }
     Shipment: {
       payload: Prisma.$ShipmentPayload<ExtArgs>
       fields: Prisma.ShipmentFieldRefs
@@ -1744,6 +1819,26 @@ export const ProofOfDeliveryScalarFieldEnum = {
 export type ProofOfDeliveryScalarFieldEnum = (typeof ProofOfDeliveryScalarFieldEnum)[keyof typeof ProofOfDeliveryScalarFieldEnum]
 
 
+export const RoleApplicationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  desiredRole: 'desiredRole',
+  status: 'status',
+  notes: 'notes',
+  experience: 'experience',
+  vehicleType: 'vehicleType',
+  vehicleNumber: 'vehicleNumber',
+  hubId: 'hubId',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  rejectionReason: 'rejectionReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoleApplicationScalarFieldEnum = (typeof RoleApplicationScalarFieldEnum)[keyof typeof RoleApplicationScalarFieldEnum]
+
+
 export const ShipmentScalarFieldEnum = {
   id: 'id',
   trackingNumber: 'trackingNumber',
@@ -1760,6 +1855,7 @@ export const ShipmentScalarFieldEnum = {
   deliveryCharge: 'deliveryCharge',
   paymentStatus: 'paymentStatus',
   scheduledPickupAt: 'scheduledPickupAt',
+  deliveryOtp: 'deliveryOtp',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1791,6 +1887,7 @@ export const UserScalarFieldEnum = {
   phone: 'phone',
   role: 'role',
   status: 'status',
+  profilePicture: 'profilePicture',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1974,6 +2071,34 @@ export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'UserRole'
+ */
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+/**
+ * Reference to a field of type 'UserRole[]'
+ */
+export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ApplicationStatus'
+ */
+export type EnumApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApplicationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ApplicationStatus[]'
+ */
+export type ListEnumApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApplicationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ShipmentStatus'
  */
 export type EnumShipmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShipmentStatus'>
@@ -1998,20 +2123,6 @@ export type EnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'AuthProvider[]'
  */
 export type ListEnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthProvider[]'>
-    
-
-
-/**
- * Reference to a field of type 'UserRole'
- */
-export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
-    
-
-
-/**
- * Reference to a field of type 'UserRole[]'
- */
-export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
     
 
 
@@ -2204,6 +2315,7 @@ export type GlobalOmitConfig = {
   payment?: Prisma.PaymentOmit
   pricingRule?: Prisma.PricingRuleOmit
   proofOfDelivery?: Prisma.ProofOfDeliveryOmit
+  roleApplication?: Prisma.RoleApplicationOmit
   shipment?: Prisma.ShipmentOmit
   shipmentStatusHistory?: Prisma.ShipmentStatusHistoryOmit
   user?: Prisma.UserOmit

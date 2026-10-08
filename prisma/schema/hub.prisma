@@ -15,5 +15,6 @@ model Hub {
   destinationShipments Shipment[]    @relation("DestinationHubShipments")
   transfersFrom        HubTransfer[] @relation("TransfersFromHub")
   transfersTo          HubTransfer[] @relation("TransfersToHub")
+  roleApplications     RoleApplication[]
   @@map("hubs")
 }

@@ -97,6 +97,11 @@ export type PricingRule = Prisma.PricingRuleModel
  */
 export type ProofOfDelivery = Prisma.ProofOfDeliveryModel
 /**
+ * Model RoleApplication
+ * 
+ */
+export type RoleApplication = Prisma.RoleApplicationModel
+/**
  * Model Shipment
  * 
  */

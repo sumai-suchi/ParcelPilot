@@ -62,6 +62,7 @@ export const ModelName = {
   Payment: 'Payment',
   PricingRule: 'PricingRule',
   ProofOfDelivery: 'ProofOfDelivery',
+  RoleApplication: 'RoleApplication',
   Shipment: 'Shipment',
   ShipmentStatusHistory: 'ShipmentStatusHistory',
   User: 'User',
@@ -248,6 +249,26 @@ export const ProofOfDeliveryScalarFieldEnum = {
 export type ProofOfDeliveryScalarFieldEnum = (typeof ProofOfDeliveryScalarFieldEnum)[keyof typeof ProofOfDeliveryScalarFieldEnum]
 
 
+export const RoleApplicationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  desiredRole: 'desiredRole',
+  status: 'status',
+  notes: 'notes',
+  experience: 'experience',
+  vehicleType: 'vehicleType',
+  vehicleNumber: 'vehicleNumber',
+  hubId: 'hubId',
+  reviewedBy: 'reviewedBy',
+  reviewedAt: 'reviewedAt',
+  rejectionReason: 'rejectionReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoleApplicationScalarFieldEnum = (typeof RoleApplicationScalarFieldEnum)[keyof typeof RoleApplicationScalarFieldEnum]
+
+
 export const ShipmentScalarFieldEnum = {
   id: 'id',
   trackingNumber: 'trackingNumber',
@@ -264,6 +285,7 @@ export const ShipmentScalarFieldEnum = {
   deliveryCharge: 'deliveryCharge',
   paymentStatus: 'paymentStatus',
   scheduledPickupAt: 'scheduledPickupAt',
+  deliveryOtp: 'deliveryOtp',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -295,6 +317,7 @@ export const UserScalarFieldEnum = {
   phone: 'phone',
   role: 'role',
   status: 'status',
+  profilePicture: 'profilePicture',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

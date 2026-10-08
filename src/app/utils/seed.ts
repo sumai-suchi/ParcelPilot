@@ -92,12 +92,19 @@ export const seedUsers = async () => {
 				phone: config.courier_phone || "+8801700000004",
 				role: UserRole.COURIER,
 			},
+			{
+				name: "Customer",
+				email: "customer@parcelpilot.com".toLowerCase().trim(),
+				password: "Customer@123456",
+				phone: "+8801700000005",
+				role: UserRole.CUSTOMER,
+			},
 		];
 
 		for (const userData of usersToSeed) {
 			const existingUser = await prisma.user.findUnique({
 				where: { email: userData.email },
-				include: { courier: true },
+				include: { courier: true, customer: true },
 			});
 
 			if (existingUser) {
@@ -116,6 +123,18 @@ export const seedUsers = async () => {
 					});
 					console.log(
 						`📦 Created missing Courier profile for: ${userData.email}`,
+					);
+				}
+
+				// If user is CUSTOMER but has no Customer profile, create it
+				if (userData.role === UserRole.CUSTOMER && !existingUser.customer) {
+					await prisma.customer.create({
+						data: {
+							userId: existingUser.id,
+						},
+					});
+					console.log(
+						`📦 Created missing Customer profile for: ${userData.email}`,
 					);
 				}
 				continue;
@@ -152,6 +171,25 @@ export const seedUsers = async () => {
 				});
 				console.log(
 					`✅ Seeded ${userData.role}: ${userData.email} (with Courier profile)`,
+				);
+			} else if (userData.role === UserRole.CUSTOMER) {
+				await prisma.user.create({
+					data: {
+						name: userData.name,
+						email: userData.email,
+						password: hashedPassword,
+						phone: phoneToUse,
+						role: userData.role,
+						status: UserStatus.ACTIVE,
+						emailVerified: true,
+						authProvider: AuthProvider.CREDENTIALS,
+						customer: {
+							create: {},
+						},
+					},
+				});
+				console.log(
+					`✅ Seeded ${userData.role}: ${userData.email} (with Customer profile)`,
 				);
 			} else {
 				await prisma.user.create({

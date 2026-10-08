@@ -220,6 +220,7 @@ export type HubWhereInput = {
   destinationShipments?: Prisma.ShipmentListRelationFilter
   transfersFrom?: Prisma.HubTransferListRelationFilter
   transfersTo?: Prisma.HubTransferListRelationFilter
+  roleApplications?: Prisma.RoleApplicationListRelationFilter
 }
 
 export type HubOrderByWithRelationInput = {
@@ -238,6 +239,7 @@ export type HubOrderByWithRelationInput = {
   destinationShipments?: Prisma.ShipmentOrderByRelationAggregateInput
   transfersFrom?: Prisma.HubTransferOrderByRelationAggregateInput
   transfersTo?: Prisma.HubTransferOrderByRelationAggregateInput
+  roleApplications?: Prisma.RoleApplicationOrderByRelationAggregateInput
 }
 
 export type HubWhereUniqueInput = Prisma.AtLeast<{
@@ -259,6 +261,7 @@ export type HubWhereUniqueInput = Prisma.AtLeast<{
   destinationShipments?: Prisma.ShipmentListRelationFilter
   transfersFrom?: Prisma.HubTransferListRelationFilter
   transfersTo?: Prisma.HubTransferListRelationFilter
+  roleApplications?: Prisma.RoleApplicationListRelationFilter
 }, "id" | "code">
 
 export type HubOrderByWithAggregationInput = {
@@ -306,6 +309,7 @@ export type HubCreateInput = {
   destinationShipments?: Prisma.ShipmentCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutHubInput
 }
 
 export type HubUncheckedCreateInput = {
@@ -323,6 +327,7 @@ export type HubUncheckedCreateInput = {
   destinationShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferUncheckedCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferUncheckedCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutHubInput
 }
 
 export type HubUpdateInput = {
@@ -340,6 +345,7 @@ export type HubUpdateInput = {
   destinationShipments?: Prisma.ShipmentUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateInput = {
@@ -357,6 +363,7 @@ export type HubUncheckedUpdateInput = {
   destinationShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUncheckedUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUncheckedUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutHubNestedInput
 }
 
 export type HubCreateManyInput = {
@@ -496,6 +503,22 @@ export type HubUpdateOneRequiredWithoutTransfersToNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.HubUpdateToOneWithWhereWithoutTransfersToInput, Prisma.HubUpdateWithoutTransfersToInput>, Prisma.HubUncheckedUpdateWithoutTransfersToInput>
 }
 
+export type HubCreateNestedOneWithoutRoleApplicationsInput = {
+  create?: Prisma.XOR<Prisma.HubCreateWithoutRoleApplicationsInput, Prisma.HubUncheckedCreateWithoutRoleApplicationsInput>
+  connectOrCreate?: Prisma.HubCreateOrConnectWithoutRoleApplicationsInput
+  connect?: Prisma.HubWhereUniqueInput
+}
+
+export type HubUpdateOneWithoutRoleApplicationsNestedInput = {
+  create?: Prisma.XOR<Prisma.HubCreateWithoutRoleApplicationsInput, Prisma.HubUncheckedCreateWithoutRoleApplicationsInput>
+  connectOrCreate?: Prisma.HubCreateOrConnectWithoutRoleApplicationsInput
+  upsert?: Prisma.HubUpsertWithoutRoleApplicationsInput
+  disconnect?: Prisma.HubWhereInput | boolean
+  delete?: Prisma.HubWhereInput | boolean
+  connect?: Prisma.HubWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HubUpdateToOneWithWhereWithoutRoleApplicationsInput, Prisma.HubUpdateWithoutRoleApplicationsInput>, Prisma.HubUncheckedUpdateWithoutRoleApplicationsInput>
+}
+
 export type HubCreateNestedOneWithoutOriginShipmentsInput = {
   create?: Prisma.XOR<Prisma.HubCreateWithoutOriginShipmentsInput, Prisma.HubUncheckedCreateWithoutOriginShipmentsInput>
   connectOrCreate?: Prisma.HubCreateOrConnectWithoutOriginShipmentsInput
@@ -584,6 +607,7 @@ export type HubCreateWithoutCouriersInput = {
   destinationShipments?: Prisma.ShipmentCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutHubInput
 }
 
 export type HubUncheckedCreateWithoutCouriersInput = {
@@ -600,6 +624,7 @@ export type HubUncheckedCreateWithoutCouriersInput = {
   destinationShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferUncheckedCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferUncheckedCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutHubInput
 }
 
 export type HubCreateOrConnectWithoutCouriersInput = {
@@ -632,6 +657,7 @@ export type HubUpdateWithoutCouriersInput = {
   destinationShipments?: Prisma.ShipmentUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateWithoutCouriersInput = {
@@ -648,6 +674,7 @@ export type HubUncheckedUpdateWithoutCouriersInput = {
   destinationShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUncheckedUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUncheckedUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutHubNestedInput
 }
 
 export type HubCreateWithoutTransfersFromInput = {
@@ -664,6 +691,7 @@ export type HubCreateWithoutTransfersFromInput = {
   originShipments?: Prisma.ShipmentCreateNestedManyWithoutOriginHubInput
   destinationShipments?: Prisma.ShipmentCreateNestedManyWithoutDestinationHubInput
   transfersTo?: Prisma.HubTransferCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutHubInput
 }
 
 export type HubUncheckedCreateWithoutTransfersFromInput = {
@@ -680,6 +708,7 @@ export type HubUncheckedCreateWithoutTransfersFromInput = {
   originShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutOriginHubInput
   destinationShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutDestinationHubInput
   transfersTo?: Prisma.HubTransferUncheckedCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutHubInput
 }
 
 export type HubCreateOrConnectWithoutTransfersFromInput = {
@@ -701,6 +730,7 @@ export type HubCreateWithoutTransfersToInput = {
   originShipments?: Prisma.ShipmentCreateNestedManyWithoutOriginHubInput
   destinationShipments?: Prisma.ShipmentCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferCreateNestedManyWithoutFromHubInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutHubInput
 }
 
 export type HubUncheckedCreateWithoutTransfersToInput = {
@@ -717,6 +747,7 @@ export type HubUncheckedCreateWithoutTransfersToInput = {
   originShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutOriginHubInput
   destinationShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferUncheckedCreateNestedManyWithoutFromHubInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutHubInput
 }
 
 export type HubCreateOrConnectWithoutTransfersToInput = {
@@ -749,6 +780,7 @@ export type HubUpdateWithoutTransfersFromInput = {
   originShipments?: Prisma.ShipmentUpdateManyWithoutOriginHubNestedInput
   destinationShipments?: Prisma.ShipmentUpdateManyWithoutDestinationHubNestedInput
   transfersTo?: Prisma.HubTransferUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateWithoutTransfersFromInput = {
@@ -765,6 +797,7 @@ export type HubUncheckedUpdateWithoutTransfersFromInput = {
   originShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutOriginHubNestedInput
   destinationShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutDestinationHubNestedInput
   transfersTo?: Prisma.HubTransferUncheckedUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutHubNestedInput
 }
 
 export type HubUpsertWithoutTransfersToInput = {
@@ -792,6 +825,7 @@ export type HubUpdateWithoutTransfersToInput = {
   originShipments?: Prisma.ShipmentUpdateManyWithoutOriginHubNestedInput
   destinationShipments?: Prisma.ShipmentUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUpdateManyWithoutFromHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateWithoutTransfersToInput = {
@@ -808,6 +842,91 @@ export type HubUncheckedUpdateWithoutTransfersToInput = {
   originShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutOriginHubNestedInput
   destinationShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUncheckedUpdateManyWithoutFromHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutHubNestedInput
+}
+
+export type HubCreateWithoutRoleApplicationsInput = {
+  id?: string
+  name: string
+  code: string
+  address: string
+  phone?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  zone: Prisma.ZoneCreateNestedOneWithoutHubsInput
+  couriers?: Prisma.CourierCreateNestedManyWithoutHubInput
+  originShipments?: Prisma.ShipmentCreateNestedManyWithoutOriginHubInput
+  destinationShipments?: Prisma.ShipmentCreateNestedManyWithoutDestinationHubInput
+  transfersFrom?: Prisma.HubTransferCreateNestedManyWithoutFromHubInput
+  transfersTo?: Prisma.HubTransferCreateNestedManyWithoutToHubInput
+}
+
+export type HubUncheckedCreateWithoutRoleApplicationsInput = {
+  id?: string
+  name: string
+  code: string
+  zoneId: string
+  address: string
+  phone?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  couriers?: Prisma.CourierUncheckedCreateNestedManyWithoutHubInput
+  originShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutOriginHubInput
+  destinationShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutDestinationHubInput
+  transfersFrom?: Prisma.HubTransferUncheckedCreateNestedManyWithoutFromHubInput
+  transfersTo?: Prisma.HubTransferUncheckedCreateNestedManyWithoutToHubInput
+}
+
+export type HubCreateOrConnectWithoutRoleApplicationsInput = {
+  where: Prisma.HubWhereUniqueInput
+  create: Prisma.XOR<Prisma.HubCreateWithoutRoleApplicationsInput, Prisma.HubUncheckedCreateWithoutRoleApplicationsInput>
+}
+
+export type HubUpsertWithoutRoleApplicationsInput = {
+  update: Prisma.XOR<Prisma.HubUpdateWithoutRoleApplicationsInput, Prisma.HubUncheckedUpdateWithoutRoleApplicationsInput>
+  create: Prisma.XOR<Prisma.HubCreateWithoutRoleApplicationsInput, Prisma.HubUncheckedCreateWithoutRoleApplicationsInput>
+  where?: Prisma.HubWhereInput
+}
+
+export type HubUpdateToOneWithWhereWithoutRoleApplicationsInput = {
+  where?: Prisma.HubWhereInput
+  data: Prisma.XOR<Prisma.HubUpdateWithoutRoleApplicationsInput, Prisma.HubUncheckedUpdateWithoutRoleApplicationsInput>
+}
+
+export type HubUpdateWithoutRoleApplicationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  zone?: Prisma.ZoneUpdateOneRequiredWithoutHubsNestedInput
+  couriers?: Prisma.CourierUpdateManyWithoutHubNestedInput
+  originShipments?: Prisma.ShipmentUpdateManyWithoutOriginHubNestedInput
+  destinationShipments?: Prisma.ShipmentUpdateManyWithoutDestinationHubNestedInput
+  transfersFrom?: Prisma.HubTransferUpdateManyWithoutFromHubNestedInput
+  transfersTo?: Prisma.HubTransferUpdateManyWithoutToHubNestedInput
+}
+
+export type HubUncheckedUpdateWithoutRoleApplicationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  zoneId?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  couriers?: Prisma.CourierUncheckedUpdateManyWithoutHubNestedInput
+  originShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutOriginHubNestedInput
+  destinationShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutDestinationHubNestedInput
+  transfersFrom?: Prisma.HubTransferUncheckedUpdateManyWithoutFromHubNestedInput
+  transfersTo?: Prisma.HubTransferUncheckedUpdateManyWithoutToHubNestedInput
 }
 
 export type HubCreateWithoutOriginShipmentsInput = {
@@ -824,6 +943,7 @@ export type HubCreateWithoutOriginShipmentsInput = {
   destinationShipments?: Prisma.ShipmentCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutHubInput
 }
 
 export type HubUncheckedCreateWithoutOriginShipmentsInput = {
@@ -840,6 +960,7 @@ export type HubUncheckedCreateWithoutOriginShipmentsInput = {
   destinationShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferUncheckedCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferUncheckedCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutHubInput
 }
 
 export type HubCreateOrConnectWithoutOriginShipmentsInput = {
@@ -861,6 +982,7 @@ export type HubCreateWithoutDestinationShipmentsInput = {
   originShipments?: Prisma.ShipmentCreateNestedManyWithoutOriginHubInput
   transfersFrom?: Prisma.HubTransferCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutHubInput
 }
 
 export type HubUncheckedCreateWithoutDestinationShipmentsInput = {
@@ -877,6 +999,7 @@ export type HubUncheckedCreateWithoutDestinationShipmentsInput = {
   originShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutOriginHubInput
   transfersFrom?: Prisma.HubTransferUncheckedCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferUncheckedCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutHubInput
 }
 
 export type HubCreateOrConnectWithoutDestinationShipmentsInput = {
@@ -909,6 +1032,7 @@ export type HubUpdateWithoutOriginShipmentsInput = {
   destinationShipments?: Prisma.ShipmentUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateWithoutOriginShipmentsInput = {
@@ -925,6 +1049,7 @@ export type HubUncheckedUpdateWithoutOriginShipmentsInput = {
   destinationShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUncheckedUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUncheckedUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutHubNestedInput
 }
 
 export type HubUpsertWithoutDestinationShipmentsInput = {
@@ -952,6 +1077,7 @@ export type HubUpdateWithoutDestinationShipmentsInput = {
   originShipments?: Prisma.ShipmentUpdateManyWithoutOriginHubNestedInput
   transfersFrom?: Prisma.HubTransferUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateWithoutDestinationShipmentsInput = {
@@ -968,6 +1094,7 @@ export type HubUncheckedUpdateWithoutDestinationShipmentsInput = {
   originShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutOriginHubNestedInput
   transfersFrom?: Prisma.HubTransferUncheckedUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUncheckedUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutHubNestedInput
 }
 
 export type HubCreateWithoutZoneInput = {
@@ -984,6 +1111,7 @@ export type HubCreateWithoutZoneInput = {
   destinationShipments?: Prisma.ShipmentCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationCreateNestedManyWithoutHubInput
 }
 
 export type HubUncheckedCreateWithoutZoneInput = {
@@ -1000,6 +1128,7 @@ export type HubUncheckedCreateWithoutZoneInput = {
   destinationShipments?: Prisma.ShipmentUncheckedCreateNestedManyWithoutDestinationHubInput
   transfersFrom?: Prisma.HubTransferUncheckedCreateNestedManyWithoutFromHubInput
   transfersTo?: Prisma.HubTransferUncheckedCreateNestedManyWithoutToHubInput
+  roleApplications?: Prisma.RoleApplicationUncheckedCreateNestedManyWithoutHubInput
 }
 
 export type HubCreateOrConnectWithoutZoneInput = {
@@ -1068,6 +1197,7 @@ export type HubUpdateWithoutZoneInput = {
   destinationShipments?: Prisma.ShipmentUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateWithoutZoneInput = {
@@ -1084,6 +1214,7 @@ export type HubUncheckedUpdateWithoutZoneInput = {
   destinationShipments?: Prisma.ShipmentUncheckedUpdateManyWithoutDestinationHubNestedInput
   transfersFrom?: Prisma.HubTransferUncheckedUpdateManyWithoutFromHubNestedInput
   transfersTo?: Prisma.HubTransferUncheckedUpdateManyWithoutToHubNestedInput
+  roleApplications?: Prisma.RoleApplicationUncheckedUpdateManyWithoutHubNestedInput
 }
 
 export type HubUncheckedUpdateManyWithoutZoneInput = {
@@ -1108,6 +1239,7 @@ export type HubCountOutputType = {
   destinationShipments: number
   transfersFrom: number
   transfersTo: number
+  roleApplications: number
 }
 
 export type HubCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1116,6 +1248,7 @@ export type HubCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.In
   destinationShipments?: boolean | HubCountOutputTypeCountDestinationShipmentsArgs
   transfersFrom?: boolean | HubCountOutputTypeCountTransfersFromArgs
   transfersTo?: boolean | HubCountOutputTypeCountTransfersToArgs
+  roleApplications?: boolean | HubCountOutputTypeCountRoleApplicationsArgs
 }
 
 /**
@@ -1163,6 +1296,13 @@ export type HubCountOutputTypeCountTransfersToArgs<ExtArgs extends runtime.Types
   where?: Prisma.HubTransferWhereInput
 }
 
+/**
+ * HubCountOutputType without action
+ */
+export type HubCountOutputTypeCountRoleApplicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RoleApplicationWhereInput
+}
+
 
 export type HubSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1180,6 +1320,7 @@ export type HubSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   destinationShipments?: boolean | Prisma.Hub$destinationShipmentsArgs<ExtArgs>
   transfersFrom?: boolean | Prisma.Hub$transfersFromArgs<ExtArgs>
   transfersTo?: boolean | Prisma.Hub$transfersToArgs<ExtArgs>
+  roleApplications?: boolean | Prisma.Hub$roleApplicationsArgs<ExtArgs>
   _count?: boolean | Prisma.HubCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["hub"]>
 
@@ -1229,6 +1370,7 @@ export type HubInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   destinationShipments?: boolean | Prisma.Hub$destinationShipmentsArgs<ExtArgs>
   transfersFrom?: boolean | Prisma.Hub$transfersFromArgs<ExtArgs>
   transfersTo?: boolean | Prisma.Hub$transfersToArgs<ExtArgs>
+  roleApplications?: boolean | Prisma.Hub$roleApplicationsArgs<ExtArgs>
   _count?: boolean | Prisma.HubCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HubIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1247,6 +1389,7 @@ export type $HubPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     destinationShipments: Prisma.$ShipmentPayload<ExtArgs>[]
     transfersFrom: Prisma.$HubTransferPayload<ExtArgs>[]
     transfersTo: Prisma.$HubTransferPayload<ExtArgs>[]
+    roleApplications: Prisma.$RoleApplicationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1658,6 +1801,7 @@ export interface Prisma__HubClient<T, Null = never, ExtArgs extends runtime.Type
   destinationShipments<T extends Prisma.Hub$destinationShipmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hub$destinationShipmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShipmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transfersFrom<T extends Prisma.Hub$transfersFromArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hub$transfersFromArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HubTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transfersTo<T extends Prisma.Hub$transfersToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hub$transfersToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HubTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  roleApplications<T extends Prisma.Hub$roleApplicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hub$roleApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoleApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2214,6 +2358,30 @@ export type Hub$transfersToArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.HubTransferScalarFieldEnum | Prisma.HubTransferScalarFieldEnum[]
+}
+
+/**
+ * Hub.roleApplications
+ */
+export type Hub$roleApplicationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RoleApplication
+   */
+  select?: Prisma.RoleApplicationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RoleApplication
+   */
+  omit?: Prisma.RoleApplicationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RoleApplicationInclude<ExtArgs> | null
+  where?: Prisma.RoleApplicationWhereInput
+  orderBy?: Prisma.RoleApplicationOrderByWithRelationInput | Prisma.RoleApplicationOrderByWithRelationInput[]
+  cursor?: Prisma.RoleApplicationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RoleApplicationScalarFieldEnum | Prisma.RoleApplicationScalarFieldEnum[]
 }
 
 /**

@@ -28,6 +28,7 @@ export interface IStartDeliveryPayload {
 export interface ICompleteDeliveryPayload {
 	recipientName: string;
 	recipientPhone: string;
+	otp: string;
 	imageUrl?: string;
 	signatureUrl?: string;
 	notes?: string;

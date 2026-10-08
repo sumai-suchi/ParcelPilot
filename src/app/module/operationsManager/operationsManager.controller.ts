@@ -177,6 +177,18 @@ const receiveHubTransfer = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getAllHubTransfers = catchAsync(async (req: Request, res: Response) => {
+	const result = await OperationsManagerService.getAllHubTransfers(req.query);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Hub transfers retrieved successfully.",
+		data: result.data,
+		meta: result.meta,
+	});
+});
+
 const initiateReturn = catchAsync(async (req: Request, res: Response) => {
 	const user = req.user;
 	if (!user) {
@@ -307,6 +319,7 @@ export const OperationsManagerController = {
 	assignDeliveryCourier,
 	createHubTransfer,
 	receiveHubTransfer,
+	getAllHubTransfers,
 	initiateReturn,
 	returnInTransit,
 	cancelShipment,

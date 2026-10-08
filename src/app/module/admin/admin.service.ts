@@ -445,6 +445,133 @@ const createHub = async (payload: ICreateHubPayload) => {
 	return hub;
 };
 
+const bulkCreateHubs = async (items: any[]) => {
+	if (!Array.isArray(items) || items.length === 0) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Expected a non-empty array of hub items.",
+		);
+	}
+
+	const results = [];
+	let createdCount = 0;
+	let updatedCount = 0;
+
+	for (const item of items) {
+		// Grouped format: { zoneName, zoneCode, hubs: [...] }
+		if (Array.isArray(item.hubs) && item.zoneCode) {
+			const zoneCode = item.zoneCode.toUpperCase().trim();
+			const zoneName = item.zoneName || zoneCode;
+
+			const zone = await prisma.zone.upsert({
+				where: { code: zoneCode },
+				update: { name: zoneName, isActive: true },
+				create: { code: zoneCode, name: zoneName, isActive: true },
+			});
+
+			for (const hub of item.hubs) {
+				const hubCode = hub.code.toUpperCase().trim();
+				const existing = await prisma.hub.findUnique({
+					where: { code: hubCode },
+				});
+
+				const savedHub = await prisma.hub.upsert({
+					where: { code: hubCode },
+					update: {
+						name: hub.name,
+						zoneId: zone.id,
+						address: hub.address,
+						phone: hub.phone || null,
+						isActive: hub.isActive !== false,
+					},
+					create: {
+						name: hub.name,
+						code: hubCode,
+						zoneId: zone.id,
+						address: hub.address,
+						phone: hub.phone || null,
+						isActive: hub.isActive !== false,
+					},
+					include: { zone: true },
+				});
+
+				if (existing) updatedCount++;
+				else createdCount++;
+				results.push(savedHub);
+			}
+			continue;
+		}
+
+		// Flat format: { name, code, zoneCode, zoneName, address, phone }
+		if (item.name && item.code && item.address) {
+			let zoneId = item.zoneId;
+
+			if (!zoneId && item.zoneCode) {
+				const zoneCode = item.zoneCode.toUpperCase().trim();
+				const zoneName = item.zoneName || zoneCode;
+				const zone = await prisma.zone.upsert({
+					where: { code: zoneCode },
+					update: { name: zoneName, isActive: true },
+					create: { code: zoneCode, name: zoneName, isActive: true },
+				});
+				zoneId = zone.id;
+			}
+
+			if (!zoneId) {
+				const firstZone = await prisma.zone.findFirst();
+				if (firstZone) {
+					zoneId = firstZone.id;
+				} else {
+					const defaultZone = await prisma.zone.create({
+						data: {
+							code: "ZONE-DEFAULT",
+							name: "General Logistics Zone",
+							isActive: true,
+						},
+					});
+					zoneId = defaultZone.id;
+				}
+			}
+
+			const hubCode = item.code.toUpperCase().trim();
+			const existing = await prisma.hub.findUnique({
+				where: { code: hubCode },
+			});
+
+			const savedHub = await prisma.hub.upsert({
+				where: { code: hubCode },
+				update: {
+					name: item.name,
+					zoneId,
+					address: item.address,
+					phone: item.phone || null,
+					isActive: item.isActive !== false,
+				},
+				create: {
+					name: item.name,
+					code: hubCode,
+					zoneId,
+					address: item.address,
+					phone: item.phone || null,
+					isActive: item.isActive !== false,
+				},
+				include: { zone: true },
+			});
+
+			if (existing) updatedCount++;
+			else createdCount++;
+			results.push(savedHub);
+		}
+	}
+
+	return {
+		totalProcessed: results.length,
+		createdCount,
+		updatedCount,
+		hubs: results,
+	};
+};
+
 const updateHub = async (id: string, payload: IUpdateHubPayload) => {
 	const hub = await prisma.hub.findUnique({ where: { id } });
 
@@ -810,6 +937,7 @@ export const AdminService = {
 	deleteZone,
 	getAllHubs,
 	createHub,
+	bulkCreateHubs,
 	updateHub,
 	deleteHub,
 	getAllPricingRules,

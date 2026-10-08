@@ -14,6 +14,7 @@ model Shipment {
   deliveryCharge    Decimal        @default(0.00) @map("delivery_charge") @db.Decimal(10, 2)
   paymentStatus     PaymentStatus  @default(PENDING) @map("payment_status")
   scheduledPickupAt DateTime?      @map("scheduled_pickup_at") @db.Timestamptz
+  deliveryOtp       String?        @map("delivery_otp") @db.VarChar(10)
   createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz
   updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
   // Relations

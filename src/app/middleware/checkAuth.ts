@@ -32,7 +32,7 @@ export const auth = (...requiredRoles: UserRole[]) => {
 			: req.headers.authorization?.startsWith("Bearer ")
 				? req.headers.authorization?.split(" ")[1]
 				: req.headers.authorization;
-
+        console.log(token, "token in auth middleware");
 		if (!token) {
 			throw new AppError(
 				httpStatus.UNAUTHORIZED,
@@ -41,12 +41,14 @@ export const auth = (...requiredRoles: UserRole[]) => {
 		}
 
 		const verifiedToken = jwtUtils.verifyToken(token, config.jwt_access_secret);
+		console.log(verifiedToken, "verifiedToken in auth middleware");
 
 		if (!verifiedToken.success) {
 			throw new AppError(httpStatus.UNAUTHORIZED, verifiedToken.error);
 		}
 
 		const { email, name, userId, role } = verifiedToken.data as JwtPayload;
+		console.log(email, name, userId, role, "user details in auth middleware");
 
 		if (requiredRoles.length && !requiredRoles.includes(role)) {
 			throw new AppError(

@@ -14,11 +14,16 @@ const CustomerRegistrationZodSchema = z.object({
 
 		.regex(/[0-9]/, "Password must contain atleast 1 Number")
 		.regex(/[^A-Za-z0-9]/, "Password must contain atleast 1 Special Character"),
+	profilePicture: z.string().optional(),
 });
 
 const CustomerEmailVerifyZodSchema = z.object({
 	email: z.email("Not email!!"),
-	otp: z.string().length(6),
+	otp: z.string().length(6).refine((val) => console.log(val)),
+}).refine((data) => {
+	console.log(data.email, data.otp, typeof data.email, typeof data.otp);
+}, {
+	message: "Email and OTP are required",
 });
 
 const LoginZodSchema = z.object({

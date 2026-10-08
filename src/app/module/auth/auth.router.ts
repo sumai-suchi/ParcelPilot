@@ -16,7 +16,7 @@ router.post(
 
 router.post(
 	"/verify-email",
-	validateRequest(UserValidation.CustomerEmailVerifyZodSchema),
+
 	AuthController.verifyCustomerEmailController,
 );
 router.post(
@@ -49,5 +49,5 @@ router.post(
 	validateRequest(UserValidation.ResetPasswordZodSchema),
 	AuthController.resetPassword,
 );
-
+router.post("/logout", AuthController.logout);
 export const AuthRoutes = router;

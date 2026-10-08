@@ -260,7 +260,50 @@ const returnShipment = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
+	const user = req.user;
+	if (!user) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"User context missing from request.",
+		);
+	}
+
+	const result = await CourierService.getMyProfile(user.userId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Courier profile retrieved successfully.",
+		data: result,
+	});
+});
+
+const updateAvailability = catchAsync(async (req: Request, res: Response) => {
+	const user = req.user;
+	if (!user) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"User context missing from request.",
+		);
+	}
+
+	const result = await CourierService.updateAvailability(
+		user.userId,
+		req.body.availabilityStatus,
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Courier availability updated successfully.",
+		data: result,
+	});
+});
+
 export const CourierController = {
+	getMyProfile,
+	updateAvailability,
 	getMyTasks,
 	getTaskById,
 	acceptAssignment,

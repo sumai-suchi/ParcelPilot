@@ -58,6 +58,7 @@ router.patch(
 );
 
 // Inter-Hub Transfer Operations
+router.get("/transfers", OperationsManagerController.getAllHubTransfers);
 router.post(
 	"/shipments/:id/transfer",
 	validateRequest(OperationsManagerValidation.CreateHubTransferZodSchema),

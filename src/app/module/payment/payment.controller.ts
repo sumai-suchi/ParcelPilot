@@ -5,7 +5,9 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { PaymentService } from "./payment.service";
 
-const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
+
+
+const createCheckoutSession = catchAsync(async (req: Request, res: Response) => {
 	const user = req.user;
 	if (!user) {
 		throw new AppError(
@@ -15,7 +17,7 @@ const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
 	}
 
 	const { shipmentId } = req.params;
-	const result = await PaymentService.createPaymentIntent(
+	const result = await PaymentService.createCheckoutSession(
 		shipmentId as string,
 		user.userId,
 		req.body,
@@ -24,12 +26,12 @@ const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Stripe PaymentIntent generated successfully.",
+		message: "Stripe Checkout Session initialized successfully.",
 		data: result,
 	});
 });
 
-const confirmPayment = catchAsync(async (req: Request, res: Response) => {
+const verifyCheckoutSession = catchAsync(async (req: Request, res: Response) => {
 	const user = req.user;
 	if (!user) {
 		throw new AppError(
@@ -39,16 +41,25 @@ const confirmPayment = catchAsync(async (req: Request, res: Response) => {
 	}
 
 	const { shipmentId } = req.params;
-	const result = await PaymentService.confirmPayment(
+	const { sessionId } = req.body;
+
+	if (!sessionId) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Stripe sessionId is required to verify checkout session.",
+		);
+	}
+
+	const result = await PaymentService.verifyCheckoutSession(
 		shipmentId as string,
+		sessionId,
 		user.userId,
-		req.body,
 	);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Stripe payment confirmed successfully. Shipment marked as PAID.",
+		message: "Stripe Checkout Session verified successfully.",
 		data: result,
 	});
 });
@@ -74,8 +85,10 @@ const handleWebhook = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const PaymentController = {
-	createPaymentIntent,
-	confirmPayment,
+	
+	createCheckoutSession,
+	verifyCheckoutSession,
 	getPaymentStatus,
 	handleWebhook,
 };
+

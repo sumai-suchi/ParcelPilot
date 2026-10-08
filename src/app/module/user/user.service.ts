@@ -29,17 +29,29 @@ import type {
  * Helper: Find Customer profile by User ID
  */
 const getCustomerByUserId = async (userId: string) => {
-	const customer = await prisma.customer.findUnique({
+	let customer = await prisma.customer.findUnique({
 		where: {
 			userId,
 		},
 	});
 
 	if (!customer) {
-		throw new AppError(
-			httpStatus.NOT_FOUND,
-			"Customer profile not found for this user account.",
-		);
+		const user = await prisma.user.findUnique({
+			where: { id: userId },
+		});
+
+		if (user && user.role === UserRole.CUSTOMER) {
+			customer = await prisma.customer.create({
+				data: {
+					userId,
+				},
+			});
+		} else {
+			throw new AppError(
+				httpStatus.NOT_FOUND,
+				"Customer profile not found for this user account.",
+			);
+		}
 	}
 
 	return customer;
@@ -86,7 +98,7 @@ const updateProfile = async (
 	userId: string,
 	payload: IUpdateProfilePayload,
 ) => {
-	const { name, phone } = payload;
+	const { name, phone, profilePicture } = payload;
 
 	const existingUser = await prisma.user.findUnique({
 		where: {
@@ -123,6 +135,7 @@ const updateProfile = async (
 		data: {
 			...(name ? { name } : {}),
 			...(phone ? { phone } : {}),
+			...(profilePicture !== undefined ? { profilePicture } : {}),
 		},
 		omit: {
 			password: true,
@@ -574,13 +587,23 @@ const createShipmentRequest = async (
 		const targetArea = deliveryArea.toLowerCase();
 
 		const isSupported = activeZones.some((zone) => {
-			const zoneNameMatch = zone.name.toLowerCase().includes(targetCity);
-			const zoneCodeMatch = zone.code.toLowerCase().includes(targetCity);
+			const zName = zone.name.toLowerCase();
+			const zCode = zone.code.toLowerCase();
+			const zoneNameMatch = zName.includes(targetCity) || targetCity.includes(zName);
+			const zoneCodeMatch = zCode.includes(targetCity) || targetCity.includes(zCode);
 			const hubMatch = zone.hubs.some(
-				(hub) =>
-					hub.address.toLowerCase().includes(targetCity) ||
-					hub.address.toLowerCase().includes(targetArea) ||
-					hub.name.toLowerCase().includes(targetCity),
+				(hub) => {
+					const hAddr = hub.address.toLowerCase();
+					const hName = hub.name.toLowerCase();
+					return (
+						hAddr.includes(targetCity) ||
+						targetCity.includes(hAddr) ||
+						hAddr.includes(targetArea) ||
+						targetArea.includes(hAddr) ||
+						hName.includes(targetCity) ||
+						targetCity.includes(hName)
+					);
+				},
 			);
 			return zoneNameMatch || zoneCodeMatch || hubMatch;
 		});
@@ -627,7 +650,7 @@ const createShipmentRequest = async (
 	const trackingNumber = `PP-${datePart}-${randomPart}`;
 
 	const deliveryType = payload.deliveryType || "STANDARD";
-	let deliveryCharge = 60.0; // Default baseline charge
+	let deliveryCharge = 100.0; // Default baseline charge for STANDARD (minimum 100 BDT)
 	const matchingRule = await prisma.pricingRule.findFirst({
 		where: {
 			isActive: true,
@@ -641,6 +664,18 @@ const createShipmentRequest = async (
 		const perKg = Number(matchingRule.perKgCharge);
 		const minW = Number(matchingRule.minWeight);
 		const extra = Math.max(0, payload.weight - minW);
+		deliveryCharge = Number((base + extra * perKg).toFixed(2));
+	} else {
+		let base = 100.0;
+		let perKg = 20.0;
+		if (deliveryType === "EXPRESS") {
+			base = 150.0;
+			perKg = 35.0;
+		} else if (deliveryType === "SAME_DAY") {
+			base = 200.0;
+			perKg = 50.0;
+		}
+		const extra = Math.max(0, payload.weight - 1.0);
 		deliveryCharge = Number((base + extra * perKg).toFixed(2));
 	}
 
@@ -714,6 +749,9 @@ const createShipmentRequest = async (
 			);
 		}
 
+		// Generate secure 6-digit delivery OTP for receiver handover verification
+		const deliveryOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
 		// Create Shipment record in PENDING_APPROVAL without assigned hubs
 		const createdShipment = await tx.shipment.create({
 			data: {
@@ -728,6 +766,7 @@ const createShipmentRequest = async (
 				description: formattedDescription || null,
 				deliveryType,
 				deliveryCharge,
+				deliveryOtp,
 				status: ShipmentStatus.PENDING_APPROVAL,
 				paymentStatus: PaymentStatus.PENDING,
 				scheduledPickupAt: payload.scheduledPickupAt
@@ -845,6 +884,8 @@ const getShipmentById = async (
 			deliveryAddress: true,
 			originHub: true,
 			destinationHub: true,
+			payment: true,
+			proofOfDelivery: true,
 			statusHistory: {
 				orderBy: {
 					createdAt: "asc",
@@ -962,6 +1003,7 @@ const trackShipment = async (trackingNumber: string, userId?: string) => {
 		deliveryType: shipment.deliveryType,
 		parcelType: shipment.parcelType,
 		weight: Number(shipment.weight),
+		deliveryOtp: shipment.deliveryOtp,
 		scheduledPickupAt: shipment.scheduledPickupAt,
 		createdAt: shipment.createdAt,
 		updatedAt: shipment.updatedAt,
@@ -1267,14 +1309,14 @@ const calculatePricing = async (payload: ICalculatePricingPayload) => {
 		};
 	}
 
-	let baseCharge = 60.0;
+	let baseCharge = 100.0;
 	let perKgCharge = 20.0;
 
 	if (deliveryType === "EXPRESS") {
-		baseCharge = 120.0;
+		baseCharge = 150.0;
 		perKgCharge = 35.0;
 	} else if (deliveryType === "SAME_DAY") {
-		baseCharge = 180.0;
+		baseCharge = 200.0;
 		perKgCharge = 50.0;
 	}
 

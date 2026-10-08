@@ -6,19 +6,46 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import type {
 	IConfirmPaymentPayload,
+	ICreateCheckoutSessionPayload,
 	ICreatePaymentIntentPayload,
+	IVerifyCheckoutSessionPayload,
 } from "./payment.interface";
 
 // Initialize official Stripe client
 const stripe = new Stripe(config.stripe_secret_key || "");
 
+
 /**
- * Creates a Stripe PaymentIntent for the shipment's delivery charge
+ * Get real-time payment status of a shipment
  */
-const createPaymentIntent = async (
+const getPaymentStatus = async (shipmentId: string) => {
+	const shipment = await prisma.shipment.findUnique({
+		where: { id: shipmentId },
+		include: {
+			payment: true,
+		},
+	});
+
+	if (!shipment) {
+		throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
+	}
+
+	return {
+		shipmentId: shipment.id,
+		trackingNumber: shipment.trackingNumber,
+		deliveryCharge: shipment.deliveryCharge,
+		paymentStatus: shipment.paymentStatus,
+		payment: shipment.payment,
+	};
+};
+
+/**
+ * Creates a Stripe Hosted Checkout Session for the shipment
+ */
+const createCheckoutSession = async (
 	shipmentId: string,
 	userId: string,
-	payload?: ICreatePaymentIntentPayload,
+	payload?: ICreateCheckoutSessionPayload,
 ) => {
 	const shipment = await prisma.shipment.findUnique({
 		where: { id: shipmentId },
@@ -50,38 +77,54 @@ const createPaymentIntent = async (
 		);
 	}
 
-	const deliveryCharge = Number(shipment.deliveryCharge) || 60.0;
+	const deliveryCharge = Number(shipment.deliveryCharge) || 100.0;
 	const currency = (
 		payload?.currency ||
 		config.stripe_currency ||
 		"bdt"
 	).toLowerCase();
 
-	// Convert to smallest currency unit (e.g., paisa / cents)
-	const amountInSubunits = Math.round(deliveryCharge * 100);
+	const rawSubunits = Math.round(deliveryCharge * 100);
+	const amountInSubunits =
+		currency === "bdt" ? Math.max(rawSubunits, 10000) : Math.max(rawSubunits, 50);
 
-	let paymentIntent: Stripe.PaymentIntent;
+	const frontendUrl = config.frontend_url || "http://localhost:3000";
+	const successUrl = `${frontendUrl}/customer/shipments/${shipmentId}?payment=success&session_id={CHECKOUT_SESSION_ID}`;
+	const cancelUrl = `${frontendUrl}/customer/shipments/${shipmentId}?payment=cancelled`;
+
+	let session: Stripe.Checkout.Session;
 
 	try {
-		paymentIntent = await stripe.paymentIntents.create({
-			amount: amountInSubunits,
-			currency,
-			description: `Delivery charge for ParcelPilot shipment ${shipment.trackingNumber}`,
+		session = await stripe.checkout.sessions.create({
+			payment_method_types: ["card"],
+			line_items: [
+				{
+					price_data: {
+						currency,
+						product_data: {
+							name: `Shipment Waybill: ${shipment.trackingNumber}`,
+							description: `Door-to-door delivery tariff for ${shipment.parcelType} (${Number(shipment.weight).toFixed(1)} kg)`,
+						},
+						unit_amount: amountInSubunits,
+					},
+					quantity: 1,
+				},
+			],
+			mode: "payment",
+			customer_email: shipment.customer.user.email,
+			client_reference_id: shipmentId,
 			metadata: {
 				shipmentId,
 				trackingNumber: shipment.trackingNumber,
-				customerName: shipment.customer.user.name,
-				customerEmail: shipment.customer.user.email,
-				initiatedBy: userId,
+				userId,
 			},
-			automatic_payment_methods: {
-				enabled: true,
-			},
+			success_url: successUrl,
+			cancel_url: cancelUrl,
 		});
 	} catch (error: any) {
 		throw new AppError(
 			httpStatus.BAD_GATEWAY,
-			`Stripe PaymentIntent creation failed: ${error.message}`,
+			`Stripe Checkout Session creation failed: ${error.message}`,
 		);
 	}
 
@@ -92,7 +135,7 @@ const createPaymentIntent = async (
 			amount: deliveryCharge,
 			currency: currency.toUpperCase(),
 			provider: "STRIPE",
-			transactionId: paymentIntent.id,
+			transactionId: session.id,
 			status: PaymentStatus.PENDING,
 		},
 		create: {
@@ -100,28 +143,27 @@ const createPaymentIntent = async (
 			amount: deliveryCharge,
 			currency: currency.toUpperCase(),
 			provider: "STRIPE",
-			transactionId: paymentIntent.id,
+			transactionId: session.id,
 			status: PaymentStatus.PENDING,
 		},
 	});
 
 	return {
-		clientSecret: paymentIntent.client_secret,
-		paymentIntentId: paymentIntent.id,
+		sessionId: session.id,
+		url: session.url,
 		amount: deliveryCharge,
 		currency: currency.toUpperCase(),
 		trackingNumber: shipment.trackingNumber,
-		publishableKey: config.stripe_publishable_key,
 	};
 };
 
 /**
- * Confirm payment status directly against Stripe API and update shipment status
+ * Verifies a Stripe Hosted Checkout Session upon return to frontend
  */
-const confirmPayment = async (
+const verifyCheckoutSession = async (
 	shipmentId: string,
+	sessionId: string,
 	userId: string,
-	payload: IConfirmPaymentPayload,
 ) => {
 	const shipment = await prisma.shipment.findUnique({
 		where: { id: shipmentId },
@@ -132,117 +174,82 @@ const confirmPayment = async (
 		throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
 	}
 
-	let paymentIntent: Stripe.PaymentIntent;
+	let session: Stripe.Checkout.Session;
 
 	try {
-		paymentIntent = await stripe.paymentIntents.retrieve(
-			payload.paymentIntentId,
-		);
+		session = await stripe.checkout.sessions.retrieve(sessionId);
 	} catch (error: any) {
 		throw new AppError(
 			httpStatus.BAD_GATEWAY,
-			`Failed to retrieve PaymentIntent from Stripe: ${error.message}`,
+			`Failed to retrieve Checkout Session from Stripe: ${error.message}`,
 		);
 	}
 
-	if (paymentIntent.status === "requires_payment_method") {
-		try {
-			paymentIntent = await stripe.paymentIntents.confirm(
-				payload.paymentIntentId,
-				{
-					payment_method: payload.paymentMethodId || "pm_card_visa",
-					return_url: config.frontend_url || "http://localhost:5000",
+	if (session.payment_status === "paid") {
+		const transactionId =
+			typeof session.payment_intent === "string"
+				? session.payment_intent
+				: session.id;
+
+		const result = await prisma.$transaction(async (tx) => {
+			const updatedPayment = await tx.payment.upsert({
+				where: { shipmentId },
+				update: {
+					status: PaymentStatus.PAID,
+					paidAt: new Date(),
+					transactionId,
+					provider: "STRIPE",
 				},
-			);
-		} catch (error: any) {
-			throw new AppError(
-				httpStatus.BAD_REQUEST,
-				`Failed to process payment on Stripe: ${error.message}`,
-			);
-		}
-	}
+				create: {
+					shipmentId,
+					amount: Number(shipment.deliveryCharge),
+					currency: (session.currency || "bdt").toUpperCase(),
+					status: PaymentStatus.PAID,
+					paidAt: new Date(),
+					transactionId,
+					provider: "STRIPE",
+				},
+			});
 
-	if (paymentIntent.status !== "succeeded") {
-		throw new AppError(
-			httpStatus.BAD_REQUEST,
-			`Payment has not succeeded yet on Stripe (Current status: ${paymentIntent.status}).`,
-		);
-	}
+			const updatedShipment = await tx.shipment.update({
+				where: { id: shipmentId },
+				data: {
+					paymentStatus: PaymentStatus.PAID,
+				},
+				include: {
+					payment: true,
+					pickupAddress: true,
+					deliveryAddress: true,
+				},
+			});
 
-	const result = await prisma.$transaction(async (tx) => {
-		// Update Payment record
-		const updatedPayment = await tx.payment.upsert({
-			where: { shipmentId },
-			update: {
-				status: PaymentStatus.PAID,
-				paidAt: new Date(),
-				transactionId: paymentIntent.id,
-				provider: "STRIPE",
-			},
-			create: {
-				shipmentId,
-				amount: shipment.deliveryCharge,
-				currency: paymentIntent.currency.toUpperCase(),
-				status: PaymentStatus.PAID,
-				paidAt: new Date(),
-				transactionId: paymentIntent.id,
-				provider: "STRIPE",
-			},
-		});
+			await tx.shipmentStatusHistory.create({
+				data: {
+					shipmentId,
+					status: shipment.status,
+					note: `Payment of ৳${shipment.deliveryCharge} completed successfully via Stripe Hosted Checkout (Session: ${session.id}).`,
+					updatedBy: userId,
+				},
+			});
 
-		// Update Shipment paymentStatus
-		const updatedShipment = await tx.shipment.update({
-			where: { id: shipmentId },
-			data: {
-				paymentStatus: PaymentStatus.PAID,
-			},
-			include: {
-				payment: true,
-				pickupAddress: true,
-				deliveryAddress: true,
-			},
-		});
-
-		// Add status history
-		await tx.shipmentStatusHistory.create({
-			data: {
-				shipmentId,
-				status: shipment.status,
-				note: `Payment of ${shipment.deliveryCharge} ${paymentIntent.currency.toUpperCase()} completed successfully via Stripe (ID: ${paymentIntent.id}).`,
-				updatedBy: userId,
-			},
+			return {
+				shipment: updatedShipment,
+				payment: updatedPayment,
+			};
 		});
 
 		return {
-			shipment: updatedShipment,
-			payment: updatedPayment,
+			paid: true,
+			status: "PAID",
+			transactionId,
+			shipment: result.shipment,
 		};
-	});
-
-	return result;
-};
-
-/**
- * Get real-time payment status of a shipment
- */
-const getPaymentStatus = async (shipmentId: string) => {
-	const shipment = await prisma.shipment.findUnique({
-		where: { id: shipmentId },
-		include: {
-			payment: true,
-		},
-	});
-
-	if (!shipment) {
-		throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
 	}
 
 	return {
-		shipmentId: shipment.id,
-		trackingNumber: shipment.trackingNumber,
-		deliveryCharge: shipment.deliveryCharge,
-		paymentStatus: shipment.paymentStatus,
-		payment: shipment.payment,
+		paid: false,
+		status: session.payment_status,
+		sessionId: session.id,
 	};
 };
 
@@ -305,14 +312,55 @@ const handleWebhook = async (signature: string, payload: Buffer) => {
 				});
 			});
 		}
+	} else if (event.type === "checkout.session.completed") {
+		const session = event.data.object as Stripe.Checkout.Session;
+		const shipmentId =
+			session.metadata?.shipmentId || session.client_reference_id;
+
+		if (shipmentId && session.payment_status === "paid") {
+			const transactionId =
+				typeof session.payment_intent === "string"
+					? session.payment_intent
+					: session.id;
+
+			await prisma.$transaction(async (tx) => {
+				await tx.payment.upsert({
+					where: { shipmentId },
+					update: {
+						status: PaymentStatus.PAID,
+						paidAt: new Date(),
+						transactionId,
+						provider: "STRIPE",
+					},
+					create: {
+						shipmentId,
+						amount: (session.amount_total || 0) / 100,
+						currency: (session.currency || "BDT").toUpperCase(),
+						status: PaymentStatus.PAID,
+						paidAt: new Date(),
+						transactionId,
+						provider: "STRIPE",
+					},
+				});
+
+				await tx.shipment.update({
+					where: { id: shipmentId },
+					data: {
+						paymentStatus: PaymentStatus.PAID,
+					},
+				});
+			});
+		}
 	}
 
 	return { received: true };
 };
 
 export const PaymentService = {
-	createPaymentIntent,
-	confirmPayment,
+
+	createCheckoutSession,
+	verifyCheckoutSession,
 	getPaymentStatus,
 	handleWebhook,
 };
+

@@ -8,13 +8,76 @@ var __export = (target, all) => {
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express2 from "express";
-import httpStatus16 from "http-status";
+import httpStatus21 from "http-status";
+
+// src/app/config/index.ts
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.join(process.cwd(), ".env") });
+var config_default = {
+  node_env: process.env.NODE_ENV,
+  port: process.env.PORT,
+  database_url: process.env.DATABASE_URL,
+  bak_url: process.env.APP_URL,
+  frontend_url: process.env.FRONTEND_URL,
+  bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
+  jwt_access_secret: process.env.JWT_ACCESS_SECRET,
+  jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
+  jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN,
+  jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
+  google_client_id: process.env.GOOGLE_CLIENT_ID,
+  super_admin_name: process.env.SUPER_ADMIN_NAME,
+  super_admin_email: process.env.SUPER_ADMIN_EMAIL,
+  super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
+  admin_name: process.env.SUPER_ADMIN_NAME,
+  admin_email: process.env.SUPER_ADMIN_EMAIL,
+  admin_password: process.env.SUPER_ADMIN_PASSWORD,
+  admin_phone: process.env.ADMIN_PHONE,
+  operations_manager_name: process.env.OPERATIONS_MANAGER_NAME,
+  operations_manager_email: process.env.OPERATIONS_MANAGER_EMAIL,
+  operations_manager_password: process.env.OPERATIONS_MANAGER_PASSWORD,
+  operations_manager_phone: process.env.OPERATIONS_MANAGER_PHONE,
+  hub_manager_name: process.env.HUB_MANAGER_NAME,
+  hub_manager_email: process.env.HUB_MANAGER_EMAIL,
+  hub_manager_password: process.env.HUB_MANAGER_PASSWORD,
+  hub_manager_phone: process.env.HUB_MANAGER_PHONE,
+  courier_name: process.env.COURIER_NAME,
+  courier_email: process.env.COURIER_EMAIL,
+  courier_password: process.env.COURIER_PASSWORD,
+  courier_phone: process.env.COURIER_PHONE,
+  tester_admin_name: process.env.TESTER_ADMIN_NAME,
+  tester_admin_email: process.env.TESTER_ADMIN_EMAIL,
+  tester_admin_password: process.env.TESTER_ADMIN_PASSWORD,
+  tester_doctor_name: process.env.TESTER_DOCTOR_NAME,
+  tester_doctor_email: process.env.TESTER_DOCTOR_EMAIL,
+  tester_doctor_password: process.env.TESTER_DOCTOR_PASSWORD,
+  redis_user: process.env.REDIS_USER,
+  redis_password: process.env.REDIS_PASSWORD,
+  redis_host: process.env.REDIS_HOST,
+  redis_port: process.env.REDIS_PORT,
+  smtp_user: process.env.SMTP_USER,
+  smtp_password: process.env.SMTP_PASSWORD,
+  email_sender: process.env.EMAIL_SENDER,
+  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
+  bkash_base_url: process.env.BKASH_BASE_URL,
+  bkash_username: process.env.BKASH_USERNAME,
+  bkash_password: process.env.BKASH_PASSWORD,
+  bkash_app_key: process.env.BKASH_APP_KEY,
+  bkash_app_secret: process.env.BKASH_APP_SECRET,
+  bkash_callback_url: process.env.BKASH_CALLBACK_URL,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+  stripe_publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
+  stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
+  stripe_currency: process.env.STRIPE_CURRENCY || "bdt"
+};
 
 // src/app/middleware/globalErrorHandler.ts
 import httpStatus from "http-status";
 
 // src/generated/prisma/client.ts
-import * as path from "node:path";
+import * as path2 from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/generated/prisma/internal/class.ts
@@ -24,7 +87,7 @@ var config = {
   "clientVersion": "7.10.0",
   "engineVersion": "0edf323efd1d98336f3f0a68684b56f689b900d3",
   "activeProvider": "postgresql",
-  "inlineSchema": 'model Address {\n  id                String     @id @default(uuid()) @db.Uuid\n  customerId        String     @map("customer_id") @db.Uuid\n  label             String?    @db.VarChar(50)\n  addressLine       String     @map("address_line") @db.Text\n  city              String     @db.VarChar(100)\n  area              String     @db.VarChar(100)\n  postalCode        String?    @map("postal_code") @db.VarChar(20)\n  latitude          Decimal?   @db.Decimal(10, 8)\n  longitude         Decimal?   @db.Decimal(11, 8)\n  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt         DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  customer          Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade, map: "fk_addresses_customer")\n  pickupShipments   Shipment[] @relation("PickupAddressShipments")\n  deliveryShipments Shipment[] @relation("DeliveryAddressShipments")\n\n  @@map("addresses")\n}\n\nmodel Courier {\n  id                 String              @id @default(uuid()) @db.Uuid\n  userId             String              @unique @map("user_id") @db.Uuid\n  hubId              String              @map("hub_id") @db.Uuid\n  vehicleType        String              @map("vehicle_type") @db.VarChar(50)\n  vehicleNumber      String              @map("vehicle_number") @db.VarChar(50)\n  availabilityStatus CourierAvailability @default(AVAILABLE) @map("availability_status")\n  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt          DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_couriers_user")\n  hub                Hub                 @relation(fields: [hubId], references: [id], onDelete: Restrict, map: "fk_couriers_hub")\n  assignments        CourierParcel[]\n  deliveryAttempts   DeliveryAttempt[]\n\n  @@map("couriers")\n}\n\nmodel CourierParcel {\n  id          String           @id @default(uuid()) @db.Uuid\n  shipmentId  String           @map("shipment_id") @db.Uuid\n  courierId   String           @map("courier_id") @db.Uuid\n  assignedBy  String?          @map("assigned_by") @db.Uuid\n  status      AssignmentStatus @default(PENDING)\n  assignedAt  DateTime         @default(now()) @map("assigned_at") @db.Timestamptz\n  acceptedAt  DateTime?        @map("accepted_at") @db.Timestamptz\n  completedAt DateTime?        @map("completed_at") @db.Timestamptz\n  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  shipment    Shipment         @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_assignments_shipment")\n  courier     Courier          @relation(fields: [courierId], references: [id], onDelete: Restrict, map: "fk_assignments_courier")\n  assigner    User?            @relation("UserCourierAssignments", fields: [assignedBy], references: [id], onDelete: SetNull, map: "fk_assignments_assigned_by")\n\n  @@index([shipmentId], map: "idx_courier_assignments_shipment")\n  @@index([courierId], map: "idx_courier_assignments_courier")\n  @@map("courier_assignments")\n}\n\nmodel Customer {\n  id        String     @id @default(uuid()) @db.Uuid\n  userId    String     @unique @map("user_id") @db.Uuid\n  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_customers_user")\n  addresses Address[]\n  shipments Shipment[]\n\n  @@map("customers")\n}\n\nmodel DeliveryAttempt {\n  id              String           @id @default(uuid()) @db.Uuid\n  shipmentId      String           @map("shipment_id") @db.Uuid\n  courierId       String           @map("courier_id") @db.Uuid\n  attemptNumber   Int              @default(1) @map("attempt_number")\n  status          AttemptStatus\n  failureReason   String?          @map("failure_reason") @db.VarChar(255)\n  notes           String?          @db.Text\n  attemptedAt     DateTime         @default(now()) @map("attempted_at") @db.Timestamptz\n  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  shipment        Shipment         @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_delivery_attempts_shipment")\n  courier         Courier          @relation(fields: [courierId], references: [id], onDelete: Restrict, map: "fk_delivery_attempts_courier")\n  proofOfDelivery ProofOfDelivery?\n\n  @@index([shipmentId], map: "idx_delivery_attempts_shipment")\n  @@map("delivery_attempts")\n}\n\nenum UserRole {\n  CUSTOMER\n  COURIER\n  HUB_MANAGER\n  OPERATIONS_MANAGER\n  ADMIN\n\n  @@map("user_role")\n}\n\nenum UserStatus {\n  ACTIVE\n  INACTIVE\n  SUSPENDED\n\n  @@map("user_status")\n}\n\nenum CourierAvailability {\n  AVAILABLE\n  BUSY\n  OFFLINE\n\n  @@map("courier_availability")\n}\n\nenum ShipmentStatus {\n  PENDING_APPROVAL\n  CREATED\n  COURIER_ASSIGNED\n  PICKUP_ASSIGNED\n  PICKED_UP\n  AT_ORIGIN_HUB\n  IN_TRANSIT\n  AT_DESTINATION_HUB\n  OUT_FOR_DELIVERY\n  DELIVERED\n  DELIVERY_FAILED\n  RESCHEDULED\n  RETURN_INITIATED\n  RETURN_IN_TRANSIT\n  RETURNED\n  CANCELLED\n\n  @@map("shipment_status")\n}\n\nenum AssignmentStatus {\n  PENDING\n  ACCEPTED\n  REJECTED\n  COMPLETED\n  CANCELLED\n\n  @@map("assignment_status")\n}\n\nenum TransferStatus {\n  PENDING\n  DISPATCHED\n  IN_TRANSIT\n  RECEIVED\n  CANCELLED\n\n  @@map("transfer_status")\n}\n\nenum AttemptStatus {\n  SUCCESS\n  FAILED\n\n  @@map("attempt_status")\n}\n\nenum PaymentStatus {\n  PENDING\n  PAID\n  FAILED\n  REFUNDED\n\n  @@map("payment_status")\n}\n\nenum AuthProvider {\n  GOOGLE\n  CREDENTIALS\n}\n\nmodel Hub {\n  id                   String        @id @default(uuid()) @db.Uuid\n  name                 String        @db.VarChar(150)\n  code                 String        @unique @db.VarChar(50)\n  zoneId               String        @map("zone_id") @db.Uuid\n  address              String        @db.Text\n  phone                String?       @db.VarChar(50)\n  isActive             Boolean       @default(true) @map("is_active")\n  createdAt            DateTime      @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt            DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  zone                 Zone          @relation(fields: [zoneId], references: [id], onDelete: Restrict, map: "fk_hubs_zone")\n  couriers             Courier[]\n  originShipments      Shipment[]    @relation("OriginHubShipments")\n  destinationShipments Shipment[]    @relation("DestinationHubShipments")\n  transfersFrom        HubTransfer[] @relation("TransfersFromHub")\n  transfersTo          HubTransfer[] @relation("TransfersToHub")\n\n  @@map("hubs")\n}\n\nmodel HubTransfer {\n  id           String         @id @default(uuid()) @db.Uuid\n  shipmentId   String         @map("shipment_id") @db.Uuid\n  fromHubId    String         @map("from_hub_id") @db.Uuid\n  toHubId      String         @map("to_hub_id") @db.Uuid\n  status       TransferStatus @default(PENDING)\n  dispatchedAt DateTime?      @map("dispatched_at") @db.Timestamptz\n  receivedAt   DateTime?      @map("received_at") @db.Timestamptz\n  createdBy    String?        @map("created_by") @db.Uuid\n  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  shipment     Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_hub_transfers_shipment")\n  fromHub      Hub            @relation("TransfersFromHub", fields: [fromHubId], references: [id], onDelete: Restrict, map: "fk_hub_transfers_from_hub")\n  toHub        Hub            @relation("TransfersToHub", fields: [toHubId], references: [id], onDelete: Restrict, map: "fk_hub_transfers_to_hub")\n  creator      User?          @relation("UserHubTransfers", fields: [createdBy], references: [id], onDelete: SetNull, map: "fk_hub_transfers_created_by")\n\n  @@index([shipmentId], map: "idx_hub_transfers_shipment")\n  @@map("hub_transfers")\n}\n\nmodel Notification {\n  id         String    @id @default(uuid()) @db.Uuid\n  userId     String    @map("user_id") @db.Uuid\n  shipmentId String?   @map("shipment_id") @db.Uuid\n  title      String    @db.VarChar(255)\n  message    String    @db.Text\n  type       String    @db.VarChar(50)\n  isRead     Boolean   @default(false) @map("is_read")\n  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_notifications_user")\n  shipment   Shipment? @relation(fields: [shipmentId], references: [id], onDelete: SetNull, map: "fk_notifications_shipment")\n\n  @@index([userId], map: "idx_notifications_user")\n  @@map("notifications")\n}\n\nmodel Payment {\n  id            String        @id @default(uuid()) @db.Uuid\n  shipmentId    String        @unique @map("shipment_id") @db.Uuid\n  amount        Decimal       @db.Decimal(10, 2)\n  currency      String        @default("BDT") @db.VarChar(10)\n  provider      String        @db.VarChar(50)\n  transactionId String?       @unique @map("transaction_id") @db.VarChar(255)\n  status        PaymentStatus @default(PENDING)\n  paidAt        DateTime?     @map("paid_at") @db.Timestamptz\n  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  shipment      Shipment      @relation(fields: [shipmentId], references: [id], onDelete: Restrict, map: "fk_payments_shipment")\n\n  @@map("payments")\n}\n\nmodel PricingRule {\n  id           String   @id @default(uuid()) @db.Uuid\n  zoneId       String   @map("zone_id") @db.Uuid\n  deliveryType String   @default("STANDARD") @map("delivery_type") @db.VarChar(50)\n  minWeight    Decimal  @default(0.00) @map("min_weight") @db.Decimal(8, 2)\n  maxWeight    Decimal  @map("max_weight") @db.Decimal(8, 2)\n  baseCharge   Decimal  @map("base_charge") @db.Decimal(10, 2)\n  perKgCharge  Decimal  @default(0.00) @map("per_kg_charge") @db.Decimal(10, 2)\n  isActive     Boolean  @default(true) @map("is_active")\n  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  zone         Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade, map: "fk_pricing_rules_zone")\n\n  @@map("pricing_rules")\n}\n\nmodel ProofOfDelivery {\n  id                String          @id @default(uuid()) @db.Uuid\n  shipmentId        String          @unique @map("shipment_id") @db.Uuid\n  deliveryAttemptId String          @unique @map("delivery_attempt_id") @db.Uuid\n  recipientName     String          @map("recipient_name") @db.VarChar(255)\n  recipientPhone    String          @map("recipient_phone") @db.VarChar(50)\n  imageUrl          String?         @map("image_url") @db.VarChar(1000)\n  signatureUrl      String?         @map("signature_url") @db.VarChar(1000)\n  notes             String?         @db.Text\n  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  shipment          Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_pod_shipment")\n  deliveryAttempt   DeliveryAttempt @relation(fields: [deliveryAttemptId], references: [id], onDelete: Cascade, map: "fk_pod_attempt")\n\n  @@map("proof_of_deliveries")\n}\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Shipment {\n  id                 String                  @id @default(uuid()) @db.Uuid\n  trackingNumber     String                  @unique @map("tracking_number") @db.VarChar(50)\n  customerId         String                  @map("customer_id") @db.Uuid\n  pickupAddressId    String                  @map("pickup_address_id") @db.Uuid\n  deliveryAddressId  String                  @map("delivery_address_id") @db.Uuid\n  originHubId        String?                 @map("origin_hub_id") @db.Uuid\n  destinationHubId   String?                 @map("destination_hub_id") @db.Uuid\n  parcelType         String                  @map("parcel_type") @db.VarChar(50)\n  weight             Decimal                 @db.Decimal(8, 2)\n  description        String?                 @db.Text\n  deliveryType       String                  @default("STANDARD") @map("delivery_type") @db.VarChar(50)\n  status             ShipmentStatus          @default(PENDING_APPROVAL)\n  deliveryCharge     Decimal                 @default(0.00) @map("delivery_charge") @db.Decimal(10, 2)\n  paymentStatus      PaymentStatus           @default(PENDING) @map("payment_status")\n  scheduledPickupAt  DateTime?               @map("scheduled_pickup_at") @db.Timestamptz\n  createdAt          DateTime                @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt          DateTime                @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  customer           Customer                @relation(fields: [customerId], references: [id], onDelete: Restrict, map: "fk_shipments_customer")\n  pickupAddress      Address                 @relation("PickupAddressShipments", fields: [pickupAddressId], references: [id], onDelete: Restrict, map: "fk_shipments_pickup_address")\n  deliveryAddress    Address                 @relation("DeliveryAddressShipments", fields: [deliveryAddressId], references: [id], onDelete: Restrict, map: "fk_shipments_delivery_address")\n  originHub          Hub?                    @relation("OriginHubShipments", fields: [originHubId], references: [id], onDelete: Restrict, map: "fk_shipments_origin_hub")\n  destinationHub     Hub?                    @relation("DestinationHubShipments", fields: [destinationHubId], references: [id], onDelete: Restrict, map: "fk_shipments_dest_hub")\n  // Downstream Operations Relations\n  statusHistory      ShipmentStatusHistory[]\n  courierAssignments CourierParcel[]\n  hubTransfers       HubTransfer[]\n  deliveryAttempts   DeliveryAttempt[]\n  proofOfDelivery    ProofOfDelivery?\n  payment            Payment?\n  notifications      Notification[]\n\n  @@index([trackingNumber], map: "idx_shipments_tracking_number")\n  @@index([status], map: "idx_shipments_status")\n  @@index([customerId], map: "idx_shipments_customer")\n  @@map("shipments")\n}\n\nmodel ShipmentStatusHistory {\n  id         String         @id @default(uuid()) @db.Uuid\n  shipmentId String         @map("shipment_id") @db.Uuid\n  status     ShipmentStatus\n  location   String?        @db.VarChar(255)\n  note       String?        @db.Text\n  updatedBy  String?        @map("updated_by") @db.Uuid\n  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  shipment   Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_status_history_shipment")\n  updater    User?          @relation("UserStatusUpdates", fields: [updatedBy], references: [id], onDelete: SetNull, map: "fk_status_history_user")\n\n  @@index([shipmentId], map: "idx_shipment_history_shipment")\n  @@map("shipment_status_history")\n}\n\nmodel User {\n  id               String                  @id @default(uuid()) @db.Uuid\n  name             String                  @db.VarChar(255)\n  email            String                  @unique @db.VarChar(255)\n  password         String?                 @db.VarChar(255)\n  googleId         String?                 @unique @map("google_id")\n  authProvider     AuthProvider            @default(CREDENTIALS)\n  emailVerified    Boolean?                @default(false) @map("email_verified")\n  phone            String?                 @unique @db.VarChar(50)\n  role             UserRole                @default(CUSTOMER)\n  status           UserStatus              @default(ACTIVE)\n  createdAt        DateTime                @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt        DateTime                @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations (1:1 with Profiles)\n  customer         Customer?\n  courier          Courier?\n  // Operational Relations\n  statusUpdates    ShipmentStatusHistory[] @relation("UserStatusUpdates")\n  assignedCouriers CourierParcel[]         @relation("UserCourierAssignments")\n  createdTransfers HubTransfer[]           @relation("UserHubTransfers")\n  notifications    Notification[]\n\n  @@map("users")\n}\n\nmodel Zone {\n  id           String        @id @default(uuid()) @db.Uuid\n  name         String        @db.VarChar(100)\n  code         String        @unique @db.VarChar(50)\n  isActive     Boolean       @default(true) @map("is_active")\n  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  hubs         Hub[]\n  pricingRules PricingRule[]\n\n  @@map("zones")\n}\n',
+  "inlineSchema": 'model Address {\n  id                String     @id @default(uuid()) @db.Uuid\n  customerId        String     @map("customer_id") @db.Uuid\n  label             String?    @db.VarChar(50)\n  addressLine       String     @map("address_line") @db.Text\n  city              String     @db.VarChar(100)\n  area              String     @db.VarChar(100)\n  postalCode        String?    @map("postal_code") @db.VarChar(20)\n  latitude          Decimal?   @db.Decimal(10, 8)\n  longitude         Decimal?   @db.Decimal(11, 8)\n  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt         DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  customer          Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade, map: "fk_addresses_customer")\n  pickupShipments   Shipment[] @relation("PickupAddressShipments")\n  deliveryShipments Shipment[] @relation("DeliveryAddressShipments")\n\n  @@map("addresses")\n}\n\nmodel Courier {\n  id                 String              @id @default(uuid()) @db.Uuid\n  userId             String              @unique @map("user_id") @db.Uuid\n  hubId              String              @map("hub_id") @db.Uuid\n  vehicleType        String              @map("vehicle_type") @db.VarChar(50)\n  vehicleNumber      String              @map("vehicle_number") @db.VarChar(50)\n  availabilityStatus CourierAvailability @default(AVAILABLE) @map("availability_status")\n  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt          DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_couriers_user")\n  hub                Hub                 @relation(fields: [hubId], references: [id], onDelete: Restrict, map: "fk_couriers_hub")\n  assignments        CourierParcel[]\n  deliveryAttempts   DeliveryAttempt[]\n\n  @@map("couriers")\n}\n\nmodel CourierParcel {\n  id          String           @id @default(uuid()) @db.Uuid\n  shipmentId  String           @map("shipment_id") @db.Uuid\n  courierId   String           @map("courier_id") @db.Uuid\n  assignedBy  String?          @map("assigned_by") @db.Uuid\n  status      AssignmentStatus @default(PENDING)\n  assignedAt  DateTime         @default(now()) @map("assigned_at") @db.Timestamptz\n  acceptedAt  DateTime?        @map("accepted_at") @db.Timestamptz\n  completedAt DateTime?        @map("completed_at") @db.Timestamptz\n  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  shipment    Shipment         @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_assignments_shipment")\n  courier     Courier          @relation(fields: [courierId], references: [id], onDelete: Restrict, map: "fk_assignments_courier")\n  assigner    User?            @relation("UserCourierAssignments", fields: [assignedBy], references: [id], onDelete: SetNull, map: "fk_assignments_assigned_by")\n\n  @@index([shipmentId], map: "idx_courier_assignments_shipment")\n  @@index([courierId], map: "idx_courier_assignments_courier")\n  @@map("courier_assignments")\n}\n\nmodel Customer {\n  id        String     @id @default(uuid()) @db.Uuid\n  userId    String     @unique @map("user_id") @db.Uuid\n  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_customers_user")\n  addresses Address[]\n  shipments Shipment[]\n\n  @@map("customers")\n}\n\nmodel DeliveryAttempt {\n  id              String           @id @default(uuid()) @db.Uuid\n  shipmentId      String           @map("shipment_id") @db.Uuid\n  courierId       String           @map("courier_id") @db.Uuid\n  attemptNumber   Int              @default(1) @map("attempt_number")\n  status          AttemptStatus\n  failureReason   String?          @map("failure_reason") @db.VarChar(255)\n  notes           String?          @db.Text\n  attemptedAt     DateTime         @default(now()) @map("attempted_at") @db.Timestamptz\n  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  shipment        Shipment         @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_delivery_attempts_shipment")\n  courier         Courier          @relation(fields: [courierId], references: [id], onDelete: Restrict, map: "fk_delivery_attempts_courier")\n  proofOfDelivery ProofOfDelivery?\n\n  @@index([shipmentId], map: "idx_delivery_attempts_shipment")\n  @@map("delivery_attempts")\n}\n\nenum UserRole {\n  CUSTOMER\n  COURIER\n  HUB_MANAGER\n  OPERATIONS_MANAGER\n  ADMIN\n\n  @@map("user_role")\n}\n\nenum UserStatus {\n  ACTIVE\n  INACTIVE\n  SUSPENDED\n\n  @@map("user_status")\n}\n\nenum CourierAvailability {\n  AVAILABLE\n  BUSY\n  OFFLINE\n\n  @@map("courier_availability")\n}\n\nenum ShipmentStatus {\n  PENDING_APPROVAL\n  CREATED\n  COURIER_ASSIGNED\n  PICKUP_ASSIGNED\n  PICKED_UP\n  AT_ORIGIN_HUB\n  IN_TRANSIT\n  AT_DESTINATION_HUB\n  OUT_FOR_DELIVERY\n  DELIVERED\n  DELIVERY_FAILED\n  RESCHEDULED\n  RETURN_INITIATED\n  RETURN_IN_TRANSIT\n  RETURNED\n  CANCELLED\n\n  @@map("shipment_status")\n}\n\nenum AssignmentStatus {\n  PENDING\n  ACCEPTED\n  REJECTED\n  COMPLETED\n  CANCELLED\n\n  @@map("assignment_status")\n}\n\nenum TransferStatus {\n  PENDING\n  DISPATCHED\n  IN_TRANSIT\n  RECEIVED\n  CANCELLED\n\n  @@map("transfer_status")\n}\n\nenum AttemptStatus {\n  SUCCESS\n  FAILED\n\n  @@map("attempt_status")\n}\n\nenum PaymentStatus {\n  PENDING\n  PAID\n  FAILED\n  REFUNDED\n\n  @@map("payment_status")\n}\n\nenum AuthProvider {\n  GOOGLE\n  CREDENTIALS\n}\n\nenum ApplicationStatus {\n  PENDING\n  APPROVED\n  REJECTED\n\n  @@map("application_status")\n}\n\nmodel Hub {\n  id                   String            @id @default(uuid()) @db.Uuid\n  name                 String            @db.VarChar(150)\n  code                 String            @unique @db.VarChar(50)\n  zoneId               String            @map("zone_id") @db.Uuid\n  address              String            @db.Text\n  phone                String?           @db.VarChar(50)\n  isActive             Boolean           @default(true) @map("is_active")\n  createdAt            DateTime          @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt            DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  zone                 Zone              @relation(fields: [zoneId], references: [id], onDelete: Restrict, map: "fk_hubs_zone")\n  couriers             Courier[]\n  originShipments      Shipment[]        @relation("OriginHubShipments")\n  destinationShipments Shipment[]        @relation("DestinationHubShipments")\n  transfersFrom        HubTransfer[]     @relation("TransfersFromHub")\n  transfersTo          HubTransfer[]     @relation("TransfersToHub")\n  roleApplications     RoleApplication[]\n\n  @@map("hubs")\n}\n\nmodel HubTransfer {\n  id           String         @id @default(uuid()) @db.Uuid\n  shipmentId   String         @map("shipment_id") @db.Uuid\n  fromHubId    String         @map("from_hub_id") @db.Uuid\n  toHubId      String         @map("to_hub_id") @db.Uuid\n  status       TransferStatus @default(PENDING)\n  dispatchedAt DateTime?      @map("dispatched_at") @db.Timestamptz\n  receivedAt   DateTime?      @map("received_at") @db.Timestamptz\n  createdBy    String?        @map("created_by") @db.Uuid\n  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  shipment     Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_hub_transfers_shipment")\n  fromHub      Hub            @relation("TransfersFromHub", fields: [fromHubId], references: [id], onDelete: Restrict, map: "fk_hub_transfers_from_hub")\n  toHub        Hub            @relation("TransfersToHub", fields: [toHubId], references: [id], onDelete: Restrict, map: "fk_hub_transfers_to_hub")\n  creator      User?          @relation("UserHubTransfers", fields: [createdBy], references: [id], onDelete: SetNull, map: "fk_hub_transfers_created_by")\n\n  @@index([shipmentId], map: "idx_hub_transfers_shipment")\n  @@map("hub_transfers")\n}\n\nmodel Notification {\n  id         String    @id @default(uuid()) @db.Uuid\n  userId     String    @map("user_id") @db.Uuid\n  shipmentId String?   @map("shipment_id") @db.Uuid\n  title      String    @db.VarChar(255)\n  message    String    @db.Text\n  type       String    @db.VarChar(50)\n  isRead     Boolean   @default(false) @map("is_read")\n  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_notifications_user")\n  shipment   Shipment? @relation(fields: [shipmentId], references: [id], onDelete: SetNull, map: "fk_notifications_shipment")\n\n  @@index([userId], map: "idx_notifications_user")\n  @@map("notifications")\n}\n\nmodel Payment {\n  id            String        @id @default(uuid()) @db.Uuid\n  shipmentId    String        @unique @map("shipment_id") @db.Uuid\n  amount        Decimal       @db.Decimal(10, 2)\n  currency      String        @default("BDT") @db.VarChar(10)\n  provider      String        @db.VarChar(50)\n  transactionId String?       @unique @map("transaction_id") @db.VarChar(255)\n  status        PaymentStatus @default(PENDING)\n  paidAt        DateTime?     @map("paid_at") @db.Timestamptz\n  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  shipment      Shipment      @relation(fields: [shipmentId], references: [id], onDelete: Restrict, map: "fk_payments_shipment")\n\n  @@map("payments")\n}\n\nmodel PricingRule {\n  id           String   @id @default(uuid()) @db.Uuid\n  zoneId       String   @map("zone_id") @db.Uuid\n  deliveryType String   @default("STANDARD") @map("delivery_type") @db.VarChar(50)\n  minWeight    Decimal  @default(0.00) @map("min_weight") @db.Decimal(8, 2)\n  maxWeight    Decimal  @map("max_weight") @db.Decimal(8, 2)\n  baseCharge   Decimal  @map("base_charge") @db.Decimal(10, 2)\n  perKgCharge  Decimal  @default(0.00) @map("per_kg_charge") @db.Decimal(10, 2)\n  isActive     Boolean  @default(true) @map("is_active")\n  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  zone         Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade, map: "fk_pricing_rules_zone")\n\n  @@map("pricing_rules")\n}\n\nmodel ProofOfDelivery {\n  id                String          @id @default(uuid()) @db.Uuid\n  shipmentId        String          @unique @map("shipment_id") @db.Uuid\n  deliveryAttemptId String          @unique @map("delivery_attempt_id") @db.Uuid\n  recipientName     String          @map("recipient_name") @db.VarChar(255)\n  recipientPhone    String          @map("recipient_phone") @db.VarChar(50)\n  imageUrl          String?         @map("image_url") @db.VarChar(1000)\n  signatureUrl      String?         @map("signature_url") @db.VarChar(1000)\n  notes             String?         @db.Text\n  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  shipment          Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_pod_shipment")\n  deliveryAttempt   DeliveryAttempt @relation(fields: [deliveryAttemptId], references: [id], onDelete: Cascade, map: "fk_pod_attempt")\n\n  @@map("proof_of_deliveries")\n}\n\nmodel RoleApplication {\n  id              String            @id @default(uuid()) @db.Uuid\n  userId          String            @map("user_id") @db.Uuid\n  desiredRole     UserRole          @map("desired_role")\n  status          ApplicationStatus @default(PENDING)\n  notes           String?           @db.Text\n  experience      String?           @db.Text\n  vehicleType     String?           @map("vehicle_type") @db.VarChar(50)\n  vehicleNumber   String?           @map("vehicle_number") @db.VarChar(50)\n  hubId           String?           @map("hub_id") @db.Uuid\n  reviewedBy      String?           @map("reviewed_by") @db.Uuid\n  reviewedAt      DateTime?         @map("reviewed_at") @db.Timestamptz\n  rejectionReason String?           @map("rejection_reason") @db.Text\n  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n\n  // Relations\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_role_applications_user")\n  hub  Hub? @relation(fields: [hubId], references: [id], onDelete: SetNull, map: "fk_role_applications_hub")\n\n  @@map("role_applications")\n}\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Shipment {\n  id                 String                  @id @default(uuid()) @db.Uuid\n  trackingNumber     String                  @unique @map("tracking_number") @db.VarChar(50)\n  customerId         String                  @map("customer_id") @db.Uuid\n  pickupAddressId    String                  @map("pickup_address_id") @db.Uuid\n  deliveryAddressId  String                  @map("delivery_address_id") @db.Uuid\n  originHubId        String?                 @map("origin_hub_id") @db.Uuid\n  destinationHubId   String?                 @map("destination_hub_id") @db.Uuid\n  parcelType         String                  @map("parcel_type") @db.VarChar(50)\n  weight             Decimal                 @db.Decimal(8, 2)\n  description        String?                 @db.Text\n  deliveryType       String                  @default("STANDARD") @map("delivery_type") @db.VarChar(50)\n  status             ShipmentStatus          @default(PENDING_APPROVAL)\n  deliveryCharge     Decimal                 @default(0.00) @map("delivery_charge") @db.Decimal(10, 2)\n  paymentStatus      PaymentStatus           @default(PENDING) @map("payment_status")\n  scheduledPickupAt  DateTime?               @map("scheduled_pickup_at") @db.Timestamptz\n  createdAt          DateTime                @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt          DateTime                @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  customer           Customer                @relation(fields: [customerId], references: [id], onDelete: Restrict, map: "fk_shipments_customer")\n  pickupAddress      Address                 @relation("PickupAddressShipments", fields: [pickupAddressId], references: [id], onDelete: Restrict, map: "fk_shipments_pickup_address")\n  deliveryAddress    Address                 @relation("DeliveryAddressShipments", fields: [deliveryAddressId], references: [id], onDelete: Restrict, map: "fk_shipments_delivery_address")\n  originHub          Hub?                    @relation("OriginHubShipments", fields: [originHubId], references: [id], onDelete: Restrict, map: "fk_shipments_origin_hub")\n  destinationHub     Hub?                    @relation("DestinationHubShipments", fields: [destinationHubId], references: [id], onDelete: Restrict, map: "fk_shipments_dest_hub")\n  // Downstream Operations Relations\n  statusHistory      ShipmentStatusHistory[]\n  courierAssignments CourierParcel[]\n  hubTransfers       HubTransfer[]\n  deliveryAttempts   DeliveryAttempt[]\n  proofOfDelivery    ProofOfDelivery?\n  payment            Payment?\n  notifications      Notification[]\n\n  @@index([trackingNumber], map: "idx_shipments_tracking_number")\n  @@index([status], map: "idx_shipments_status")\n  @@index([customerId], map: "idx_shipments_customer")\n  @@map("shipments")\n}\n\nmodel ShipmentStatusHistory {\n  id         String         @id @default(uuid()) @db.Uuid\n  shipmentId String         @map("shipment_id") @db.Uuid\n  status     ShipmentStatus\n  location   String?        @db.VarChar(255)\n  note       String?        @db.Text\n  updatedBy  String?        @map("updated_by") @db.Uuid\n  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz\n  // Relations\n  shipment   Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade, map: "fk_status_history_shipment")\n  updater    User?          @relation("UserStatusUpdates", fields: [updatedBy], references: [id], onDelete: SetNull, map: "fk_status_history_user")\n\n  @@index([shipmentId], map: "idx_shipment_history_shipment")\n  @@map("shipment_status_history")\n}\n\nmodel User {\n  id               String                  @id @default(uuid()) @db.Uuid\n  name             String                  @db.VarChar(255)\n  email            String                  @unique @db.VarChar(255)\n  password         String?                 @db.VarChar(255)\n  googleId         String?                 @unique @map("google_id")\n  authProvider     AuthProvider            @default(CREDENTIALS)\n  emailVerified    Boolean?                @default(false) @map("email_verified")\n  phone            String?                 @unique @db.VarChar(50)\n  role             UserRole                @default(CUSTOMER)\n  status           UserStatus              @default(ACTIVE)\n  profilePicture   String?                 @map("profile_picture") @db.Text\n  createdAt        DateTime                @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt        DateTime                @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations (1:1 with Profiles)\n  customer         Customer?\n  courier          Courier?\n  roleApplications RoleApplication[]\n  // Operational Relations\n  statusUpdates    ShipmentStatusHistory[] @relation("UserStatusUpdates")\n  assignedCouriers CourierParcel[]         @relation("UserCourierAssignments")\n  createdTransfers HubTransfer[]           @relation("UserHubTransfers")\n  notifications    Notification[]\n\n  @@map("users")\n}\n\nmodel Zone {\n  id           String        @id @default(uuid()) @db.Uuid\n  name         String        @db.VarChar(100)\n  code         String        @unique @db.VarChar(50)\n  isActive     Boolean       @default(true) @map("is_active")\n  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz\n  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz\n  // Relations\n  hubs         Hub[]\n  pricingRules PricingRule[]\n\n  @@map("zones")\n}\n',
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -35,10 +98,10 @@ var config = {
     "graph": ""
   }
 };
-config.runtimeDataModel = JSON.parse('{"models":{"Address":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"customerId","kind":"scalar","type":"String","dbName":"customer_id"},{"name":"label","kind":"scalar","type":"String"},{"name":"addressLine","kind":"scalar","type":"String","dbName":"address_line"},{"name":"city","kind":"scalar","type":"String"},{"name":"area","kind":"scalar","type":"String"},{"name":"postalCode","kind":"scalar","type":"String","dbName":"postal_code"},{"name":"latitude","kind":"scalar","type":"Decimal"},{"name":"longitude","kind":"scalar","type":"Decimal"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"customer","kind":"object","type":"Customer","relationName":"AddressToCustomer"},{"name":"pickupShipments","kind":"object","type":"Shipment","relationName":"PickupAddressShipments"},{"name":"deliveryShipments","kind":"object","type":"Shipment","relationName":"DeliveryAddressShipments"}],"dbName":"addresses","schema":null},"Courier":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String","dbName":"user_id"},{"name":"hubId","kind":"scalar","type":"String","dbName":"hub_id"},{"name":"vehicleType","kind":"scalar","type":"String","dbName":"vehicle_type"},{"name":"vehicleNumber","kind":"scalar","type":"String","dbName":"vehicle_number"},{"name":"availabilityStatus","kind":"enum","type":"CourierAvailability","dbName":"availability_status"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"user","kind":"object","type":"User","relationName":"CourierToUser"},{"name":"hub","kind":"object","type":"Hub","relationName":"CourierToHub"},{"name":"assignments","kind":"object","type":"CourierParcel","relationName":"CourierToCourierParcel"},{"name":"deliveryAttempts","kind":"object","type":"DeliveryAttempt","relationName":"CourierToDeliveryAttempt"}],"dbName":"couriers","schema":null},"CourierParcel":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"courierId","kind":"scalar","type":"String","dbName":"courier_id"},{"name":"assignedBy","kind":"scalar","type":"String","dbName":"assigned_by"},{"name":"status","kind":"enum","type":"AssignmentStatus"},{"name":"assignedAt","kind":"scalar","type":"DateTime","dbName":"assigned_at"},{"name":"acceptedAt","kind":"scalar","type":"DateTime","dbName":"accepted_at"},{"name":"completedAt","kind":"scalar","type":"DateTime","dbName":"completed_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"CourierParcelToShipment"},{"name":"courier","kind":"object","type":"Courier","relationName":"CourierToCourierParcel"},{"name":"assigner","kind":"object","type":"User","relationName":"UserCourierAssignments"}],"dbName":"courier_assignments","schema":null},"Customer":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String","dbName":"user_id"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"user","kind":"object","type":"User","relationName":"CustomerToUser"},{"name":"addresses","kind":"object","type":"Address","relationName":"AddressToCustomer"},{"name":"shipments","kind":"object","type":"Shipment","relationName":"CustomerToShipment"}],"dbName":"customers","schema":null},"DeliveryAttempt":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"courierId","kind":"scalar","type":"String","dbName":"courier_id"},{"name":"attemptNumber","kind":"scalar","type":"Int","dbName":"attempt_number"},{"name":"status","kind":"enum","type":"AttemptStatus"},{"name":"failureReason","kind":"scalar","type":"String","dbName":"failure_reason"},{"name":"notes","kind":"scalar","type":"String"},{"name":"attemptedAt","kind":"scalar","type":"DateTime","dbName":"attempted_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"DeliveryAttemptToShipment"},{"name":"courier","kind":"object","type":"Courier","relationName":"CourierToDeliveryAttempt"},{"name":"proofOfDelivery","kind":"object","type":"ProofOfDelivery","relationName":"DeliveryAttemptToProofOfDelivery"}],"dbName":"delivery_attempts","schema":null},"Hub":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"zoneId","kind":"scalar","type":"String","dbName":"zone_id"},{"name":"address","kind":"scalar","type":"String"},{"name":"phone","kind":"scalar","type":"String"},{"name":"isActive","kind":"scalar","type":"Boolean","dbName":"is_active"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"zone","kind":"object","type":"Zone","relationName":"HubToZone"},{"name":"couriers","kind":"object","type":"Courier","relationName":"CourierToHub"},{"name":"originShipments","kind":"object","type":"Shipment","relationName":"OriginHubShipments"},{"name":"destinationShipments","kind":"object","type":"Shipment","relationName":"DestinationHubShipments"},{"name":"transfersFrom","kind":"object","type":"HubTransfer","relationName":"TransfersFromHub"},{"name":"transfersTo","kind":"object","type":"HubTransfer","relationName":"TransfersToHub"}],"dbName":"hubs","schema":null},"HubTransfer":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"fromHubId","kind":"scalar","type":"String","dbName":"from_hub_id"},{"name":"toHubId","kind":"scalar","type":"String","dbName":"to_hub_id"},{"name":"status","kind":"enum","type":"TransferStatus"},{"name":"dispatchedAt","kind":"scalar","type":"DateTime","dbName":"dispatched_at"},{"name":"receivedAt","kind":"scalar","type":"DateTime","dbName":"received_at"},{"name":"createdBy","kind":"scalar","type":"String","dbName":"created_by"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"HubTransferToShipment"},{"name":"fromHub","kind":"object","type":"Hub","relationName":"TransfersFromHub"},{"name":"toHub","kind":"object","type":"Hub","relationName":"TransfersToHub"},{"name":"creator","kind":"object","type":"User","relationName":"UserHubTransfers"}],"dbName":"hub_transfers","schema":null},"Notification":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String","dbName":"user_id"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"title","kind":"scalar","type":"String"},{"name":"message","kind":"scalar","type":"String"},{"name":"type","kind":"scalar","type":"String"},{"name":"isRead","kind":"scalar","type":"Boolean","dbName":"is_read"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"user","kind":"object","type":"User","relationName":"NotificationToUser"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"NotificationToShipment"}],"dbName":"notifications","schema":null},"Payment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"amount","kind":"scalar","type":"Decimal"},{"name":"currency","kind":"scalar","type":"String"},{"name":"provider","kind":"scalar","type":"String"},{"name":"transactionId","kind":"scalar","type":"String","dbName":"transaction_id"},{"name":"status","kind":"enum","type":"PaymentStatus"},{"name":"paidAt","kind":"scalar","type":"DateTime","dbName":"paid_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"PaymentToShipment"}],"dbName":"payments","schema":null},"PricingRule":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"zoneId","kind":"scalar","type":"String","dbName":"zone_id"},{"name":"deliveryType","kind":"scalar","type":"String","dbName":"delivery_type"},{"name":"minWeight","kind":"scalar","type":"Decimal","dbName":"min_weight"},{"name":"maxWeight","kind":"scalar","type":"Decimal","dbName":"max_weight"},{"name":"baseCharge","kind":"scalar","type":"Decimal","dbName":"base_charge"},{"name":"perKgCharge","kind":"scalar","type":"Decimal","dbName":"per_kg_charge"},{"name":"isActive","kind":"scalar","type":"Boolean","dbName":"is_active"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"zone","kind":"object","type":"Zone","relationName":"PricingRuleToZone"}],"dbName":"pricing_rules","schema":null},"ProofOfDelivery":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"deliveryAttemptId","kind":"scalar","type":"String","dbName":"delivery_attempt_id"},{"name":"recipientName","kind":"scalar","type":"String","dbName":"recipient_name"},{"name":"recipientPhone","kind":"scalar","type":"String","dbName":"recipient_phone"},{"name":"imageUrl","kind":"scalar","type":"String","dbName":"image_url"},{"name":"signatureUrl","kind":"scalar","type":"String","dbName":"signature_url"},{"name":"notes","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"ProofOfDeliveryToShipment"},{"name":"deliveryAttempt","kind":"object","type":"DeliveryAttempt","relationName":"DeliveryAttemptToProofOfDelivery"}],"dbName":"proof_of_deliveries","schema":null},"Shipment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"trackingNumber","kind":"scalar","type":"String","dbName":"tracking_number"},{"name":"customerId","kind":"scalar","type":"String","dbName":"customer_id"},{"name":"pickupAddressId","kind":"scalar","type":"String","dbName":"pickup_address_id"},{"name":"deliveryAddressId","kind":"scalar","type":"String","dbName":"delivery_address_id"},{"name":"originHubId","kind":"scalar","type":"String","dbName":"origin_hub_id"},{"name":"destinationHubId","kind":"scalar","type":"String","dbName":"destination_hub_id"},{"name":"parcelType","kind":"scalar","type":"String","dbName":"parcel_type"},{"name":"weight","kind":"scalar","type":"Decimal"},{"name":"description","kind":"scalar","type":"String"},{"name":"deliveryType","kind":"scalar","type":"String","dbName":"delivery_type"},{"name":"status","kind":"enum","type":"ShipmentStatus"},{"name":"deliveryCharge","kind":"scalar","type":"Decimal","dbName":"delivery_charge"},{"name":"paymentStatus","kind":"enum","type":"PaymentStatus","dbName":"payment_status"},{"name":"scheduledPickupAt","kind":"scalar","type":"DateTime","dbName":"scheduled_pickup_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"customer","kind":"object","type":"Customer","relationName":"CustomerToShipment"},{"name":"pickupAddress","kind":"object","type":"Address","relationName":"PickupAddressShipments"},{"name":"deliveryAddress","kind":"object","type":"Address","relationName":"DeliveryAddressShipments"},{"name":"originHub","kind":"object","type":"Hub","relationName":"OriginHubShipments"},{"name":"destinationHub","kind":"object","type":"Hub","relationName":"DestinationHubShipments"},{"name":"statusHistory","kind":"object","type":"ShipmentStatusHistory","relationName":"ShipmentToShipmentStatusHistory"},{"name":"courierAssignments","kind":"object","type":"CourierParcel","relationName":"CourierParcelToShipment"},{"name":"hubTransfers","kind":"object","type":"HubTransfer","relationName":"HubTransferToShipment"},{"name":"deliveryAttempts","kind":"object","type":"DeliveryAttempt","relationName":"DeliveryAttemptToShipment"},{"name":"proofOfDelivery","kind":"object","type":"ProofOfDelivery","relationName":"ProofOfDeliveryToShipment"},{"name":"payment","kind":"object","type":"Payment","relationName":"PaymentToShipment"},{"name":"notifications","kind":"object","type":"Notification","relationName":"NotificationToShipment"}],"dbName":"shipments","schema":null},"ShipmentStatusHistory":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"status","kind":"enum","type":"ShipmentStatus"},{"name":"location","kind":"scalar","type":"String"},{"name":"note","kind":"scalar","type":"String"},{"name":"updatedBy","kind":"scalar","type":"String","dbName":"updated_by"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"ShipmentToShipmentStatusHistory"},{"name":"updater","kind":"object","type":"User","relationName":"UserStatusUpdates"}],"dbName":"shipment_status_history","schema":null},"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"password","kind":"scalar","type":"String"},{"name":"googleId","kind":"scalar","type":"String","dbName":"google_id"},{"name":"authProvider","kind":"enum","type":"AuthProvider"},{"name":"emailVerified","kind":"scalar","type":"Boolean","dbName":"email_verified"},{"name":"phone","kind":"scalar","type":"String"},{"name":"role","kind":"enum","type":"UserRole"},{"name":"status","kind":"enum","type":"UserStatus"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"customer","kind":"object","type":"Customer","relationName":"CustomerToUser"},{"name":"courier","kind":"object","type":"Courier","relationName":"CourierToUser"},{"name":"statusUpdates","kind":"object","type":"ShipmentStatusHistory","relationName":"UserStatusUpdates"},{"name":"assignedCouriers","kind":"object","type":"CourierParcel","relationName":"UserCourierAssignments"},{"name":"createdTransfers","kind":"object","type":"HubTransfer","relationName":"UserHubTransfers"},{"name":"notifications","kind":"object","type":"Notification","relationName":"NotificationToUser"}],"dbName":"users","schema":null},"Zone":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"isActive","kind":"scalar","type":"Boolean","dbName":"is_active"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"hubs","kind":"object","type":"Hub","relationName":"HubToZone"},{"name":"pricingRules","kind":"object","type":"PricingRule","relationName":"PricingRuleToZone"}],"dbName":"zones","schema":null}},"enums":{},"types":{}}');
+config.runtimeDataModel = JSON.parse('{"models":{"Address":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"customerId","kind":"scalar","type":"String","dbName":"customer_id"},{"name":"label","kind":"scalar","type":"String"},{"name":"addressLine","kind":"scalar","type":"String","dbName":"address_line"},{"name":"city","kind":"scalar","type":"String"},{"name":"area","kind":"scalar","type":"String"},{"name":"postalCode","kind":"scalar","type":"String","dbName":"postal_code"},{"name":"latitude","kind":"scalar","type":"Decimal"},{"name":"longitude","kind":"scalar","type":"Decimal"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"customer","kind":"object","type":"Customer","relationName":"AddressToCustomer"},{"name":"pickupShipments","kind":"object","type":"Shipment","relationName":"PickupAddressShipments"},{"name":"deliveryShipments","kind":"object","type":"Shipment","relationName":"DeliveryAddressShipments"}],"dbName":"addresses","schema":null},"Courier":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String","dbName":"user_id"},{"name":"hubId","kind":"scalar","type":"String","dbName":"hub_id"},{"name":"vehicleType","kind":"scalar","type":"String","dbName":"vehicle_type"},{"name":"vehicleNumber","kind":"scalar","type":"String","dbName":"vehicle_number"},{"name":"availabilityStatus","kind":"enum","type":"CourierAvailability","dbName":"availability_status"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"user","kind":"object","type":"User","relationName":"CourierToUser"},{"name":"hub","kind":"object","type":"Hub","relationName":"CourierToHub"},{"name":"assignments","kind":"object","type":"CourierParcel","relationName":"CourierToCourierParcel"},{"name":"deliveryAttempts","kind":"object","type":"DeliveryAttempt","relationName":"CourierToDeliveryAttempt"}],"dbName":"couriers","schema":null},"CourierParcel":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"courierId","kind":"scalar","type":"String","dbName":"courier_id"},{"name":"assignedBy","kind":"scalar","type":"String","dbName":"assigned_by"},{"name":"status","kind":"enum","type":"AssignmentStatus"},{"name":"assignedAt","kind":"scalar","type":"DateTime","dbName":"assigned_at"},{"name":"acceptedAt","kind":"scalar","type":"DateTime","dbName":"accepted_at"},{"name":"completedAt","kind":"scalar","type":"DateTime","dbName":"completed_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"CourierParcelToShipment"},{"name":"courier","kind":"object","type":"Courier","relationName":"CourierToCourierParcel"},{"name":"assigner","kind":"object","type":"User","relationName":"UserCourierAssignments"}],"dbName":"courier_assignments","schema":null},"Customer":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String","dbName":"user_id"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"user","kind":"object","type":"User","relationName":"CustomerToUser"},{"name":"addresses","kind":"object","type":"Address","relationName":"AddressToCustomer"},{"name":"shipments","kind":"object","type":"Shipment","relationName":"CustomerToShipment"}],"dbName":"customers","schema":null},"DeliveryAttempt":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"courierId","kind":"scalar","type":"String","dbName":"courier_id"},{"name":"attemptNumber","kind":"scalar","type":"Int","dbName":"attempt_number"},{"name":"status","kind":"enum","type":"AttemptStatus"},{"name":"failureReason","kind":"scalar","type":"String","dbName":"failure_reason"},{"name":"notes","kind":"scalar","type":"String"},{"name":"attemptedAt","kind":"scalar","type":"DateTime","dbName":"attempted_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"DeliveryAttemptToShipment"},{"name":"courier","kind":"object","type":"Courier","relationName":"CourierToDeliveryAttempt"},{"name":"proofOfDelivery","kind":"object","type":"ProofOfDelivery","relationName":"DeliveryAttemptToProofOfDelivery"}],"dbName":"delivery_attempts","schema":null},"Hub":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"zoneId","kind":"scalar","type":"String","dbName":"zone_id"},{"name":"address","kind":"scalar","type":"String"},{"name":"phone","kind":"scalar","type":"String"},{"name":"isActive","kind":"scalar","type":"Boolean","dbName":"is_active"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"zone","kind":"object","type":"Zone","relationName":"HubToZone"},{"name":"couriers","kind":"object","type":"Courier","relationName":"CourierToHub"},{"name":"originShipments","kind":"object","type":"Shipment","relationName":"OriginHubShipments"},{"name":"destinationShipments","kind":"object","type":"Shipment","relationName":"DestinationHubShipments"},{"name":"transfersFrom","kind":"object","type":"HubTransfer","relationName":"TransfersFromHub"},{"name":"transfersTo","kind":"object","type":"HubTransfer","relationName":"TransfersToHub"},{"name":"roleApplications","kind":"object","type":"RoleApplication","relationName":"HubToRoleApplication"}],"dbName":"hubs","schema":null},"HubTransfer":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"fromHubId","kind":"scalar","type":"String","dbName":"from_hub_id"},{"name":"toHubId","kind":"scalar","type":"String","dbName":"to_hub_id"},{"name":"status","kind":"enum","type":"TransferStatus"},{"name":"dispatchedAt","kind":"scalar","type":"DateTime","dbName":"dispatched_at"},{"name":"receivedAt","kind":"scalar","type":"DateTime","dbName":"received_at"},{"name":"createdBy","kind":"scalar","type":"String","dbName":"created_by"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"HubTransferToShipment"},{"name":"fromHub","kind":"object","type":"Hub","relationName":"TransfersFromHub"},{"name":"toHub","kind":"object","type":"Hub","relationName":"TransfersToHub"},{"name":"creator","kind":"object","type":"User","relationName":"UserHubTransfers"}],"dbName":"hub_transfers","schema":null},"Notification":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String","dbName":"user_id"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"title","kind":"scalar","type":"String"},{"name":"message","kind":"scalar","type":"String"},{"name":"type","kind":"scalar","type":"String"},{"name":"isRead","kind":"scalar","type":"Boolean","dbName":"is_read"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"user","kind":"object","type":"User","relationName":"NotificationToUser"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"NotificationToShipment"}],"dbName":"notifications","schema":null},"Payment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"amount","kind":"scalar","type":"Decimal"},{"name":"currency","kind":"scalar","type":"String"},{"name":"provider","kind":"scalar","type":"String"},{"name":"transactionId","kind":"scalar","type":"String","dbName":"transaction_id"},{"name":"status","kind":"enum","type":"PaymentStatus"},{"name":"paidAt","kind":"scalar","type":"DateTime","dbName":"paid_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"PaymentToShipment"}],"dbName":"payments","schema":null},"PricingRule":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"zoneId","kind":"scalar","type":"String","dbName":"zone_id"},{"name":"deliveryType","kind":"scalar","type":"String","dbName":"delivery_type"},{"name":"minWeight","kind":"scalar","type":"Decimal","dbName":"min_weight"},{"name":"maxWeight","kind":"scalar","type":"Decimal","dbName":"max_weight"},{"name":"baseCharge","kind":"scalar","type":"Decimal","dbName":"base_charge"},{"name":"perKgCharge","kind":"scalar","type":"Decimal","dbName":"per_kg_charge"},{"name":"isActive","kind":"scalar","type":"Boolean","dbName":"is_active"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"zone","kind":"object","type":"Zone","relationName":"PricingRuleToZone"}],"dbName":"pricing_rules","schema":null},"ProofOfDelivery":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"deliveryAttemptId","kind":"scalar","type":"String","dbName":"delivery_attempt_id"},{"name":"recipientName","kind":"scalar","type":"String","dbName":"recipient_name"},{"name":"recipientPhone","kind":"scalar","type":"String","dbName":"recipient_phone"},{"name":"imageUrl","kind":"scalar","type":"String","dbName":"image_url"},{"name":"signatureUrl","kind":"scalar","type":"String","dbName":"signature_url"},{"name":"notes","kind":"scalar","type":"String"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"ProofOfDeliveryToShipment"},{"name":"deliveryAttempt","kind":"object","type":"DeliveryAttempt","relationName":"DeliveryAttemptToProofOfDelivery"}],"dbName":"proof_of_deliveries","schema":null},"RoleApplication":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String","dbName":"user_id"},{"name":"desiredRole","kind":"enum","type":"UserRole","dbName":"desired_role"},{"name":"status","kind":"enum","type":"ApplicationStatus"},{"name":"notes","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"String"},{"name":"vehicleType","kind":"scalar","type":"String","dbName":"vehicle_type"},{"name":"vehicleNumber","kind":"scalar","type":"String","dbName":"vehicle_number"},{"name":"hubId","kind":"scalar","type":"String","dbName":"hub_id"},{"name":"reviewedBy","kind":"scalar","type":"String","dbName":"reviewed_by"},{"name":"reviewedAt","kind":"scalar","type":"DateTime","dbName":"reviewed_at"},{"name":"rejectionReason","kind":"scalar","type":"String","dbName":"rejection_reason"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"user","kind":"object","type":"User","relationName":"RoleApplicationToUser"},{"name":"hub","kind":"object","type":"Hub","relationName":"HubToRoleApplication"}],"dbName":"role_applications","schema":null},"Shipment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"trackingNumber","kind":"scalar","type":"String","dbName":"tracking_number"},{"name":"customerId","kind":"scalar","type":"String","dbName":"customer_id"},{"name":"pickupAddressId","kind":"scalar","type":"String","dbName":"pickup_address_id"},{"name":"deliveryAddressId","kind":"scalar","type":"String","dbName":"delivery_address_id"},{"name":"originHubId","kind":"scalar","type":"String","dbName":"origin_hub_id"},{"name":"destinationHubId","kind":"scalar","type":"String","dbName":"destination_hub_id"},{"name":"parcelType","kind":"scalar","type":"String","dbName":"parcel_type"},{"name":"weight","kind":"scalar","type":"Decimal"},{"name":"description","kind":"scalar","type":"String"},{"name":"deliveryType","kind":"scalar","type":"String","dbName":"delivery_type"},{"name":"status","kind":"enum","type":"ShipmentStatus"},{"name":"deliveryCharge","kind":"scalar","type":"Decimal","dbName":"delivery_charge"},{"name":"paymentStatus","kind":"enum","type":"PaymentStatus","dbName":"payment_status"},{"name":"scheduledPickupAt","kind":"scalar","type":"DateTime","dbName":"scheduled_pickup_at"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"customer","kind":"object","type":"Customer","relationName":"CustomerToShipment"},{"name":"pickupAddress","kind":"object","type":"Address","relationName":"PickupAddressShipments"},{"name":"deliveryAddress","kind":"object","type":"Address","relationName":"DeliveryAddressShipments"},{"name":"originHub","kind":"object","type":"Hub","relationName":"OriginHubShipments"},{"name":"destinationHub","kind":"object","type":"Hub","relationName":"DestinationHubShipments"},{"name":"statusHistory","kind":"object","type":"ShipmentStatusHistory","relationName":"ShipmentToShipmentStatusHistory"},{"name":"courierAssignments","kind":"object","type":"CourierParcel","relationName":"CourierParcelToShipment"},{"name":"hubTransfers","kind":"object","type":"HubTransfer","relationName":"HubTransferToShipment"},{"name":"deliveryAttempts","kind":"object","type":"DeliveryAttempt","relationName":"DeliveryAttemptToShipment"},{"name":"proofOfDelivery","kind":"object","type":"ProofOfDelivery","relationName":"ProofOfDeliveryToShipment"},{"name":"payment","kind":"object","type":"Payment","relationName":"PaymentToShipment"},{"name":"notifications","kind":"object","type":"Notification","relationName":"NotificationToShipment"}],"dbName":"shipments","schema":null},"ShipmentStatusHistory":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"shipmentId","kind":"scalar","type":"String","dbName":"shipment_id"},{"name":"status","kind":"enum","type":"ShipmentStatus"},{"name":"location","kind":"scalar","type":"String"},{"name":"note","kind":"scalar","type":"String"},{"name":"updatedBy","kind":"scalar","type":"String","dbName":"updated_by"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"shipment","kind":"object","type":"Shipment","relationName":"ShipmentToShipmentStatusHistory"},{"name":"updater","kind":"object","type":"User","relationName":"UserStatusUpdates"}],"dbName":"shipment_status_history","schema":null},"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"password","kind":"scalar","type":"String"},{"name":"googleId","kind":"scalar","type":"String","dbName":"google_id"},{"name":"authProvider","kind":"enum","type":"AuthProvider"},{"name":"emailVerified","kind":"scalar","type":"Boolean","dbName":"email_verified"},{"name":"phone","kind":"scalar","type":"String"},{"name":"role","kind":"enum","type":"UserRole"},{"name":"status","kind":"enum","type":"UserStatus"},{"name":"profilePicture","kind":"scalar","type":"String","dbName":"profile_picture"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"customer","kind":"object","type":"Customer","relationName":"CustomerToUser"},{"name":"courier","kind":"object","type":"Courier","relationName":"CourierToUser"},{"name":"roleApplications","kind":"object","type":"RoleApplication","relationName":"RoleApplicationToUser"},{"name":"statusUpdates","kind":"object","type":"ShipmentStatusHistory","relationName":"UserStatusUpdates"},{"name":"assignedCouriers","kind":"object","type":"CourierParcel","relationName":"UserCourierAssignments"},{"name":"createdTransfers","kind":"object","type":"HubTransfer","relationName":"UserHubTransfers"},{"name":"notifications","kind":"object","type":"Notification","relationName":"NotificationToUser"}],"dbName":"users","schema":null},"Zone":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"isActive","kind":"scalar","type":"Boolean","dbName":"is_active"},{"name":"createdAt","kind":"scalar","type":"DateTime","dbName":"created_at"},{"name":"updatedAt","kind":"scalar","type":"DateTime","dbName":"updated_at"},{"name":"hubs","kind":"object","type":"Hub","relationName":"HubToZone"},{"name":"pricingRules","kind":"object","type":"PricingRule","relationName":"PricingRuleToZone"}],"dbName":"zones","schema":null}},"enums":{},"types":{}}');
 config.parameterizationSchema = {
-  strings: JSON.parse('["where","customer","user","orderBy","cursor","hubs","zone","pricingRules","_count","couriers","pickupAddress","deliveryAddress","originHub","destinationHub","shipment","updater","statusHistory","courier","assigner","courierAssignments","fromHub","toHub","creator","hubTransfers","deliveryAttempt","proofOfDelivery","deliveryAttempts","payment","notifications","originShipments","destinationShipments","transfersFrom","transfersTo","hub","assignments","statusUpdates","assignedCouriers","createdTransfers","addresses","shipments","pickupShipments","deliveryShipments","Address.findUnique","Address.findUniqueOrThrow","Address.findFirst","Address.findFirstOrThrow","Address.findMany","data","Address.createOne","Address.createMany","Address.createManyAndReturn","Address.updateOne","Address.updateMany","Address.updateManyAndReturn","create","update","Address.upsertOne","Address.deleteOne","Address.deleteMany","having","_avg","_sum","_min","_max","Address.groupBy","Address.aggregate","Courier.findUnique","Courier.findUniqueOrThrow","Courier.findFirst","Courier.findFirstOrThrow","Courier.findMany","Courier.createOne","Courier.createMany","Courier.createManyAndReturn","Courier.updateOne","Courier.updateMany","Courier.updateManyAndReturn","Courier.upsertOne","Courier.deleteOne","Courier.deleteMany","Courier.groupBy","Courier.aggregate","CourierParcel.findUnique","CourierParcel.findUniqueOrThrow","CourierParcel.findFirst","CourierParcel.findFirstOrThrow","CourierParcel.findMany","CourierParcel.createOne","CourierParcel.createMany","CourierParcel.createManyAndReturn","CourierParcel.updateOne","CourierParcel.updateMany","CourierParcel.updateManyAndReturn","CourierParcel.upsertOne","CourierParcel.deleteOne","CourierParcel.deleteMany","CourierParcel.groupBy","CourierParcel.aggregate","Customer.findUnique","Customer.findUniqueOrThrow","Customer.findFirst","Customer.findFirstOrThrow","Customer.findMany","Customer.createOne","Customer.createMany","Customer.createManyAndReturn","Customer.updateOne","Customer.updateMany","Customer.updateManyAndReturn","Customer.upsertOne","Customer.deleteOne","Customer.deleteMany","Customer.groupBy","Customer.aggregate","DeliveryAttempt.findUnique","DeliveryAttempt.findUniqueOrThrow","DeliveryAttempt.findFirst","DeliveryAttempt.findFirstOrThrow","DeliveryAttempt.findMany","DeliveryAttempt.createOne","DeliveryAttempt.createMany","DeliveryAttempt.createManyAndReturn","DeliveryAttempt.updateOne","DeliveryAttempt.updateMany","DeliveryAttempt.updateManyAndReturn","DeliveryAttempt.upsertOne","DeliveryAttempt.deleteOne","DeliveryAttempt.deleteMany","DeliveryAttempt.groupBy","DeliveryAttempt.aggregate","Hub.findUnique","Hub.findUniqueOrThrow","Hub.findFirst","Hub.findFirstOrThrow","Hub.findMany","Hub.createOne","Hub.createMany","Hub.createManyAndReturn","Hub.updateOne","Hub.updateMany","Hub.updateManyAndReturn","Hub.upsertOne","Hub.deleteOne","Hub.deleteMany","Hub.groupBy","Hub.aggregate","HubTransfer.findUnique","HubTransfer.findUniqueOrThrow","HubTransfer.findFirst","HubTransfer.findFirstOrThrow","HubTransfer.findMany","HubTransfer.createOne","HubTransfer.createMany","HubTransfer.createManyAndReturn","HubTransfer.updateOne","HubTransfer.updateMany","HubTransfer.updateManyAndReturn","HubTransfer.upsertOne","HubTransfer.deleteOne","HubTransfer.deleteMany","HubTransfer.groupBy","HubTransfer.aggregate","Notification.findUnique","Notification.findUniqueOrThrow","Notification.findFirst","Notification.findFirstOrThrow","Notification.findMany","Notification.createOne","Notification.createMany","Notification.createManyAndReturn","Notification.updateOne","Notification.updateMany","Notification.updateManyAndReturn","Notification.upsertOne","Notification.deleteOne","Notification.deleteMany","Notification.groupBy","Notification.aggregate","Payment.findUnique","Payment.findUniqueOrThrow","Payment.findFirst","Payment.findFirstOrThrow","Payment.findMany","Payment.createOne","Payment.createMany","Payment.createManyAndReturn","Payment.updateOne","Payment.updateMany","Payment.updateManyAndReturn","Payment.upsertOne","Payment.deleteOne","Payment.deleteMany","Payment.groupBy","Payment.aggregate","PricingRule.findUnique","PricingRule.findUniqueOrThrow","PricingRule.findFirst","PricingRule.findFirstOrThrow","PricingRule.findMany","PricingRule.createOne","PricingRule.createMany","PricingRule.createManyAndReturn","PricingRule.updateOne","PricingRule.updateMany","PricingRule.updateManyAndReturn","PricingRule.upsertOne","PricingRule.deleteOne","PricingRule.deleteMany","PricingRule.groupBy","PricingRule.aggregate","ProofOfDelivery.findUnique","ProofOfDelivery.findUniqueOrThrow","ProofOfDelivery.findFirst","ProofOfDelivery.findFirstOrThrow","ProofOfDelivery.findMany","ProofOfDelivery.createOne","ProofOfDelivery.createMany","ProofOfDelivery.createManyAndReturn","ProofOfDelivery.updateOne","ProofOfDelivery.updateMany","ProofOfDelivery.updateManyAndReturn","ProofOfDelivery.upsertOne","ProofOfDelivery.deleteOne","ProofOfDelivery.deleteMany","ProofOfDelivery.groupBy","ProofOfDelivery.aggregate","Shipment.findUnique","Shipment.findUniqueOrThrow","Shipment.findFirst","Shipment.findFirstOrThrow","Shipment.findMany","Shipment.createOne","Shipment.createMany","Shipment.createManyAndReturn","Shipment.updateOne","Shipment.updateMany","Shipment.updateManyAndReturn","Shipment.upsertOne","Shipment.deleteOne","Shipment.deleteMany","Shipment.groupBy","Shipment.aggregate","ShipmentStatusHistory.findUnique","ShipmentStatusHistory.findUniqueOrThrow","ShipmentStatusHistory.findFirst","ShipmentStatusHistory.findFirstOrThrow","ShipmentStatusHistory.findMany","ShipmentStatusHistory.createOne","ShipmentStatusHistory.createMany","ShipmentStatusHistory.createManyAndReturn","ShipmentStatusHistory.updateOne","ShipmentStatusHistory.updateMany","ShipmentStatusHistory.updateManyAndReturn","ShipmentStatusHistory.upsertOne","ShipmentStatusHistory.deleteOne","ShipmentStatusHistory.deleteMany","ShipmentStatusHistory.groupBy","ShipmentStatusHistory.aggregate","User.findUnique","User.findUniqueOrThrow","User.findFirst","User.findFirstOrThrow","User.findMany","User.createOne","User.createMany","User.createManyAndReturn","User.updateOne","User.updateMany","User.updateManyAndReturn","User.upsertOne","User.deleteOne","User.deleteMany","User.groupBy","User.aggregate","Zone.findUnique","Zone.findUniqueOrThrow","Zone.findFirst","Zone.findFirstOrThrow","Zone.findMany","Zone.createOne","Zone.createMany","Zone.createManyAndReturn","Zone.updateOne","Zone.updateMany","Zone.updateManyAndReturn","Zone.upsertOne","Zone.deleteOne","Zone.deleteMany","Zone.groupBy","Zone.aggregate","AND","OR","NOT","id","name","code","isActive","createdAt","updatedAt","equals","in","notIn","lt","lte","gt","gte","not","contains","startsWith","endsWith","every","some","none","email","password","googleId","AuthProvider","authProvider","emailVerified","phone","UserRole","role","UserStatus","status","shipmentId","ShipmentStatus","location","note","updatedBy","trackingNumber","customerId","pickupAddressId","deliveryAddressId","originHubId","destinationHubId","parcelType","weight","description","deliveryType","deliveryCharge","PaymentStatus","paymentStatus","scheduledPickupAt","deliveryAttemptId","recipientName","recipientPhone","imageUrl","signatureUrl","notes","zoneId","minWeight","maxWeight","baseCharge","perKgCharge","amount","currency","provider","transactionId","paidAt","userId","title","message","type","isRead","fromHubId","toHubId","TransferStatus","dispatchedAt","receivedAt","createdBy","address","courierId","attemptNumber","AttemptStatus","failureReason","attemptedAt","assignedBy","AssignmentStatus","assignedAt","acceptedAt","completedAt","hubId","vehicleType","vehicleNumber","CourierAvailability","availabilityStatus","label","addressLine","city","area","postalCode","latitude","longitude","is","isNot","connectOrCreate","upsert","createMany","set","disconnect","delete","connect","updateMany","deleteMany","increment","decrement","multiply","divide"]'),
-  graph: "pwmKAfABEQEAAKcEACAoAACYBAAgKQAAmAQAIKICAAClBAAwowIAAFEAEKQCAAClBAAwpQIBAAAAAakCQADMAwAhqgJAAMwDACHKAgEAyQMAIYIDAQDiAwAhgwMBAMoDACGEAwEAygMAIYUDAQDKAwAhhgMBAOIDACGHAxAApgQAIYgDEACmBAAhAQAAAAEAIAoCAACWBAAgJgAAlwQAICcAAJgEACCiAgAAlQQAMKMCAAADABCkAgAAlQQAMKUCAQDJAwAhqQJAAMwDACGqAkAAzAMAIecCAQDJAwAhAQAAAAMAIA8CAACWBAAgGgAAvAQAICEAALMEACAiAADqAwAgogIAAL4EADCjAgAABQAQpAIAAL4EADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHnAgEAyQMAIf0CAQDJAwAh_gIBAMoDACH_AgEAygMAIYEDAAC_BIEDIgEAAAAFACASBgAAwQQAIAkAAMMEACAdAACYBAAgHgAAmAQAIB8AAOsDACAgAADrAwAgogIAAMIEADCjAgAABwAQpAIAAMIEADClAgEAyQMAIaYCAQDKAwAhpwIBAMoDACGoAiAAywMAIakCQADMAwAhqgJAAMwDACG_AgEA4gMAId0CAQDJAwAh8gIBAMoDACEHBgAAiQgAIAkAAIoIACAdAAD2BwAgHgAA9gcAIB8AAMIHACAgAADCBwAgvwIAAMYGACASBgAAwQQAIAkAAMMEACAdAACYBAAgHgAAmAQAIB8AAOsDACAgAADrAwAgogIAAMIEADCjAgAABwAQpAIAAMIEADClAgEAAAABpgIBAMoDACGnAgEAAAABqAIgAMsDACGpAkAAzAMAIaoCQADMAwAhvwIBAOIDACHdAgEAyQMAIfICAQDKAwAhAwAAAAcAIAMAAAgAMAQAAAkAIA4GAADBBAAgogIAAMAEADCjAgAACwAQpAIAAMAEADClAgEAyQMAIagCIADLAwAhqQJAAMwDACGqAkAAzAMAIdICAQDKAwAh3QIBAMkDACHeAhAAhAQAId8CEACEBAAh4AIQAIQEACHhAhAAhAQAIQEGAACJCAAgDgYAAMEEACCiAgAAwAQAMKMCAAALABCkAgAAwAQAMKUCAQAAAAGoAiAAywMAIakCQADMAwAhqgJAAMwDACHSAgEAygMAId0CAQDJAwAh3gIQAIQEACHfAhAAhAQAIeACEACEBAAh4QIQAIQEACEDAAAACwAgAwAADAAwBAAADQAgAQAAAAcAIAEAAAALACAEAgAA9AcAIBoAAIcIACAhAACFCAAgIgAAwQcAIA8CAACWBAAgGgAAvAQAICEAALMEACAiAADqAwAgogIAAL4EADCjAgAABQAQpAIAAL4EADClAgEAAAABqQJAAMwDACGqAkAAzAMAIecCAQAAAAH9AgEAyQMAIf4CAQDKAwAh_wIBAMoDACGBAwAAvwSBAyIDAAAABQAgAwAAEQAwBAAAEgAgIAEAAKcEACAKAAC6BAAgCwAAugQAIAwAALsEACANAAC7BAAgEAAA6QMAIBMAAOoDACAXAADrAwAgGQAAsAQAIBoAALwEACAbAAC9BAAgHAAA7AMAIKICAAC5BAAwowIAABQAEKQCAAC5BAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALgExgIiyQIBAMoDACHKAgEAyQMAIcsCAQDJAwAhzAIBAMkDACHNAgEAqQQAIc4CAQCpBAAhzwIBAMoDACHQAhAAhAQAIdECAQDiAwAh0gIBAMoDACHTAhAAhAQAIdUCAACFBNUCItYCQACGBAAhEAEAAL4HACAKAACGCAAgCwAAhggAIAwAAIUIACANAACFCAAgEAAAwAcAIBMAAMEHACAXAADCBwAgGQAAhAgAIBoAAIcIACAbAACICAAgHAAAwwcAIM0CAADGBgAgzgIAAMYGACDRAgAAxgYAINYCAADGBgAgIAEAAKcEACAKAAC6BAAgCwAAugQAIAwAALsEACANAAC7BAAgEAAA6QMAIBMAAOoDACAXAADrAwAgGQAAsAQAIBoAALwEACAbAAC9BAAgHAAA7AMAIKICAAC5BAAwowIAABQAEKQCAAC5BAAwpQIBAAAAAakCQADMAwAhqgJAAMwDACHDAgAAuATGAiLJAgEAAAABygIBAMkDACHLAgEAyQMAIcwCAQDJAwAhzQIBAKkEACHOAgEAqQQAIc8CAQDKAwAh0AIQAIQEACHRAgEA4gMAIdICAQDKAwAh0wIQAIQEACHVAgAAhQTVAiLWAkAAhgQAIQMAAAAUACADAAAVADAEAAAWACABAAAABwAgAQAAAAcAIAwOAAD_AwAgDwAAtAQAIKICAAC3BAAwowIAABoAEKQCAAC3BAAwpQIBAMkDACGpAkAAzAMAIcMCAAC4BMYCIsQCAQDJAwAhxgIBAOIDACHHAgEA4gMAIcgCAQCpBAAhBQ4AAM8HACAPAAD0BwAgxgIAAMYGACDHAgAAxgYAIMgCAADGBgAgDA4AAP8DACAPAAC0BAAgogIAALcEADCjAgAAGgAQpAIAALcEADClAgEAAAABqQJAAMwDACHDAgAAuATGAiLEAgEAyQMAIcYCAQDiAwAhxwIBAOIDACHIAgEAqQQAIQMAAAAaACADAAAbADAEAAAcACAVAQAA5wMAIBEAAOgDACAcAADsAwAgIwAA6QMAICQAAOoDACAlAADrAwAgogIAAOEDADCjAgAAHgAQpAIAAOEDADClAgEAyQMAIaYCAQDKAwAhqQJAAMwDACGqAkAAzAMAIbkCAQDKAwAhugIBAOIDACG7AgEA4gMAIb0CAADjA70CIr4CIADkAwAhvwIBAOIDACHBAgAA5QPBAiLDAgAA5gPDAiIBAAAAHgAgEA4AAP8DACARAACvBAAgEgAAtAQAIKICAAC1BAAwowIAACAAEKQCAAC1BAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALYE-gIixAIBAMkDACHzAgEAyQMAIfgCAQCpBAAh-gJAAMwDACH7AkAAhgQAIfwCQACGBAAhBg4AAM8HACARAAC_BwAgEgAA9AcAIPgCAADGBgAg-wIAAMYGACD8AgAAxgYAIBAOAAD_AwAgEQAArwQAIBIAALQEACCiAgAAtQQAMKMCAAAgABCkAgAAtQQAMKUCAQAAAAGpAkAAzAMAIaoCQADMAwAhwwIAALYE-gIixAIBAMkDACHzAgEAyQMAIfgCAQCpBAAh-gJAAMwDACH7AkAAhgQAIfwCQACGBAAhAwAAACAAIAMAACEAMAQAACIAIAEAAAAeACARDgAA_wMAIBQAALMEACAVAACzBAAgFgAAtAQAIKICAACxBAAwowIAACUAEKQCAACxBAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALIE7wIixAIBAMkDACHsAgEAyQMAIe0CAQDJAwAh7wJAAIYEACHwAkAAhgQAIfECAQCpBAAhBw4AAM8HACAUAACFCAAgFQAAhQgAIBYAAPQHACDvAgAAxgYAIPACAADGBgAg8QIAAMYGACARDgAA_wMAIBQAALMEACAVAACzBAAgFgAAtAQAIKICAACxBAAwowIAACUAEKQCAACxBAAwpQIBAAAAAakCQADMAwAhqgJAAMwDACHDAgAAsgTvAiLEAgEAyQMAIewCAQDJAwAh7QIBAMkDACHvAkAAhgQAIfACQACGBAAh8QIBAKkEACEDAAAAJQAgAwAAJgAwBAAAJwAgAQAAAB4AIA8OAAD_AwAgEQAArwQAIBkAALAEACCiAgAArAQAMKMCAAAqABCkAgAArAQAMKUCAQDJAwAhqQJAAMwDACHDAgAArgT2AiLEAgEAyQMAIdwCAQDiAwAh8wIBAMkDACH0AgIArQQAIfYCAQDiAwAh9wJAAMwDACEFDgAAzwcAIBEAAL8HACAZAACECAAg3AIAAMYGACD2AgAAxgYAIA8OAAD_AwAgEQAArwQAIBkAALAEACCiAgAArAQAMKMCAAAqABCkAgAArAQAMKUCAQAAAAGpAkAAzAMAIcMCAACuBPYCIsQCAQDJAwAh3AIBAOIDACHzAgEAyQMAIfQCAgCtBAAh9gIBAOIDACH3AkAAzAMAIQMAAAAqACADAAArADAEAAAsACAODgAA_wMAIBgAAIAEACCiAgAA_gMAMKMCAAAuABCkAgAA_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_QcAIDwAAP4HACA9AACBCAAgPgAAgAgAID8AAP8HACCCAwAAxgYAIIYDAADGBgAghwMAAMYGACCIAwAAxgYAIA6iAgAAoQQAMKMCAABtABCkAgAAoQQAMKUCAQC8AwAhqQJAAL8DACGqAkAAvwMAIcoCAQC8AwAhggMBANEDACGDAwEAvQMAIYQDAQC9AwAhhQMBAL0DACGGAwEA0QMAIYcDEACiBAAhiAMQAKIEACEDAAAAUQAgAwAAbAAwOwAAbQAgAwAAAFEAIAMAAFIAMAQAAAEAIAEAAAASACABAAAAEgAgAwAAAAUAIAMAABEAMAQAABIAIAMAAAAFACADAAARADAEAAASACADAAAABQAgAwAAEQAwBAAAEgAgDAIAALkGACAaAAC7BgAgIQAAggcAICIAALoGACClAgEAAAABqQJAAAAAAaoCQAAAAAHnAgEAAAAB_QIBAAAAAf4CAQAAAAH_AgEAAAABgQMAAACBAwIBLwAAdQAgCKUCAQAAAAGpAkAAAAABqgJAAAAAAecCAQAAAAH9AgEAAAAB_gIBAAAAAf8CAQAAAAGBAwAAAIEDAgEvAAB3ADABLwAAdwAwDAIAAJ8GACAaAAChBgAgIQAAgQcAICIAAKAGACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHnAgEAxwQAIf0CAQDHBAAh_gIBAMcEACH_AgEAxwQAIYEDAACdBoEDIgIAAAASACAvAAB6ACAIpQIBAMcEACGpAkAAyQQAIaoCQADJBAAh5wIBAMcEACH9AgEAxwQAIf4CAQDHBAAh_wIBAMcEACGBAwAAnQaBAyICAAAABQAgLwAAfAAgAgAAAAUAIC8AAHwAIAMAAAASACA2AAB1ACA3AAB6ACABAAAAEgAgAQAAAAUAIAMIAAD6BwAgPgAA_AcAID8AAPsHACALogIAAJ0EADCjAgAAgwEAEKQCAACdBAAwpQIBALwDACGpAkAAvwMAIaoCQAC_AwAh5wIBALwDACH9AgEAvAMAIf4CAQC9AwAh_wIBAL0DACGBAwAAngSBAyIDAAAABQAgAwAAggEAMDsAAIMBACADAAAABQAgAwAAEQAwBAAAEgAgAQAAACIAIAEAAAAiACADAAAAIAAgAwAAIQAwBAAAIgAgAwAAACAAIAMAACEAMAQAACIAIAMAAAAgACADAAAhADAEAAAiACANDgAAtwYAIBEAAOwFACASAADtBQAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAAD6AgLEAgEAAAAB8wIBAAAAAfgCAQAAAAH6AkAAAAAB-wJAAAAAAfwCQAAAAAEBLwAAiwEAIAqlAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAPoCAsQCAQAAAAHzAgEAAAAB-AIBAAAAAfoCQAAAAAH7AkAAAAAB_AJAAAAAAQEvAACNAQAwAS8AAI0BADABAAAAHgAgDQ4AALUGACARAADpBQAgEgAA6gUAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAADnBfoCIsQCAQDHBAAh8wIBAMcEACH4AgEA4wQAIfoCQADJBAAh-wJAAPUEACH8AkAA9QQAIQIAAAAiACAvAACRAQAgCqUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAADnBfoCIsQCAQDHBAAh8wIBAMcEACH4AgEA4wQAIfoCQADJBAAh-wJAAPUEACH8AkAA9QQAIQIAAAAgACAvAACTAQAgAgAAACAAIC8AAJMBACABAAAAHgAgAwAAACIAIDYAAIsBACA3AACRAQAgAQAAACIAIAEAAAAgACAGCAAA9wcAID4AAPkHACA_AAD4BwAg-AIAAMYGACD7AgAAxgYAIPwCAADGBgAgDaICAACZBAAwowIAAJsBABCkAgAAmQQAMKUCAQC8AwAhqQJAAL8DACGqAkAAvwMAIcMCAACaBPoCIsQCAQC8AwAh8wIBALwDACH4AgEA7wMAIfoCQAC_AwAh-wJAAPYDACH8AkAA9gMAIQMAAAAgACADAACaAQAwOwAAmwEAIAMAAAAgACADAAAhADAEAAAiACAKAgAAlgQAICYAAJcEACAnAACYBAAgogIAAJUEADCjAgAAAwAQpAIAAJUEADClAgEAAAABqQJAAMwDACGqAkAAzAMAIecCAQAAAAEBAAAAngEAIAEAAACeAQAgAwIAAPQHACAmAAD1BwAgJwAA9gcAIAMAAAADACADAAChAQAwBAAAngEAIAMAAAADACADAAChAQAwBAAAngEAIAMAAAADACADAAChAQAwBAAAngEAIAcCAADzBwAgJgAAtgcAICcAALcHACClAgEAAAABqQJAAAAAAaoCQAAAAAHnAgEAAAABAS8AAKUBACAEpQIBAAAAAakCQAAAAAGqAkAAAAAB5wIBAAAAAQEvAACnAQAwAS8AAKcBADAHAgAA8gcAICYAAIgHACAnAACJBwAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAh5wIBAMcEACECAAAAngEAIC8AAKoBACAEpQIBAMcEACGpAkAAyQQAIaoCQADJBAAh5wIBAMcEACECAAAAAwAgLwAArAEAIAIAAAADACAvAACsAQAgAwAAAJ4BACA2AAClAQAgNwAAqgEAIAEAAACeAQAgAQAAAAMAIAMIAADvBwAgPgAA8QcAID8AAPAHACAHogIAAJQEADCjAgAAswEAEKQCAACUBAAwpQIBALwDACGpAkAAvwMAIaoCQAC_AwAh5wIBALwDACEDAAAAAwAgAwAAsgEAMDsAALMBACADAAAAAwAgAwAAoQEAMAQAAJ4BACABAAAALAAgAQAAACwAIAMAAAAqACADAAArADAEAAAsACADAAAAKgAgAwAAKwAwBAAALAAgAwAAACoAIAMAACsAMAQAACwAIAwOAACsBgAgEQAA0gUAIBkAANMFACClAgEAAAABqQJAAAAAAcMCAAAA9gICxAIBAAAAAdwCAQAAAAHzAgEAAAAB9AICAAAAAfYCAQAAAAH3AkAAAAABAS8AALsBACAJpQIBAAAAAakCQAAAAAHDAgAAAPYCAsQCAQAAAAHcAgEAAAAB8wIBAAAAAfQCAgAAAAH2AgEAAAAB9wJAAAAAAQEvAAC9AQAwAS8AAL0BADAMDgAAqgYAIBEAAMgFACAZAADJBQAgpQIBAMcEACGpAkAAyQQAIcMCAADGBfYCIsQCAQDHBAAh3AIBAOMEACHzAgEAxwQAIfQCAgDFBQAh9gIBAOMEACH3AkAAyQQAIQIAAAAsACAvAADAAQAgCaUCAQDHBAAhqQJAAMkEACHDAgAAxgX2AiLEAgEAxwQAIdwCAQDjBAAh8wIBAMcEACH0AgIAxQUAIfYCAQDjBAAh9wJAAMkEACECAAAAKgAgLwAAwgEAIAIAAAAqACAvAADCAQAgAwAAACwAIDYAALsBACA3AADAAQAgAQAAACwAIAEAAAAqACAHCAAA6gcAIDwAAOsHACA9AADuBwAgPgAA7QcAID8AAOwHACDcAgAAxgYAIPYCAADGBgAgDKICAACNBAAwowIAAMkBABCkAgAAjQQAMKUCAQC8AwAhqQJAAL8DACHDAgAAjwT2AiLEAgEAvAMAIdwCAQDRAwAh8wIBALwDACH0AgIAjgQAIfYCAQDRAwAh9wJAAL8DACEDAAAAKgAgAwAAyAEAMDsAAMkBACADAAAAKgAgAwAAKwAwBAAALAAgAQAAAAkAIAEAAAAJACADAAAABwAgAwAACAAwBAAACQAgAwAAAAcAIAMAAAgAMAQAAAkAIAMAAAAHACADAAAIADAEAAAJACAPBgAA6QcAIAkAAL0GACAdAAC-BgAgHgAAvwYAIB8AAMAGACAgAADBBgAgpQIBAAAAAaYCAQAAAAGnAgEAAAABqAIgAAAAAakCQAAAAAGqAkAAAAABvwIBAAAAAd0CAQAAAAHyAgEAAAABAS8AANEBACAJpQIBAAAAAaYCAQAAAAGnAgEAAAABqAIgAAAAAakCQAAAAAGqAkAAAAABvwIBAAAAAd0CAQAAAAHyAgEAAAABAS8AANMBADABLwAA0wEAMA8GAADoBwAgCQAA5QQAIB0AAOYEACAeAADnBAAgHwAA6AQAICAAAOkEACClAgEAxwQAIaYCAQDHBAAhpwIBAMcEACGoAiAAyAQAIakCQADJBAAhqgJAAMkEACG_AgEA4wQAId0CAQDHBAAh8gIBAMcEACECAAAACQAgLwAA1gEAIAmlAgEAxwQAIaYCAQDHBAAhpwIBAMcEACGoAiAAyAQAIakCQADJBAAhqgJAAMkEACG_AgEA4wQAId0CAQDHBAAh8gIBAMcEACECAAAABwAgLwAA2AEAIAIAAAAHACAvAADYAQAgAwAAAAkAIDYAANEBACA3AADWAQAgAQAAAAkAIAEAAAAHACAECAAA5QcAID4AAOcHACA_AADmBwAgvwIAAMYGACAMogIAAIwEADCjAgAA3wEAEKQCAACMBAAwpQIBALwDACGmAgEAvQMAIacCAQC9AwAhqAIgAL4DACGpAkAAvwMAIaoCQAC_AwAhvwIBANEDACHdAgEAvAMAIfICAQC9AwAhAwAAAAcAIAMAAN4BADA7AADfAQAgAwAAAAcAIAMAAAgAMAQAAAkAIAEAAAAnACABAAAAJwAgAwAAACUAIAMAACYAMAQAACcAIAMAAAAlACADAAAmADAEAAAnACADAAAAJQAgAwAAJgAwBAAAJwAgDg4AAPsEACAUAAD8BAAgFQAAiAUAIBYAAP0EACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAO8CAsQCAQAAAAHsAgEAAAAB7QIBAAAAAe8CQAAAAAHwAkAAAAAB8QIBAAAAAQEvAADnAQAgCqUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA7wICxAIBAAAAAewCAQAAAAHtAgEAAAAB7wJAAAAAAfACQAAAAAHxAgEAAAABAS8AAOkBADABLwAA6QEAMAEAAAAeACAODgAA9wQAIBQAAPgEACAVAACGBQAgFgAA-QQAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAAD0BO8CIsQCAQDHBAAh7AIBAMcEACHtAgEAxwQAIe8CQAD1BAAh8AJAAPUEACHxAgEA4wQAIQIAAAAnACAvAADtAQAgCqUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAAD0BO8CIsQCAQDHBAAh7AIBAMcEACHtAgEAxwQAIe8CQAD1BAAh8AJAAPUEACHxAgEA4wQAIQIAAAAlACAvAADvAQAgAgAAACUAIC8AAO8BACABAAAAHgAgAwAAACcAIDYAAOcBACA3AADtAQAgAQAAACcAIAEAAAAlACAGCAAA4gcAID4AAOQHACA_AADjBwAg7wIAAMYGACDwAgAAxgYAIPECAADGBgAgDaICAACIBAAwowIAAPcBABCkAgAAiAQAMKUCAQC8AwAhqQJAAL8DACGqAkAAvwMAIcMCAACJBO8CIsQCAQC8AwAh7AIBALwDACHtAgEAvAMAIe8CQAD2AwAh8AJAAPYDACHxAgEA7wMAIQMAAAAlACADAAD2AQAwOwAA9wEAIAMAAAAlACADAAAmADAEAAAnACABAAAANQAgAQAAADUAIAMAAAAzACADAAA0ADAEAAA1ACADAAAAMwAgAwAANAAwBAAANQAgAwAAADMAIAMAADQAMAQAADUAIAoCAACuBQAgDgAA3gYAIKUCAQAAAAGpAkAAAAABxAIBAAAAAecCAQAAAAHoAgEAAAAB6QIBAAAAAeoCAQAAAAHrAiAAAAABAS8AAP8BACAIpQIBAAAAAakCQAAAAAHEAgEAAAAB5wIBAAAAAegCAQAAAAHpAgEAAAAB6gIBAAAAAesCIAAAAAEBLwAAgQIAMAEvAACBAgAwAQAAABQAIAoCAACsBQAgDgAA3AYAIKUCAQDHBAAhqQJAAMkEACHEAgEA4wQAIecCAQDHBAAh6AIBAMcEACHpAgEAxwQAIeoCAQDHBAAh6wIgAMgEACECAAAANQAgLwAAhQIAIAilAgEAxwQAIakCQADJBAAhxAIBAOMEACHnAgEAxwQAIegCAQDHBAAh6QIBAMcEACHqAgEAxwQAIesCIADIBAAhAgAAADMAIC8AAIcCACACAAAAMwAgLwAAhwIAIAEAAAAUACADAAAANQAgNgAA_wEAIDcAAIUCACABAAAANQAgAQAAADMAIAQIAADfBwAgPgAA4QcAID8AAOAHACDEAgAAxgYAIAuiAgAAhwQAMKMCAACPAgAQpAIAAIcEADClAgEAvAMAIakCQAC_AwAhxAIBAO8DACHnAgEAvAMAIegCAQC9AwAh6QIBAL0DACHqAgEAvQMAIesCIAC-AwAhAwAAADMAIAMAAI4CADA7AACPAgAgAwAAADMAIAMAADQAMAQAADUAIA4OAAD_AwAgogIAAIMEADCjAgAAMQAQpAIAAIMEADClAgEAAAABqQJAAMwDACGqAkAAzAMAIcMCAACFBNUCIsQCAQAAAAHiAhAAhAQAIeMCAQDKAwAh5AIBAMoDACHlAgEAAAAB5gJAAIYEACEBAAAAkgIAIAEAAACSAgAgAw4AAM8HACDlAgAAxgYAIOYCAADGBgAgAwAAADEAIAMAAJUCADAEAACSAgAgAwAAADEAIAMAAJUCADAEAACSAgAgAwAAADEAIAMAAJUCADAEAACSAgAgCw4AAN4HACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAANUCAsQCAQAAAAHiAhAAAAAB4wIBAAAAAeQCAQAAAAHlAgEAAAAB5gJAAAAAAQEvAACZAgAgCqUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA1QICxAIBAAAAAeICEAAAAAHjAgEAAAAB5AIBAAAAAeUCAQAAAAHmAkAAAAABAS8AAJsCADABLwAAmwIAMAsOAADdBwAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJQF1QIixAIBAMcEACHiAhAA1gQAIeMCAQDHBAAh5AIBAMcEACHlAgEA4wQAIeYCQAD1BAAhAgAAAJICACAvAACeAgAgCqUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAACUBdUCIsQCAQDHBAAh4gIQANYEACHjAgEAxwQAIeQCAQDHBAAh5QIBAOMEACHmAkAA9QQAIQIAAAAxACAvAACgAgAgAgAAADEAIC8AAKACACADAAAAkgIAIDYAAJkCACA3AACeAgAgAQAAAJICACABAAAAMQAgBwgAANgHACA8AADZBwAgPQAA3AcAID4AANsHACA_AADaBwAg5QIAAMYGACDmAgAAxgYAIA2iAgAAggQAMKMCAACnAgAQpAIAAIIEADClAgEAvAMAIakCQAC_AwAhqgJAAL8DACHDAgAA9QPVAiLEAgEAvAMAIeICEAD0AwAh4wIBAL0DACHkAgEAvQMAIeUCAQDRAwAh5gJAAPYDACEDAAAAMQAgAwAApgIAMDsAAKcCACADAAAAMQAgAwAAlQIAMAQAAJICACABAAAADQAgAQAAAA0AIAMAAAALACADAAAMADAEAAANACADAAAACwAgAwAADAAwBAAADQAgAwAAAAsAIAMAAAwAMAQAAA0AIAsGAADXBwAgpQIBAAAAAagCIAAAAAGpAkAAAAABqgJAAAAAAdICAQAAAAHdAgEAAAAB3gIQAAAAAd8CEAAAAAHgAhAAAAAB4QIQAAAAAQEvAACvAgAgCqUCAQAAAAGoAiAAAAABqQJAAAAAAaoCQAAAAAHSAgEAAAAB3QIBAAAAAd4CEAAAAAHfAhAAAAAB4AIQAAAAAeECEAAAAAEBLwAAsQIAMAEvAACxAgAwCwYAANYHACClAgEAxwQAIagCIADIBAAhqQJAAMkEACGqAkAAyQQAIdICAQDHBAAh3QIBAMcEACHeAhAA1gQAId8CEADWBAAh4AIQANYEACHhAhAA1gQAIQIAAAANACAvAAC0AgAgCqUCAQDHBAAhqAIgAMgEACGpAkAAyQQAIaoCQADJBAAh0gIBAMcEACHdAgEAxwQAId4CEADWBAAh3wIQANYEACHgAhAA1gQAIeECEADWBAAhAgAAAAsAIC8AALYCACACAAAACwAgLwAAtgIAIAMAAAANACA2AACvAgAgNwAAtAIAIAEAAAANACABAAAACwAgBQgAANEHACA8AADSBwAgPQAA1QcAID4AANQHACA_AADTBwAgDaICAACBBAAwowIAAL0CABCkAgAAgQQAMKUCAQC8AwAhqAIgAL4DACGpAkAAvwMAIaoCQAC_AwAh0gIBAL0DACHdAgEAvAMAId4CEAD0AwAh3wIQAPQDACHgAhAA9AMAIeECEAD0AwAhAwAAAAsAIAMAALwCADA7AAC9AgAgAwAAAAsAIAMAAAwAMAQAAA0AIA4OAAD_AwAgGAAAgAQAIKICAAD-AwAwowIAAC4AEKQCAAD-AwAwpQIBAAAAAakCQADMAwAhxAIBAAAAAdcCAQAAAAHYAgEAygMAIdkCAQDKAwAh2gIBAOIDACHbAgEA4gMAIdwCAQDiAwAhAQAAAMACACABAAAAwAIAIAUOAADPBwAgGAAA0AcAINoCAADGBgAg2wIAAMYGACDcAgAAxgYAIAMAAAAuACADAADDAgAwBAAAwAIAIAMAAAAuACADAADDAgAwBAAAwAIAIAMAAAAuACADAADDAgAwBAAAwAIAIAsOAADQBQAgGAAAugUAIKUCAQAAAAGpAkAAAAABxAIBAAAAAdcCAQAAAAHYAgEAAAAB2QIBAAAAAdoCAQAAAAHbAgEAAAAB3AIBAAAAAQEvAADHAgAgCaUCAQAAAAGpAkAAAAABxAIBAAAAAdcCAQAAAAHYAgEAAAAB2QIBAAAAAdoCAQAAAAHbAgEAAAAB3AIBAAAAAQEvAADJAgAwAS8AAMkCADALDgAAzwUAIBgAALkFACClAgEAxwQAIakCQADJBAAhxAIBAMcEACHXAgEAxwQAIdgCAQDHBAAh2QIBAMcEACHaAgEA4wQAIdsCAQDjBAAh3AIBAOMEACECAAAAwAIAIC8AAMwCACAJpQIBAMcEACGpAkAAyQQAIcQCAQDHBAAh1wIBAMcEACHYAgEAxwQAIdkCAQDHBAAh2gIBAOMEACHbAgEA4wQAIdwCAQDjBAAhAgAAAC4AIC8AAM4CACACAAAALgAgLwAAzgIAIAMAAADAAgAgNgAAxwIAIDcAAMwCACABAAAAwAIAIAEAAAAuACAGCAAAzAcAID4AAM4HACA_AADNBwAg2gIAAMYGACDbAgAAxgYAINwCAADGBgAgDKICAAD9AwAwowIAANUCABCkAgAA_QMAMKUCAQC8AwAhqQJAAL8DACHEAgEAvAMAIdcCAQC8AwAh2AIBAL0DACHZAgEAvQMAIdoCAQDRAwAh2wIBANEDACHcAgEA0QMAIQMAAAAuACADAADUAgAwOwAA1QIAIAMAAAAuACADAADDAgAwBAAAwAIAIAEAAAAWACABAAAAFgAgAwAAABQAIAMAABUAMAQAABYAIAMAAAAUACADAAAVADAEAAAWACADAAAAFAAgAwAAFQAwBAAAFgAgHQEAAP0FACAKAAD-BQAgCwAA_wUAIAwAAIAGACANAACSBgAgEAAAgQYAIBMAAIIGACAXAACDBgAgGQAAhQYAIBoAAIQGACAbAACGBgAgHAAAhwYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcoCAQAAAAHLAgEAAAABzAIBAAAAAc0CAQAAAAHOAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAEBLwAA3QIAIBGlAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAcwCAQAAAAHNAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABAS8AAN8CADABLwAA3wIAMAEAAAAHACABAAAABwAgHQEAAJYFACAKAACXBQAgCwAAmAUAIAwAAJkFACANAACQBgAgEAAAmgUAIBMAAJsFACAXAACcBQAgGQAAngUAIBoAAJ0FACAbAACfBQAgHAAAoAUAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAACTBcYCIskCAQDHBAAhygIBAMcEACHLAgEAxwQAIcwCAQDHBAAhzQIBAOMEACHOAgEA4wQAIc8CAQDHBAAh0AIQANYEACHRAgEA4wQAIdICAQDHBAAh0wIQANYEACHVAgAAlAXVAiLWAkAA9QQAIQIAAAAWACAvAADkAgAgEaUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAACTBcYCIskCAQDHBAAhygIBAMcEACHLAgEAxwQAIcwCAQDHBAAhzQIBAOMEACHOAgEA4wQAIc8CAQDHBAAh0AIQANYEACHRAgEA4wQAIdICAQDHBAAh0wIQANYEACHVAgAAlAXVAiLWAkAA9QQAIQIAAAAUACAvAADmAgAgAgAAABQAIC8AAOYCACABAAAABwAgAQAAAAcAIAMAAAAWACA2AADdAgAgNwAA5AIAIAEAAAAWACABAAAAFAAgCQgAAMcHACA8AADIBwAgPQAAywcAID4AAMoHACA_AADJBwAgzQIAAMYGACDOAgAAxgYAINECAADGBgAg1gIAAMYGACAUogIAAPMDADCjAgAA7wIAEKQCAADzAwAwpQIBALwDACGpAkAAvwMAIaoCQAC_AwAhwwIAAO4DxgIiyQIBAL0DACHKAgEAvAMAIcsCAQC8AwAhzAIBALwDACHNAgEA7wMAIc4CAQDvAwAhzwIBAL0DACHQAhAA9AMAIdECAQDRAwAh0gIBAL0DACHTAhAA9AMAIdUCAAD1A9UCItYCQAD2AwAhAwAAABQAIAMAAO4CADA7AADvAgAgAwAAABQAIAMAABUAMAQAABYAIAEAAAAcACABAAAAHAAgAwAAABoAIAMAABsAMAQAABwAIAMAAAAaACADAAAbADAEAAAcACADAAAAGgAgAwAAGwAwBAAAHAAgCQ4AAPsGACAPAAD7BQAgpQIBAAAAAakCQAAAAAHDAgAAAMYCAsQCAQAAAAHGAgEAAAABxwIBAAAAAcgCAQAAAAEBLwAA9wIAIAelAgEAAAABqQJAAAAAAcMCAAAAxgICxAIBAAAAAcYCAQAAAAHHAgEAAAAByAIBAAAAAQEvAAD5AgAwAS8AAPkCADABAAAAHgAgCQ4AAPkGACAPAAD5BQAgpQIBAMcEACGpAkAAyQQAIcMCAACTBcYCIsQCAQDHBAAhxgIBAOMEACHHAgEA4wQAIcgCAQDjBAAhAgAAABwAIC8AAP0CACAHpQIBAMcEACGpAkAAyQQAIcMCAACTBcYCIsQCAQDHBAAhxgIBAOMEACHHAgEA4wQAIcgCAQDjBAAhAgAAABoAIC8AAP8CACACAAAAGgAgLwAA_wIAIAEAAAAeACADAAAAHAAgNgAA9wIAIDcAAP0CACABAAAAHAAgAQAAABoAIAYIAADEBwAgPgAAxgcAID8AAMUHACDGAgAAxgYAIMcCAADGBgAgyAIAAMYGACAKogIAAO0DADCjAgAAhwMAEKQCAADtAwAwpQIBALwDACGpAkAAvwMAIcMCAADuA8YCIsQCAQC8AwAhxgIBANEDACHHAgEA0QMAIcgCAQDvAwAhAwAAABoAIAMAAIYDADA7AACHAwAgAwAAABoAIAMAABsAMAQAABwAIBUBAADnAwAgEQAA6AMAIBwAAOwDACAjAADpAwAgJAAA6gMAICUAAOsDACCiAgAA4QMAMKMCAAAeABCkAgAA4QMAMKUCAQAAAAGmAgEAygMAIakCQADMAwAhqgJAAMwDACG5AgEAAAABugIBAOIDACG7AgEAAAABvQIAAOMDvQIivgIgAOQDACG_AgEAAAABwQIAAOUDwQIiwwIAAOYDwwIiAQAAAIoDACABAAAAigMAIAoBAAC-BwAgEQAAvwcAIBwAAMMHACAjAADABwAgJAAAwQcAICUAAMIHACC6AgAAxgYAILsCAADGBgAgvgIAAMYGACC_AgAAxgYAIAMAAAAeACADAACNAwAwBAAAigMAIAMAAAAeACADAACNAwAwBAAAigMAIAMAAAAeACADAACNAwAwBAAAigMAIBIBAAC4BwAgEQAAuQcAIBwAAL0HACAjAAC6BwAgJAAAuwcAICUAALwHACClAgEAAAABpgIBAAAAAakCQAAAAAGqAkAAAAABuQIBAAAAAboCAQAAAAG7AgEAAAABvQIAAAC9AgK-AiAAAAABvwIBAAAAAcECAAAAwQICwwIAAADDAgIBLwAAkQMAIAylAgEAAAABpgIBAAAAAakCQAAAAAGqAkAAAAABuQIBAAAAAboCAQAAAAG7AgEAAAABvQIAAAC9AgK-AiAAAAABvwIBAAAAAcECAAAAwQICwwIAAADDAgIBLwAAkwMAMAEvAACTAwAwEgEAAM4GACARAADPBgAgHAAA0wYAICMAANAGACAkAADRBgAgJQAA0gYAIKUCAQDHBAAhpgIBAMcEACGpAkAAyQQAIaoCQADJBAAhuQIBAMcEACG6AgEA4wQAIbsCAQDjBAAhvQIAAMoGvQIivgIgAMsGACG_AgEA4wQAIcECAADMBsECIsMCAADNBsMCIgIAAACKAwAgLwAAlgMAIAylAgEAxwQAIaYCAQDHBAAhqQJAAMkEACGqAkAAyQQAIbkCAQDHBAAhugIBAOMEACG7AgEA4wQAIb0CAADKBr0CIr4CIADLBgAhvwIBAOMEACHBAgAAzAbBAiLDAgAAzQbDAiICAAAAHgAgLwAAmAMAIAIAAAAeACAvAACYAwAgAwAAAIoDACA2AACRAwAgNwAAlgMAIAEAAACKAwAgAQAAAB4AIAcIAADHBgAgPgAAyQYAID8AAMgGACC6AgAAxgYAILsCAADGBgAgvgIAAMYGACC_AgAAxgYAIA-iAgAA0AMAMKMCAACfAwAQpAIAANADADClAgEAvAMAIaYCAQC9AwAhqQJAAL8DACGqAkAAvwMAIbkCAQC9AwAhugIBANEDACG7AgEA0QMAIb0CAADSA70CIr4CIADTAwAhvwIBANEDACHBAgAA1APBAiLDAgAA1QPDAiIDAAAAHgAgAwAAngMAMDsAAJ8DACADAAAAHgAgAwAAjQMAMAQAAIoDACALBQAAzQMAIAcAAM4DACCiAgAAyAMAMKMCAAClAwAQpAIAAMgDADClAgEAAAABpgIBAMoDACGnAgEAAAABqAIgAMsDACGpAkAAzAMAIaoCQADMAwAhAQAAAKIDACABAAAAogMAIAsFAADNAwAgBwAAzgMAIKICAADIAwAwowIAAKUDABCkAgAAyAMAMKUCAQDJAwAhpgIBAMoDACGnAgEAygMAIagCIADLAwAhqQJAAMwDACGqAkAAzAMAIQIFAADEBgAgBwAAxQYAIAMAAAClAwAgAwAApgMAMAQAAKIDACADAAAApQMAIAMAAKYDADAEAACiAwAgAwAAAKUDACADAACmAwAwBAAAogMAIAgFAADCBgAgBwAAwwYAIKUCAQAAAAGmAgEAAAABpwIBAAAAAagCIAAAAAGpAkAAAAABqgJAAAAAAQEvAACqAwAgBqUCAQAAAAGmAgEAAAABpwIBAAAAAagCIAAAAAGpAkAAAAABqgJAAAAAAQEvAACsAwAwAS8AAKwDADAIBQAAygQAIAcAAMsEACClAgEAxwQAIaYCAQDHBAAhpwIBAMcEACGoAiAAyAQAIakCQADJBAAhqgJAAMkEACECAAAAogMAIC8AAK8DACAGpQIBAMcEACGmAgEAxwQAIacCAQDHBAAhqAIgAMgEACGpAkAAyQQAIaoCQADJBAAhAgAAAKUDACAvAACxAwAgAgAAAKUDACAvAACxAwAgAwAAAKIDACA2AACqAwAgNwAArwMAIAEAAACiAwAgAQAAAKUDACADCAAAxAQAID4AAMYEACA_AADFBAAgCaICAAC7AwAwowIAALgDABCkAgAAuwMAMKUCAQC8AwAhpgIBAL0DACGnAgEAvQMAIagCIAC-AwAhqQJAAL8DACGqAkAAvwMAIQMAAAClAwAgAwAAtwMAMDsAALgDACADAAAApQMAIAMAAKYDADAEAACiAwAgCaICAAC7AwAwowIAALgDABCkAgAAuwMAMKUCAQC8AwAhpgIBAL0DACGnAgEAvQMAIagCIAC-AwAhqQJAAL8DACGqAkAAvwMAIQsIAADBAwAgPgAAxgMAID8AAMYDACCrAgEAAAABrAIBAAAABK0CAQAAAASuAgEAAAABrwIBAAAAAbACAQAAAAGxAgEAAAABsgIBAMcDACEOCAAAwQMAID4AAMYDACA_AADGAwAgqwIBAAAAAawCAQAAAAStAgEAAAAErgIBAAAAAa8CAQAAAAGwAgEAAAABsQIBAAAAAbICAQDFAwAhswIBAAAAAbQCAQAAAAG1AgEAAAABBQgAAMEDACA-AADEAwAgPwAAxAMAIKsCIAAAAAGyAiAAwwMAIQsIAADBAwAgPgAAwgMAID8AAMIDACCrAkAAAAABrAJAAAAABK0CQAAAAASuAkAAAAABrwJAAAAAAbACQAAAAAGxAkAAAAABsgJAAMADACELCAAAwQMAID4AAMIDACA_AADCAwAgqwJAAAAAAawCQAAAAAStAkAAAAAErgJAAAAAAa8CQAAAAAGwAkAAAAABsQJAAAAAAbICQADAAwAhCKsCAgAAAAGsAgIAAAAErQICAAAABK4CAgAAAAGvAgIAAAABsAICAAAAAbECAgAAAAGyAgIAwQMAIQirAkAAAAABrAJAAAAABK0CQAAAAASuAkAAAAABrwJAAAAAAbACQAAAAAGxAkAAAAABsgJAAMIDACEFCAAAwQMAID4AAMQDACA_AADEAwAgqwIgAAAAAbICIADDAwAhAqsCIAAAAAGyAiAAxAMAIQ4IAADBAwAgPgAAxgMAID8AAMYDACCrAgEAAAABrAIBAAAABK0CAQAAAASuAgEAAAABrwIBAAAAAbACAQAAAAGxAgEAAAABsgIBAMUDACGzAgEAAAABtAIBAAAAAbUCAQAAAAELqwIBAAAAAawCAQAAAAStAgEAAAAErgIBAAAAAa8CAQAAAAGwAgEAAAABsQIBAAAAAbICAQDGAwAhswIBAAAAAbQCAQAAAAG1AgEAAAABCwgAAMEDACA-AADGAwAgPwAAxgMAIKsCAQAAAAGsAgEAAAAErQIBAAAABK4CAQAAAAGvAgEAAAABsAIBAAAAAbECAQAAAAGyAgEAxwMAIQsFAADNAwAgBwAAzgMAIKICAADIAwAwowIAAKUDABCkAgAAyAMAMKUCAQDJAwAhpgIBAMoDACGnAgEAygMAIagCIADLAwAhqQJAAMwDACGqAkAAzAMAIQirAgEAAAABrAIBAAAABK0CAQAAAASuAgEAAAABrwIBAAAAAbACAQAAAAGxAgEAAAABsgIBAM8DACELqwIBAAAAAawCAQAAAAStAgEAAAAErgIBAAAAAa8CAQAAAAGwAgEAAAABsQIBAAAAAbICAQDGAwAhswIBAAAAAbQCAQAAAAG1AgEAAAABAqsCIAAAAAGyAiAAxAMAIQirAkAAAAABrAJAAAAABK0CQAAAAASuAkAAAAABrwJAAAAAAbACQAAAAAGxAkAAAAABsgJAAMIDACEDtgIAAAcAILcCAAAHACC4AgAABwAgA7YCAAALACC3AgAACwAguAIAAAsAIAirAgEAAAABrAIBAAAABK0CAQAAAASuAgEAAAABrwIBAAAAAbACAQAAAAGxAgEAAAABsgIBAM8DACEPogIAANADADCjAgAAnwMAEKQCAADQAwAwpQIBALwDACGmAgEAvQMAIakCQAC_AwAhqgJAAL8DACG5AgEAvQMAIboCAQDRAwAhuwIBANEDACG9AgAA0gO9AiK-AiAA0wMAIb8CAQDRAwAhwQIAANQDwQIiwwIAANUDwwIiDggAANsDACA-AADgAwAgPwAA4AMAIKsCAQAAAAGsAgEAAAAFrQIBAAAABa4CAQAAAAGvAgEAAAABsAIBAAAAAbECAQAAAAGyAgEA3wMAIbMCAQAAAAG0AgEAAAABtQIBAAAAAQcIAADBAwAgPgAA3gMAID8AAN4DACCrAgAAAL0CAqwCAAAAvQIIrQIAAAC9AgiyAgAA3QO9AiIFCAAA2wMAID4AANwDACA_AADcAwAgqwIgAAAAAbICIADaAwAhBwgAAMEDACA-AADZAwAgPwAA2QMAIKsCAAAAwQICrAIAAADBAgitAgAAAMECCLICAADYA8ECIgcIAADBAwAgPgAA1wMAID8AANcDACCrAgAAAMMCAqwCAAAAwwIIrQIAAADDAgiyAgAA1gPDAiIHCAAAwQMAID4AANcDACA_AADXAwAgqwIAAADDAgKsAgAAAMMCCK0CAAAAwwIIsgIAANYDwwIiBKsCAAAAwwICrAIAAADDAgitAgAAAMMCCLICAADXA8MCIgcIAADBAwAgPgAA2QMAID8AANkDACCrAgAAAMECAqwCAAAAwQIIrQIAAADBAgiyAgAA2APBAiIEqwIAAADBAgKsAgAAAMECCK0CAAAAwQIIsgIAANkDwQIiBQgAANsDACA-AADcAwAgPwAA3AMAIKsCIAAAAAGyAiAA2gMAIQirAgIAAAABrAICAAAABa0CAgAAAAWuAgIAAAABrwICAAAAAbACAgAAAAGxAgIAAAABsgICANsDACECqwIgAAAAAbICIADcAwAhBwgAAMEDACA-AADeAwAgPwAA3gMAIKsCAAAAvQICrAIAAAC9AgitAgAAAL0CCLICAADdA70CIgSrAgAAAL0CAqwCAAAAvQIIrQIAAAC9AgiyAgAA3gO9AiIOCAAA2wMAID4AAOADACA_AADgAwAgqwIBAAAAAawCAQAAAAWtAgEAAAAFrgIBAAAAAa8CAQAAAAGwAgEAAAABsQIBAAAAAbICAQDfAwAhswIBAAAAAbQCAQAAAAG1AgEAAAABC6sCAQAAAAGsAgEAAAAFrQIBAAAABa4CAQAAAAGvAgEAAAABsAIBAAAAAbECAQAAAAGyAgEA4AMAIbMCAQAAAAG0AgEAAAABtQIBAAAAARUBAADnAwAgEQAA6AMAIBwAAOwDACAjAADpAwAgJAAA6gMAICUAAOsDACCiAgAA4QMAMKMCAAAeABCkAgAA4QMAMKUCAQDJAwAhpgIBAMoDACGpAkAAzAMAIaoCQADMAwAhuQIBAMoDACG6AgEA4gMAIbsCAQDiAwAhvQIAAOMDvQIivgIgAOQDACG_AgEA4gMAIcECAADlA8ECIsMCAADmA8MCIgurAgEAAAABrAIBAAAABa0CAQAAAAWuAgEAAAABrwIBAAAAAbACAQAAAAGxAgEAAAABsgIBAOADACGzAgEAAAABtAIBAAAAAbUCAQAAAAEEqwIAAAC9AgKsAgAAAL0CCK0CAAAAvQIIsgIAAN4DvQIiAqsCIAAAAAGyAiAA3AMAIQSrAgAAAMECAqwCAAAAwQIIrQIAAADBAgiyAgAA2QPBAiIEqwIAAADDAgKsAgAAAMMCCK0CAAAAwwIIsgIAANcDwwIiDAIAAJYEACAmAACXBAAgJwAAmAQAIKICAACVBAAwowIAAAMAEKQCAACVBAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAh5wIBAMkDACGJAwAAAwAgigMAAAMAIBECAACWBAAgGgAAvAQAICEAALMEACAiAADqAwAgogIAAL4EADCjAgAABQAQpAIAAL4EADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHnAgEAyQMAIf0CAQDJAwAh_gIBAMoDACH_AgEAygMAIYEDAAC_BIEDIokDAAAFACCKAwAABQAgA7YCAAAaACC3AgAAGgAguAIAABoAIAO2AgAAIAAgtwIAACAAILgCAAAgACADtgIAACUAILcCAAAlACC4AgAAJQAgA7YCAAAzACC3AgAAMwAguAIAADMAIAqiAgAA7QMAMKMCAACHAwAQpAIAAO0DADClAgEAvAMAIakCQAC_AwAhwwIAAO4DxgIixAIBALwDACHGAgEA0QMAIccCAQDRAwAhyAIBAO8DACEHCAAAwQMAID4AAPIDACA_AADyAwAgqwIAAADGAgKsAgAAAMYCCK0CAAAAxgIIsgIAAPEDxgIiCwgAANsDACA-AADgAwAgPwAA4AMAIKsCAQAAAAGsAgEAAAAFrQIBAAAABa4CAQAAAAGvAgEAAAABsAIBAAAAAbECAQAAAAGyAgEA8AMAIQsIAADbAwAgPgAA4AMAID8AAOADACCrAgEAAAABrAIBAAAABa0CAQAAAAWuAgEAAAABrwIBAAAAAbACAQAAAAGxAgEAAAABsgIBAPADACEHCAAAwQMAID4AAPIDACA_AADyAwAgqwIAAADGAgKsAgAAAMYCCK0CAAAAxgIIsgIAAPEDxgIiBKsCAAAAxgICrAIAAADGAgitAgAAAMYCCLICAADyA8YCIhSiAgAA8wMAMKMCAADvAgAQpAIAAPMDADClAgEAvAMAIakCQAC_AwAhqgJAAL8DACHDAgAA7gPGAiLJAgEAvQMAIcoCAQC8AwAhywIBALwDACHMAgEAvAMAIc0CAQDvAwAhzgIBAO8DACHPAgEAvQMAIdACEAD0AwAh0QIBANEDACHSAgEAvQMAIdMCEAD0AwAh1QIAAPUD1QIi1gJAAPYDACENCAAAwQMAIDwAAPwDACA9AAD8AwAgPgAA_AMAID8AAPwDACCrAhAAAAABrAIQAAAABK0CEAAAAASuAhAAAAABrwIQAAAAAbACEAAAAAGxAhAAAAABsgIQAPsDACEHCAAAwQMAID4AAPoDACA_AAD6AwAgqwIAAADVAgKsAgAAANUCCK0CAAAA1QIIsgIAAPkD1QIiCwgAANsDACA-AAD4AwAgPwAA-AMAIKsCQAAAAAGsAkAAAAAFrQJAAAAABa4CQAAAAAGvAkAAAAABsAJAAAAAAbECQAAAAAGyAkAA9wMAIQsIAADbAwAgPgAA-AMAID8AAPgDACCrAkAAAAABrAJAAAAABa0CQAAAAAWuAkAAAAABrwJAAAAAAbACQAAAAAGxAkAAAAABsgJAAPcDACEIqwJAAAAAAawCQAAAAAWtAkAAAAAFrgJAAAAAAa8CQAAAAAGwAkAAAAABsQJAAAAAAbICQAD4AwAhBwgAAMEDACA-AAD6AwAgPwAA-gMAIKsCAAAA1QICrAIAAADVAgitAgAAANUCCLICAAD5A9UCIgSrAgAAANUCAqwCAAAA1QIIrQIAAADVAgiyAgAA-gPVAiINCAAAwQMAIDwAAPwDACA9AAD8AwAgPgAA_AMAID8AAPwDACCrAhAAAAABrAIQAAAABK0CEAAAAASuAhAAAAABrwIQAAAAAbACEAAAAAGxAhAAAAABsgIQAPsDACEIqwIQAAAAAawCEAAAAAStAhAAAAAErgIQAAAAAa8CEAAAAAGwAhAAAAABsQIQAAAAAbICEAD8AwAhDKICAAD9AwAwowIAANUCABCkAgAA_QMAMKUCAQC8AwAhqQJAAL8DACHEAgEAvAMAIdcCAQC8AwAh2AIBAL0DACHZAgEAvQMAIdoCAQDRAwAh2wIBANEDACHcAgEA0QMAIQ4OAAD_AwAgGAAAgAQAIKICAAD-AwAwowIAAC4AEKQCAAD-AwAwpQIBAMkDACGpAkAAzAMAIcQCAQDJAwAh1wIBAMkDACHYAgEAygMAIdkCAQDKAwAh2gIBAOIDACHbAgEA4gMAIdwCAQDiAwAhIgEAAKcEACAKAAC6BAAgCwAAugQAIAwAALsEACANAAC7BAAgEAAA6QMAIBMAAOoDACAXAADrAwAgGQAAsAQAIBoAALwEACAbAAC9BAAgHAAA7AMAIKICAAC5BAAwowIAABQAEKQCAAC5BAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALgExgIiyQIBAMoDACHKAgEAyQMAIcsCAQDJAwAhzAIBAMkDACHNAgEAqQQAIc4CAQCpBAAhzwIBAMoDACHQAhAAhAQAIdECAQDiAwAh0gIBAMoDACHTAhAAhAQAIdUCAACFBNUCItYCQACGBAAhiQMAABQAIIoDAAAUACARDgAA_wMAIBEAAK8EACAZAACwBAAgogIAAKwEADCjAgAAKgAQpAIAAKwEADClAgEAyQMAIakCQADMAwAhwwIAAK4E9gIixAIBAMkDACHcAgEA4gMAIfMCAQDJAwAh9AICAK0EACH2AgEA4gMAIfcCQADMAwAhiQMAACoAIIoDAAAqACANogIAAIEEADCjAgAAvQIAEKQCAACBBAAwpQIBALwDACGoAiAAvgMAIakCQAC_AwAhqgJAAL8DACHSAgEAvQMAId0CAQC8AwAh3gIQAPQDACHfAhAA9AMAIeACEAD0AwAh4QIQAPQDACENogIAAIIEADCjAgAApwIAEKQCAACCBAAwpQIBALwDACGpAkAAvwMAIaoCQAC_AwAhwwIAAPUD1QIixAIBALwDACHiAhAA9AMAIeMCAQC9AwAh5AIBAL0DACHlAgEA0QMAIeYCQAD2AwAhDg4AAP8DACCiAgAAgwQAMKMCAAAxABCkAgAAgwQAMKUCAQDJAwAhqQJAAMwDACGqAkAAzAMAIcMCAACFBNUCIsQCAQDJAwAh4gIQAIQEACHjAgEAygMAIeQCAQDKAwAh5QIBAOIDACHmAkAAhgQAIQirAhAAAAABrAIQAAAABK0CEAAAAASuAhAAAAABrwIQAAAAAbACEAAAAAGxAhAAAAABsgIQAPwDACEEqwIAAADVAgKsAgAAANUCCK0CAAAA1QIIsgIAAPoD1QIiCKsCQAAAAAGsAkAAAAAFrQJAAAAABa4CQAAAAAGvAkAAAAABsAJAAAAAAbECQAAAAAGyAkAA-AMAIQuiAgAAhwQAMKMCAACPAgAQpAIAAIcEADClAgEAvAMAIakCQAC_AwAhxAIBAO8DACHnAgEAvAMAIegCAQC9AwAh6QIBAL0DACHqAgEAvQMAIesCIAC-AwAhDaICAACIBAAwowIAAPcBABCkAgAAiAQAMKUCAQC8AwAhqQJAAL8DACGqAkAAvwMAIcMCAACJBO8CIsQCAQC8AwAh7AIBALwDACHtAgEAvAMAIe8CQAD2AwAh8AJAAPYDACHxAgEA7wMAIQcIAADBAwAgPgAAiwQAID8AAIsEACCrAgAAAO8CAqwCAAAA7wIIrQIAAADvAgiyAgAAigTvAiIHCAAAwQMAID4AAIsEACA_AACLBAAgqwIAAADvAgKsAgAAAO8CCK0CAAAA7wIIsgIAAIoE7wIiBKsCAAAA7wICrAIAAADvAgitAgAAAO8CCLICAACLBO8CIgyiAgAAjAQAMKMCAADfAQAQpAIAAIwEADClAgEAvAMAIaYCAQC9AwAhpwIBAL0DACGoAiAAvgMAIakCQAC_AwAhqgJAAL8DACG_AgEA0QMAId0CAQC8AwAh8gIBAL0DACEMogIAAI0EADCjAgAAyQEAEKQCAACNBAAwpQIBALwDACGpAkAAvwMAIcMCAACPBPYCIsQCAQC8AwAh3AIBANEDACHzAgEAvAMAIfQCAgCOBAAh9gIBANEDACH3AkAAvwMAIQ0IAADBAwAgPAAAkwQAID0AAMEDACA-AADBAwAgPwAAwQMAIKsCAgAAAAGsAgIAAAAErQICAAAABK4CAgAAAAGvAgIAAAABsAICAAAAAbECAgAAAAGyAgIAkgQAIQcIAADBAwAgPgAAkQQAID8AAJEEACCrAgAAAPYCAqwCAAAA9gIIrQIAAAD2AgiyAgAAkAT2AiIHCAAAwQMAID4AAJEEACA_AACRBAAgqwIAAAD2AgKsAgAAAPYCCK0CAAAA9gIIsgIAAJAE9gIiBKsCAAAA9gICrAIAAAD2AgitAgAAAPYCCLICAACRBPYCIg0IAADBAwAgPAAAkwQAID0AAMEDACA-AADBAwAgPwAAwQMAIKsCAgAAAAGsAgIAAAAErQICAAAABK4CAgAAAAGvAgIAAAABsAICAAAAAbECAgAAAAGyAgIAkgQAIQirAggAAAABrAIIAAAABK0CCAAAAASuAggAAAABrwIIAAAAAbACCAAAAAGxAggAAAABsgIIAJMEACEHogIAAJQEADCjAgAAswEAEKQCAACUBAAwpQIBALwDACGpAkAAvwMAIaoCQAC_AwAh5wIBALwDACEKAgAAlgQAICYAAJcEACAnAACYBAAgogIAAJUEADCjAgAAAwAQpAIAAJUEADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHnAgEAyQMAIRcBAADnAwAgEQAA6AMAIBwAAOwDACAjAADpAwAgJAAA6gMAICUAAOsDACCiAgAA4QMAMKMCAAAeABCkAgAA4QMAMKUCAQDJAwAhpgIBAMoDACGpAkAAzAMAIaoCQADMAwAhuQIBAMoDACG6AgEA4gMAIbsCAQDiAwAhvQIAAOMDvQIivgIgAOQDACG_AgEA4gMAIcECAADlA8ECIsMCAADmA8MCIokDAAAeACCKAwAAHgAgA7YCAABRACC3AgAAUQAguAIAAFEAIAO2AgAAFAAgtwIAABQAILgCAAAUACANogIAAJkEADCjAgAAmwEAEKQCAACZBAAwpQIBALwDACGpAkAAvwMAIaoCQAC_AwAhwwIAAJoE-gIixAIBALwDACHzAgEAvAMAIfgCAQDvAwAh-gJAAL8DACH7AkAA9gMAIfwCQAD2AwAhBwgAAMEDACA-AACcBAAgPwAAnAQAIKsCAAAA-gICrAIAAAD6AgitAgAAAPoCCLICAACbBPoCIgcIAADBAwAgPgAAnAQAID8AAJwEACCrAgAAAPoCAqwCAAAA-gIIrQIAAAD6AgiyAgAAmwT6AiIEqwIAAAD6AgKsAgAAAPoCCK0CAAAA-gIIsgIAAJwE-gIiC6ICAACdBAAwowIAAIMBABCkAgAAnQQAMKUCAQC8AwAhqQJAAL8DACGqAkAAvwMAIecCAQC8AwAh_QIBALwDACH-AgEAvQMAIf8CAQC9AwAhgQMAAJ4EgQMiBwgAAMEDACA-AACgBAAgPwAAoAQAIKsCAAAAgQMCrAIAAACBAwitAgAAAIEDCLICAACfBIEDIgcIAADBAwAgPgAAoAQAID8AAKAEACCrAgAAAIEDAqwCAAAAgQMIrQIAAACBAwiyAgAAnwSBAyIEqwIAAACBAwKsAgAAAIEDCK0CAAAAgQMIsgIAAKAEgQMiDqICAAChBAAwowIAAG0AEKQCAAChBAAwpQIBALwDACGpAkAAvwMAIaoCQAC_AwAhygIBALwDACGCAwEA0QMAIYMDAQC9AwAhhAMBAL0DACGFAwEAvQMAIYYDAQDRAwAhhwMQAKIEACGIAxAAogQAIQ0IAADbAwAgPAAApAQAID0AAKQEACA-AACkBAAgPwAApAQAIKsCEAAAAAGsAhAAAAAFrQIQAAAABa4CEAAAAAGvAhAAAAABsAIQAAAAAbECEAAAAAGyAhAAowQAIQ0IAADbAwAgPAAApAQAID0AAKQEACA-AACkBAAgPwAApAQAIKsCEAAAAAGsAhAAAAAFrQIQAAAABa4CEAAAAAGvAhAAAAABsAIQAAAAAbECEAAAAAGyAhAAowQAIQirAhAAAAABrAIQAAAABa0CEAAAAAWuAhAAAAABrwIQAAAAAbACEAAAAAGxAhAAAAABsgIQAKQEACERAQAApwQAICgAAJgEACApAACYBAAgogIAAKUEADCjAgAAUQAQpAIAAKUEADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHKAgEAyQMAIYIDAQDiAwAhgwMBAMoDACGEAwEAygMAIYUDAQDKAwAhhgMBAOIDACGHAxAApgQAIYgDEACmBAAhCKsCEAAAAAGsAhAAAAAFrQIQAAAABa4CEAAAAAGvAhAAAAABsAIQAAAAAbECEAAAAAGyAhAApAQAIQwCAACWBAAgJgAAlwQAICcAAJgEACCiAgAAlQQAMKMCAAADABCkAgAAlQQAMKUCAQDJAwAhqQJAAMwDACGqAkAAzAMAIecCAQDJAwAhiQMAAAMAIIoDAAADACANAgAAlgQAIA4AAKoEACCiAgAAqAQAMKMCAAAzABCkAgAAqAQAMKUCAQDJAwAhqQJAAMwDACHEAgEAqQQAIecCAQDJAwAh6AIBAMoDACHpAgEAygMAIeoCAQDKAwAh6wIgAMsDACEIqwIBAAAAAawCAQAAAAWtAgEAAAAFrgIBAAAAAa8CAQAAAAGwAgEAAAABsQIBAAAAAbICAQCrBAAhIgEAAKcEACAKAAC6BAAgCwAAugQAIAwAALsEACANAAC7BAAgEAAA6QMAIBMAAOoDACAXAADrAwAgGQAAsAQAIBoAALwEACAbAAC9BAAgHAAA7AMAIKICAAC5BAAwowIAABQAEKQCAAC5BAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALgExgIiyQIBAMoDACHKAgEAyQMAIcsCAQDJAwAhzAIBAMkDACHNAgEAqQQAIc4CAQCpBAAhzwIBAMoDACHQAhAAhAQAIdECAQDiAwAh0gIBAMoDACHTAhAAhAQAIdUCAACFBNUCItYCQACGBAAhiQMAABQAIIoDAAAUACAIqwIBAAAAAawCAQAAAAWtAgEAAAAFrgIBAAAAAa8CAQAAAAGwAgEAAAABsQIBAAAAAbICAQCrBAAhDw4AAP8DACARAACvBAAgGQAAsAQAIKICAACsBAAwowIAACoAEKQCAACsBAAwpQIBAMkDACGpAkAAzAMAIcMCAACuBPYCIsQCAQDJAwAh3AIBAOIDACHzAgEAyQMAIfQCAgCtBAAh9gIBAOIDACH3AkAAzAMAIQirAgIAAAABrAICAAAABK0CAgAAAASuAgIAAAABrwICAAAAAbACAgAAAAGxAgIAAAABsgICAMEDACEEqwIAAAD2AgKsAgAAAPYCCK0CAAAA9gIIsgIAAJEE9gIiEQIAAJYEACAaAAC8BAAgIQAAswQAICIAAOoDACCiAgAAvgQAMKMCAAAFABCkAgAAvgQAMKUCAQDJAwAhqQJAAMwDACGqAkAAzAMAIecCAQDJAwAh_QIBAMkDACH-AgEAygMAIf8CAQDKAwAhgQMAAL8EgQMiiQMAAAUAIIoDAAAFACAQDgAA_wMAIBgAAIAEACCiAgAA_gMAMKMCAAAuABCkAgAA_gMAMKUCAQDJAwAhqQJAAMwDACHEAgEAyQMAIdcCAQDJAwAh2AIBAMoDACHZAgEAygMAIdoCAQDiAwAh2wIBAOIDACHcAgEA4gMAIYkDAAAuACCKAwAALgAgEQ4AAP8DACAUAACzBAAgFQAAswQAIBYAALQEACCiAgAAsQQAMKMCAAAlABCkAgAAsQQAMKUCAQDJAwAhqQJAAMwDACGqAkAAzAMAIcMCAACyBO8CIsQCAQDJAwAh7AIBAMkDACHtAgEAyQMAIe8CQACGBAAh8AJAAIYEACHxAgEAqQQAIQSrAgAAAO8CAqwCAAAA7wIIrQIAAADvAgiyAgAAiwTvAiIUBgAAwQQAIAkAAMMEACAdAACYBAAgHgAAmAQAIB8AAOsDACAgAADrAwAgogIAAMIEADCjAgAABwAQpAIAAMIEADClAgEAyQMAIaYCAQDKAwAhpwIBAMoDACGoAiAAywMAIakCQADMAwAhqgJAAMwDACG_AgEA4gMAId0CAQDJAwAh8gIBAMoDACGJAwAABwAgigMAAAcAIBcBAADnAwAgEQAA6AMAIBwAAOwDACAjAADpAwAgJAAA6gMAICUAAOsDACCiAgAA4QMAMKMCAAAeABCkAgAA4QMAMKUCAQDJAwAhpgIBAMoDACGpAkAAzAMAIaoCQADMAwAhuQIBAMoDACG6AgEA4gMAIbsCAQDiAwAhvQIAAOMDvQIivgIgAOQDACG_AgEA4gMAIcECAADlA8ECIsMCAADmA8MCIokDAAAeACCKAwAAHgAgEA4AAP8DACARAACvBAAgEgAAtAQAIKICAAC1BAAwowIAACAAEKQCAAC1BAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALYE-gIixAIBAMkDACHzAgEAyQMAIfgCAQCpBAAh-gJAAMwDACH7AkAAhgQAIfwCQACGBAAhBKsCAAAA-gICrAIAAAD6AgitAgAAAPoCCLICAACcBPoCIgwOAAD_AwAgDwAAtAQAIKICAAC3BAAwowIAABoAEKQCAAC3BAAwpQIBAMkDACGpAkAAzAMAIcMCAAC4BMYCIsQCAQDJAwAhxgIBAOIDACHHAgEA4gMAIcgCAQCpBAAhBKsCAAAAxgICrAIAAADGAgitAgAAAMYCCLICAADyA8YCIiABAACnBAAgCgAAugQAIAsAALoEACAMAAC7BAAgDQAAuwQAIBAAAOkDACATAADqAwAgFwAA6wMAIBkAALAEACAaAAC8BAAgGwAAvQQAIBwAAOwDACCiAgAAuQQAMKMCAAAUABCkAgAAuQQAMKUCAQDJAwAhqQJAAMwDACGqAkAAzAMAIcMCAAC4BMYCIskCAQDKAwAhygIBAMkDACHLAgEAyQMAIcwCAQDJAwAhzQIBAKkEACHOAgEAqQQAIc8CAQDKAwAh0AIQAIQEACHRAgEA4gMAIdICAQDKAwAh0wIQAIQEACHVAgAAhQTVAiLWAkAAhgQAIRMBAACnBAAgKAAAmAQAICkAAJgEACCiAgAApQQAMKMCAABRABCkAgAApQQAMKUCAQDJAwAhqQJAAMwDACGqAkAAzAMAIcoCAQDJAwAhggMBAOIDACGDAwEAygMAIYQDAQDKAwAhhQMBAMoDACGGAwEA4gMAIYcDEACmBAAhiAMQAKYEACGJAwAAUQAgigMAAFEAIBQGAADBBAAgCQAAwwQAIB0AAJgEACAeAACYBAAgHwAA6wMAICAAAOsDACCiAgAAwgQAMKMCAAAHABCkAgAAwgQAMKUCAQDJAwAhpgIBAMoDACGnAgEAygMAIagCIADLAwAhqQJAAMwDACGqAkAAzAMAIb8CAQDiAwAh3QIBAMkDACHyAgEAygMAIYkDAAAHACCKAwAABwAgA7YCAAAqACC3AgAAKgAguAIAACoAIBAOAAD_AwAgogIAAIMEADCjAgAAMQAQpAIAAIMEADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHDAgAAhQTVAiLEAgEAyQMAIeICEACEBAAh4wIBAMoDACHkAgEAygMAIeUCAQDiAwAh5gJAAIYEACGJAwAAMQAgigMAADEAIA8CAACWBAAgGgAAvAQAICEAALMEACAiAADqAwAgogIAAL4EADCjAgAABQAQpAIAAL4EADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHnAgEAyQMAIf0CAQDJAwAh_gIBAMoDACH_AgEAygMAIYEDAAC_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_AgEA4gMAId0CAQDJAwAh8gIBAMoDACECAAAACQAgLwAA5AQAIAIAAADhBAAgLwAA4gQAIAyiAgAA4AQAMKMCAADhBAAQpAIAAOAEADClAgEAyQMAIaYCAQDKAwAhpwIBAMoDACGoAiAAywMAIakCQADMAwAhqgJAAMwDACG_AgEA4gMAId0CAQDJAwAh8gIBAMoDACEMogIAAOAEADCjAgAA4QQAEKQCAADgBAAwpQIBAMkDACGmAgEAygMAIacCAQDKAwAhqAIgAMsDACGpAkAAzAMAIaoCQADMAwAhvwIBAOIDACHdAgEAyQMAIfICAQDKAwAhCKUCAQDHBAAhpgIBAMcEACGnAgEAxwQAIagCIADIBAAhqQJAAMkEACGqAkAAyQQAIb8CAQDjBAAh8gIBAMcEACEBjgMBAAAAAQ0JAADlBAAgHQAA5gQAIB4AAOcEACAfAADoBAAgIAAA6QQAIKUCAQDHBAAhpgIBAMcEACGnAgEAxwQAIagCIADIBAAhqQJAAMkEACGqAkAAyQQAIb8CAQDjBAAh8gIBAMcEACELNgAAkwYAMDcAAJgGADCLAwAAlAYAMIwDAACVBgAwjQMAAJYGACCOAwAAlwYAMI8DAACXBgAwkAMAAJcGADCRAwAAlwYAMJIDAACZBgAwkwMAAJoGADALNgAAiAYAMDcAAIwGADCLAwAAiQYAMIwDAACKBgAwjQMAAIsGACCOAwAAjQUAMI8DAACNBQAwkAMAAI0FADCRAwAAjQUAMJIDAACNBgAwkwMAAJAFADALNgAAiQUAMDcAAI4FADCLAwAAigUAMIwDAACLBQAwjQMAAIwFACCOAwAAjQUAMI8DAACNBQAwkAMAAI0FADCRAwAAjQUAMJIDAACPBQAwkwMAAJAFADALNgAA_gQAMDcAAIIFADCLAwAA_wQAMIwDAACABQAwjQMAAIEFACCOAwAA7gQAMI8DAADuBAAwkAMAAO4EADCRAwAA7gQAMJIDAACDBQAwkwMAAPEEADALNgAA6gQAMDcAAO8EADCLAwAA6wQAMIwDAADsBAAwjQMAAO0EACCOAwAA7gQAMI8DAADuBAAwkAMAAO4EADCRAwAA7gQAMJIDAADwBAAwkwMAAPEEADAMDgAA-wQAIBQAAPwEACAWAAD9BAAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADvAgLEAgEAAAAB7AIBAAAAAe8CQAAAAAHwAkAAAAAB8QIBAAAAAQIAAAAnACA2AAD6BAAgAwAAACcAIDYAAPoEACA3AAD2BAAgAS8AAKUJADARDgAA_wMAIBQAALMEACAVAACzBAAgFgAAtAQAIKICAACxBAAwowIAACUAEKQCAACxBAAwpQIBAAAAAakCQADMAwAhqgJAAMwDACHDAgAAsgTvAiLEAgEAyQMAIewCAQDJAwAh7QIBAMkDACHvAkAAhgQAIfACQACGBAAh8QIBAKkEACECAAAAJwAgLwAA9gQAIAIAAADyBAAgLwAA8wQAIA2iAgAA8QQAMKMCAADyBAAQpAIAAPEEADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHDAgAAsgTvAiLEAgEAyQMAIewCAQDJAwAh7QIBAMkDACHvAkAAhgQAIfACQACGBAAh8QIBAKkEACENogIAAPEEADCjAgAA8gQAEKQCAADxBAAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALIE7wIixAIBAMkDACHsAgEAyQMAIe0CAQDJAwAh7wJAAIYEACHwAkAAhgQAIfECAQCpBAAhCaUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAAD0BO8CIsQCAQDHBAAh7AIBAMcEACHvAkAA9QQAIfACQAD1BAAh8QIBAOMEACEBjgMAAADvAgIBjgNAAAAAAQwOAAD3BAAgFAAA-AQAIBYAAPkEACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAA9ATvAiLEAgEAxwQAIewCAQDHBAAh7wJAAPUEACHwAkAA9QQAIfECAQDjBAAhBTYAAJoJACA3AACjCQAgiwMAAJsJACCMAwAAogkAIJEDAAAWACAFNgAAmAkAIDcAAKAJACCLAwAAmQkAIIwDAACfCQAgkQMAAAkAIAc2AACWCQAgNwAAnQkAIIsDAACXCQAgjAMAAJwJACCPAwAAHgAgkAMAAB4AIJEDAACKAwAgDA4AAPsEACAUAAD8BAAgFgAA_QQAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA7wICxAIBAAAAAewCAQAAAAHvAkAAAAAB8AJAAAAAAfECAQAAAAEDNgAAmgkAIIsDAACbCQAgkQMAABYAIAM2AACYCQAgiwMAAJkJACCRAwAACQAgAzYAAJYJACCLAwAAlwkAIJEDAACKAwAgDA4AAPsEACAVAACIBQAgFgAA_QQAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA7wICxAIBAAAAAe0CAQAAAAHvAkAAAAAB8AJAAAAAAfECAQAAAAECAAAAJwAgNgAAhwUAIAMAAAAnACA2AACHBQAgNwAAhQUAIAEvAACVCQAwAgAAACcAIC8AAIUFACACAAAA8gQAIC8AAIQFACAJpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAPQE7wIixAIBAMcEACHtAgEAxwQAIe8CQAD1BAAh8AJAAPUEACHxAgEA4wQAIQwOAAD3BAAgFQAAhgUAIBYAAPkEACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAA9ATvAiLEAgEAxwQAIe0CAQDHBAAh7wJAAPUEACHwAkAA9QQAIfECAQDjBAAhBTYAAJAJACA3AACTCQAgiwMAAJEJACCMAwAAkgkAIJEDAAAJACAMDgAA-wQAIBUAAIgFACAWAAD9BAAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADvAgLEAgEAAAAB7QIBAAAAAe8CQAAAAAHwAkAAAAAB8QIBAAAAAQM2AACQCQAgiwMAAJEJACCRAwAACQAgGwEAAP0FACAKAAD-BQAgCwAA_wUAIAwAAIAGACAQAACBBgAgEwAAggYAIBcAAIMGACAZAACFBgAgGgAAhAYAIBsAAIYGACAcAACHBgAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADGAgLJAgEAAAABygIBAAAAAcsCAQAAAAHMAgEAAAABzQIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABAgAAABYAIDYAAPwFACADAAAAFgAgNgAA_AUAIDcAAJUFACABLwAAjwkAMCABAACnBAAgCgAAugQAIAsAALoEACAMAAC7BAAgDQAAuwQAIBAAAOkDACATAADqAwAgFwAA6wMAIBkAALAEACAaAAC8BAAgGwAAvQQAIBwAAOwDACCiAgAAuQQAMKMCAAAUABCkAgAAuQQAMKUCAQAAAAGpAkAAzAMAIaoCQADMAwAhwwIAALgExgIiyQIBAAAAAcoCAQDJAwAhywIBAMkDACHMAgEAyQMAIc0CAQCpBAAhzgIBAKkEACHPAgEAygMAIdACEACEBAAh0QIBAOIDACHSAgEAygMAIdMCEACEBAAh1QIAAIUE1QIi1gJAAIYEACECAAAAFgAgLwAAlQUAIAIAAACRBQAgLwAAkgUAIBSiAgAAkAUAMKMCAACRBQAQpAIAAJAFADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHDAgAAuATGAiLJAgEAygMAIcoCAQDJAwAhywIBAMkDACHMAgEAyQMAIc0CAQCpBAAhzgIBAKkEACHPAgEAygMAIdACEACEBAAh0QIBAOIDACHSAgEAygMAIdMCEACEBAAh1QIAAIUE1QIi1gJAAIYEACEUogIAAJAFADCjAgAAkQUAEKQCAACQBQAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALgExgIiyQIBAMoDACHKAgEAyQMAIcsCAQDJAwAhzAIBAMkDACHNAgEAqQQAIc4CAQCpBAAhzwIBAMoDACHQAhAAhAQAIdECAQDiAwAh0gIBAMoDACHTAhAAhAQAIdUCAACFBNUCItYCQACGBAAhEKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAACTBcYCIskCAQDHBAAhygIBAMcEACHLAgEAxwQAIcwCAQDHBAAhzQIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEBjgMAAADGAgIBjgMAAADVAgIbAQAAlgUAIAoAAJcFACALAACYBQAgDAAAmQUAIBAAAJoFACATAACbBQAgFwAAnAUAIBkAAJ4FACAaAACdBQAgGwAAnwUAIBwAAKAFACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAAkwXGAiLJAgEAxwQAIcoCAQDHBAAhywIBAMcEACHMAgEAxwQAIc0CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhBTYAANkIACA3AACNCQAgiwMAANoIACCMAwAAjAkAIJEDAACeAQAgBTYAANcIACA3AACKCQAgiwMAANgIACCMAwAAiQkAIJEDAAABACAFNgAA1QgAIDcAAIcJACCLAwAA1ggAIIwDAACGCQAgkQMAAAEAIAc2AADTCAAgNwAAhAkAIIsDAADUCAAgjAMAAIMJACCPAwAABwAgkAMAAAcAIJEDAAAJACALNgAA7gUAMDcAAPMFADCLAwAA7wUAMIwDAADwBQAwjQMAAPEFACCOAwAA8gUAMI8DAADyBQAwkAMAAPIFADCRAwAA8gUAMJIDAAD0BQAwkwMAAPUFADALNgAA3QUAMDcAAOIFADCLAwAA3gUAMIwDAADfBQAwjQMAAOAFACCOAwAA4QUAMI8DAADhBQAwkAMAAOEFADCRAwAA4QUAMJIDAADjBQAwkwMAAOQFADALNgAA1AUAMDcAANgFADCLAwAA1QUAMIwDAADWBQAwjQMAANcFACCOAwAA7gQAMI8DAADuBAAwkAMAAO4EADCRAwAA7gQAMJIDAADZBQAwkwMAAPEEADALNgAAuwUAMDcAAMAFADCLAwAAvAUAMIwDAAC9BQAwjQMAAL4FACCOAwAAvwUAMI8DAAC_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_AQAIBUAAIgFACAWAAD9BAAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADvAgLsAgEAAAAB7QIBAAAAAe8CQAAAAAHwAkAAAAAB8QIBAAAAAQIAAAAnACA2AADcBQAgAwAAACcAIDYAANwFACA3AADbBQAgAS8AAOwIADACAAAAJwAgLwAA2wUAIAIAAADyBAAgLwAA2gUAIAmlAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAA9ATvAiLsAgEAxwQAIe0CAQDHBAAh7wJAAPUEACHwAkAA9QQAIfECAQDjBAAhDBQAAPgEACAVAACGBQAgFgAA-QQAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAAD0BO8CIuwCAQDHBAAh7QIBAMcEACHvAkAA9QQAIfACQAD1BAAh8QIBAOMEACEMFAAA_AQAIBUAAIgFACAWAAD9BAAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADvAgLsAgEAAAAB7QIBAAAAAe8CQAAAAAHwAkAAAAAB8QIBAAAAAQsRAADsBQAgEgAA7QUAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA-gIC8wIBAAAAAfgCAQAAAAH6AkAAAAAB-wJAAAAAAfwCQAAAAAECAAAAIgAgNgAA6wUAIAMAAAAiACA2AADrBQAgNwAA6AUAIAEvAADrCAAwEA4AAP8DACARAACvBAAgEgAAtAQAIKICAAC1BAAwowIAACAAEKQCAAC1BAAwpQIBAAAAAakCQADMAwAhqgJAAMwDACHDAgAAtgT6AiLEAgEAyQMAIfMCAQDJAwAh-AIBAKkEACH6AkAAzAMAIfsCQACGBAAh_AJAAIYEACECAAAAIgAgLwAA6AUAIAIAAADlBQAgLwAA5gUAIA2iAgAA5AUAMKMCAADlBQAQpAIAAOQFADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHDAgAAtgT6AiLEAgEAyQMAIfMCAQDJAwAh-AIBAKkEACH6AkAAzAMAIfsCQACGBAAh_AJAAIYEACENogIAAOQFADCjAgAA5QUAEKQCAADkBQAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhwwIAALYE-gIixAIBAMkDACHzAgEAyQMAIfgCAQCpBAAh-gJAAMwDACH7AkAAhgQAIfwCQACGBAAhCaUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAADnBfoCIvMCAQDHBAAh-AIBAOMEACH6AkAAyQQAIfsCQAD1BAAh_AJAAPUEACEBjgMAAAD6AgILEQAA6QUAIBIAAOoFACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAA5wX6AiLzAgEAxwQAIfgCAQDjBAAh-gJAAMkEACH7AkAA9QQAIfwCQAD1BAAhBTYAAOMIACA3AADpCAAgiwMAAOQIACCMAwAA6AgAIJEDAAASACAHNgAA4QgAIDcAAOYIACCLAwAA4ggAIIwDAADlCAAgjwMAAB4AIJADAAAeACCRAwAAigMAIAsRAADsBQAgEgAA7QUAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA-gIC8wIBAAAAAfgCAQAAAAH6AkAAAAAB-wJAAAAAAfwCQAAAAAEDNgAA4wgAIIsDAADkCAAgkQMAABIAIAM2AADhCAAgiwMAAOIIACCRAwAAigMAIAcPAAD7BQAgpQIBAAAAAakCQAAAAAHDAgAAAMYCAsYCAQAAAAHHAgEAAAAByAIBAAAAAQIAAAAcACA2AAD6BQAgAwAAABwAIDYAAPoFACA3AAD4BQAgAS8AAOAIADAMDgAA_wMAIA8AALQEACCiAgAAtwQAMKMCAAAaABCkAgAAtwQAMKUCAQAAAAGpAkAAzAMAIcMCAAC4BMYCIsQCAQDJAwAhxgIBAOIDACHHAgEA4gMAIcgCAQCpBAAhAgAAABwAIC8AAPgFACACAAAA9gUAIC8AAPcFACAKogIAAPUFADCjAgAA9gUAEKQCAAD1BQAwpQIBAMkDACGpAkAAzAMAIcMCAAC4BMYCIsQCAQDJAwAhxgIBAOIDACHHAgEA4gMAIcgCAQCpBAAhCqICAAD1BQAwowIAAPYFABCkAgAA9QUAMKUCAQDJAwAhqQJAAMwDACHDAgAAuATGAiLEAgEAyQMAIcYCAQDiAwAhxwIBAOIDACHIAgEAqQQAIQalAgEAxwQAIakCQADJBAAhwwIAAJMFxgIixgIBAOMEACHHAgEA4wQAIcgCAQDjBAAhBw8AAPkFACClAgEAxwQAIakCQADJBAAhwwIAAJMFxgIixgIBAOMEACHHAgEA4wQAIcgCAQDjBAAhBzYAANsIACA3AADeCAAgiwMAANwIACCMAwAA3QgAII8DAAAeACCQAwAAHgAgkQMAAIoDACAHDwAA-wUAIKUCAQAAAAGpAkAAAAABwwIAAADGAgLGAgEAAAABxwIBAAAAAcgCAQAAAAEDNgAA2wgAIIsDAADcCAAgkQMAAIoDACAbAQAA_QUAIAoAAP4FACALAAD_BQAgDAAAgAYAIBAAAIEGACATAACCBgAgFwAAgwYAIBkAAIUGACAaAACEBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAcwCAQAAAAHNAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAEDNgAA2QgAIIsDAADaCAAgkQMAAJ4BACADNgAA1wgAIIsDAADYCAAgkQMAAAEAIAM2AADVCAAgiwMAANYIACCRAwAAAQAgAzYAANMIACCLAwAA1AgAIJEDAAAJACAENgAA7gUAMIsDAADvBQAwjQMAAPEFACCRAwAA8gUAMAQ2AADdBQAwiwMAAN4FADCNAwAA4AUAIJEDAADhBQAwBDYAANQFADCLAwAA1QUAMI0DAADXBQAgkQMAAO4EADAENgAAuwUAMIsDAAC8BQAwjQMAAL4FACCRAwAAvwUAMAM2AAC0BQAgiwMAALUFACCRAwAAwAIAIAM2AACvBQAgiwMAALAFACCRAwAAkgIAIAQ2AAChBQAwiwMAAKIFADCNAwAApAUAIJEDAAClBQAwGwEAAP0FACAKAAD-BQAgCwAA_wUAIA0AAJIGACAQAACBBgAgEwAAggYAIBcAAIMGACAZAACFBgAgGgAAhAYAIBsAAIYGACAcAACHBgAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADGAgLJAgEAAAABygIBAAAAAcsCAQAAAAHMAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABAgAAABYAIDYAAJEGACADAAAAFgAgNgAAkQYAIDcAAI8GACABLwAA0ggAMAIAAAAWACAvAACPBgAgAgAAAJEFACAvAACOBgAgEKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAACTBcYCIskCAQDHBAAhygIBAMcEACHLAgEAxwQAIcwCAQDHBAAhzgIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEbAQAAlgUAIAoAAJcFACALAACYBQAgDQAAkAYAIBAAAJoFACATAACbBQAgFwAAnAUAIBkAAJ4FACAaAACdBQAgGwAAnwUAIBwAAKAFACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAAkwXGAiLJAgEAxwQAIcoCAQDHBAAhywIBAMcEACHMAgEAxwQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhBzYAAM0IACA3AADQCAAgiwMAAM4IACCMAwAAzwgAII8DAAAHACCQAwAABwAgkQMAAAkAIBsBAAD9BQAgCgAA_gUAIAsAAP8FACANAACSBgAgEAAAgQYAIBMAAIIGACAXAACDBgAgGQAAhQYAIBoAAIQGACAbAACGBgAgHAAAhwYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcoCAQAAAAHLAgEAAAABzAIBAAAAAc4CAQAAAAHPAgEAAAAB0AIQAAAAAdECAQAAAAHSAgEAAAAB0wIQAAAAAdUCAAAA1QIC1gJAAAAAAQM2AADNCAAgiwMAAM4IACCRAwAACQAgCgIAALkGACAaAAC7BgAgIgAAugYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAecCAQAAAAH-AgEAAAAB_wIBAAAAAYEDAAAAgQMCAgAAABIAIDYAALgGACADAAAAEgAgNgAAuAYAIDcAAJ4GACABLwAAzAgAMA8CAACWBAAgGgAAvAQAICEAALMEACAiAADqAwAgogIAAL4EADCjAgAABQAQpAIAAL4EADClAgEAAAABqQJAAMwDACGqAkAAzAMAIecCAQAAAAH9AgEAyQMAIf4CAQDKAwAh_wIBAMoDACGBAwAAvwSBAyICAAAAEgAgLwAAngYAIAIAAACbBgAgLwAAnAYAIAuiAgAAmgYAMKMCAACbBgAQpAIAAJoGADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHnAgEAyQMAIf0CAQDJAwAh_gIBAMoDACH_AgEAygMAIYEDAAC_BIEDIguiAgAAmgYAMKMCAACbBgAQpAIAAJoGADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHnAgEAyQMAIf0CAQDJAwAh_gIBAMoDACH_AgEAygMAIYEDAAC_BIEDIgelAgEAxwQAIakCQADJBAAhqgJAAMkEACHnAgEAxwQAIf4CAQDHBAAh_wIBAMcEACGBAwAAnQaBAyIBjgMAAACBAwIKAgAAnwYAIBoAAKEGACAiAACgBgAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAh5wIBAMcEACH-AgEAxwQAIf8CAQDHBAAhgQMAAJ0GgQMiBTYAALsIACA3AADKCAAgiwMAALwIACCMAwAAyQgAIJEDAACKAwAgCzYAAK0GADA3AACxBgAwiwMAAK4GADCMAwAArwYAMI0DAACwBgAgjgMAAOEFADCPAwAA4QUAMJADAADhBQAwkQMAAOEFADCSAwAAsgYAMJMDAADkBQAwCzYAAKIGADA3AACmBgAwiwMAAKMGADCMAwAApAYAMI0DAAClBgAgjgMAAL8FADCPAwAAvwUAMJADAAC_BQAwkQMAAL8FADCSAwAApwYAMJMDAADCBQAwCg4AAKwGACAZAADTBQAgpQIBAAAAAakCQAAAAAHDAgAAAPYCAsQCAQAAAAHcAgEAAAAB9AICAAAAAfYCAQAAAAH3AkAAAAABAgAAACwAIDYAAKsGACADAAAALAAgNgAAqwYAIDcAAKkGACABLwAAyAgAMAIAAAAsACAvAACpBgAgAgAAAMMFACAvAACoBgAgCKUCAQDHBAAhqQJAAMkEACHDAgAAxgX2AiLEAgEAxwQAIdwCAQDjBAAh9AICAMUFACH2AgEA4wQAIfcCQADJBAAhCg4AAKoGACAZAADJBQAgpQIBAMcEACGpAkAAyQQAIcMCAADGBfYCIsQCAQDHBAAh3AIBAOMEACH0AgIAxQUAIfYCAQDjBAAh9wJAAMkEACEFNgAAwwgAIDcAAMYIACCLAwAAxAgAIIwDAADFCAAgkQMAABYAIAoOAACsBgAgGQAA0wUAIKUCAQAAAAGpAkAAAAABwwIAAAD2AgLEAgEAAAAB3AIBAAAAAfQCAgAAAAH2AgEAAAAB9wJAAAAAAQM2AADDCAAgiwMAAMQIACCRAwAAFgAgCw4AALcGACASAADtBQAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAAD6AgLEAgEAAAAB-AIBAAAAAfoCQAAAAAH7AkAAAAAB_AJAAAAAAQIAAAAiACA2AAC2BgAgAwAAACIAIDYAALYGACA3AAC0BgAgAS8AAMIIADACAAAAIgAgLwAAtAYAIAIAAADlBQAgLwAAswYAIAmlAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAA5wX6AiLEAgEAxwQAIfgCAQDjBAAh-gJAAMkEACH7AkAA9QQAIfwCQAD1BAAhCw4AALUGACASAADqBQAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAOcF-gIixAIBAMcEACH4AgEA4wQAIfoCQADJBAAh-wJAAPUEACH8AkAA9QQAIQU2AAC9CAAgNwAAwAgAIIsDAAC-CAAgjAMAAL8IACCRAwAAFgAgCw4AALcGACASAADtBQAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAAD6AgLEAgEAAAAB-AIBAAAAAfoCQAAAAAH7AkAAAAAB_AJAAAAAAQM2AAC9CAAgiwMAAL4IACCRAwAAFgAgCgIAALkGACAaAAC7BgAgIgAAugYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAecCAQAAAAH-AgEAAAAB_wIBAAAAAYEDAAAAgQMCAzYAALsIACCLAwAAvAgAIJEDAACKAwAgBDYAAK0GADCLAwAArgYAMI0DAACwBgAgkQMAAOEFADAENgAAogYAMIsDAACjBgAwjQMAAKUGACCRAwAAvwUAMA0JAAC9BgAgHQAAvgYAIB4AAL8GACAfAADABgAgIAAAwQYAIKUCAQAAAAGmAgEAAAABpwIBAAAAAagCIAAAAAGpAkAAAAABqgJAAAAAAb8CAQAAAAHyAgEAAAABBDYAAJMGADCLAwAAlAYAMI0DAACWBgAgkQMAAJcGADAENgAAiAYAMIsDAACJBgAwjQMAAIsGACCRAwAAjQUAMAQ2AACJBQAwiwMAAIoFADCNAwAAjAUAIJEDAACNBQAwBDYAAP4EADCLAwAA_wQAMI0DAACBBQAgkQMAAO4EADAENgAA6gQAMIsDAADrBAAwjQMAAO0EACCRAwAA7gQAMAQ2AADZBAAwiwMAANoEADCNAwAA3AQAIJEDAADdBAAwBDYAAMwEADCLAwAAzQQAMI0DAADPBAAgkQMAANAEADAAAAAAAAABjgMAAAC9AgIBjgMgAAAAAQGOAwAAAMECAgGOAwAAAMMCAgc2AACDBwAgNwAAhgcAIIsDAACEBwAgjAMAAIUHACCPAwAAAwAgkAMAAAMAIJEDAACeAQAgBzYAAPwGACA3AAD_BgAgiwMAAP0GACCMAwAA_gYAII8DAAAFACCQAwAABQAgkQMAABIAIAs2AADxBgAwNwAA9QYAMIsDAADyBgAwjAMAAPMGADCNAwAA9AYAII4DAADyBQAwjwMAAPIFADCQAwAA8gUAMJEDAADyBQAwkgMAAPYGADCTAwAA9QUAMAs2AADoBgAwNwAA7AYAMIsDAADpBgAwjAMAAOoGADCNAwAA6wYAII4DAADhBQAwjwMAAOEFADCQAwAA4QUAMJEDAADhBQAwkgMAAO0GADCTAwAA5AUAMAs2AADfBgAwNwAA4wYAMIsDAADgBgAwjAMAAOEGADCNAwAA4gYAII4DAADuBAAwjwMAAO4EADCQAwAA7gQAMJEDAADuBAAwkgMAAOQGADCTAwAA8QQAMAs2AADUBgAwNwAA2AYAMIsDAADVBgAwjAMAANYGADCNAwAA1wYAII4DAAClBQAwjwMAAKUFADCQAwAApQUAMJEDAAClBQAwkgMAANkGADCTAwAAqAUAMAgOAADeBgAgpQIBAAAAAakCQAAAAAHEAgEAAAAB6AIBAAAAAekCAQAAAAHqAgEAAAAB6wIgAAAAAQIAAAA1ACA2AADdBgAgAwAAADUAIDYAAN0GACA3AADbBgAgAS8AALoIADACAAAANQAgLwAA2wYAIAIAAACpBQAgLwAA2gYAIAelAgEAxwQAIakCQADJBAAhxAIBAOMEACHoAgEAxwQAIekCAQDHBAAh6gIBAMcEACHrAiAAyAQAIQgOAADcBgAgpQIBAMcEACGpAkAAyQQAIcQCAQDjBAAh6AIBAMcEACHpAgEAxwQAIeoCAQDHBAAh6wIgAMgEACEHNgAAtQgAIDcAALgIACCLAwAAtggAIIwDAAC3CAAgjwMAABQAIJADAAAUACCRAwAAFgAgCA4AAN4GACClAgEAAAABqQJAAAAAAcQCAQAAAAHoAgEAAAAB6QIBAAAAAeoCAQAAAAHrAiAAAAABAzYAALUIACCLAwAAtggAIJEDAAAWACAMDgAA-wQAIBQAAPwEACAVAACIBQAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADvAgLEAgEAAAAB7AIBAAAAAe0CAQAAAAHvAkAAAAAB8AJAAAAAAQIAAAAnACA2AADnBgAgAwAAACcAIDYAAOcGACA3AADmBgAgAS8AALQIADACAAAAJwAgLwAA5gYAIAIAAADyBAAgLwAA5QYAIAmlAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAA9ATvAiLEAgEAxwQAIewCAQDHBAAh7QIBAMcEACHvAkAA9QQAIfACQAD1BAAhDA4AAPcEACAUAAD4BAAgFQAAhgUAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAAD0BO8CIsQCAQDHBAAh7AIBAMcEACHtAgEAxwQAIe8CQAD1BAAh8AJAAPUEACEMDgAA-wQAIBQAAPwEACAVAACIBQAgpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADvAgLEAgEAAAAB7AIBAAAAAe0CAQAAAAHvAkAAAAAB8AJAAAAAAQsOAAC3BgAgEQAA7AUAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA-gICxAIBAAAAAfMCAQAAAAH6AkAAAAAB-wJAAAAAAfwCQAAAAAECAAAAIgAgNgAA8AYAIAMAAAAiACA2AADwBgAgNwAA7wYAIAEvAACzCAAwAgAAACIAIC8AAO8GACACAAAA5QUAIC8AAO4GACAJpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAOcF-gIixAIBAMcEACHzAgEAxwQAIfoCQADJBAAh-wJAAPUEACH8AkAA9QQAIQsOAAC1BgAgEQAA6QUAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAADnBfoCIsQCAQDHBAAh8wIBAMcEACH6AkAAyQQAIfsCQAD1BAAh_AJAAPUEACELDgAAtwYAIBEAAOwFACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAPoCAsQCAQAAAAHzAgEAAAAB-gJAAAAAAfsCQAAAAAH8AkAAAAABBw4AAPsGACClAgEAAAABqQJAAAAAAcMCAAAAxgICxAIBAAAAAcYCAQAAAAHHAgEAAAABAgAAABwAIDYAAPoGACADAAAAHAAgNgAA-gYAIDcAAPgGACABLwAAsggAMAIAAAAcACAvAAD4BgAgAgAAAPYFACAvAAD3BgAgBqUCAQDHBAAhqQJAAMkEACHDAgAAkwXGAiLEAgEAxwQAIcYCAQDjBAAhxwIBAOMEACEHDgAA-QYAIKUCAQDHBAAhqQJAAMkEACHDAgAAkwXGAiLEAgEAxwQAIcYCAQDjBAAhxwIBAOMEACEFNgAArQgAIDcAALAIACCLAwAArggAIIwDAACvCAAgkQMAABYAIAcOAAD7BgAgpQIBAAAAAakCQAAAAAHDAgAAAMYCAsQCAQAAAAHGAgEAAAABxwIBAAAAAQM2AACtCAAgiwMAAK4IACCRAwAAFgAgChoAALsGACAhAACCBwAgIgAAugYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAf0CAQAAAAH-AgEAAAAB_wIBAAAAAYEDAAAAgQMCAgAAABIAIDYAAPwGACADAAAABQAgNgAA_AYAIDcAAIAHACAMAAAABQAgGgAAoQYAICEAAIEHACAiAACgBgAgLwAAgAcAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIf0CAQDHBAAh_gIBAMcEACH_AgEAxwQAIYEDAACdBoEDIgoaAAChBgAgIQAAgQcAICIAAKAGACClAgEAxwQAIakCQADJBAAhqgJAAMkEACH9AgEAxwQAIf4CAQDHBAAh_wIBAMcEACGBAwAAnQaBAyIFNgAAqAgAIDcAAKsIACCLAwAAqQgAIIwDAACqCAAgkQMAAAkAIAM2AACoCAAgiwMAAKkIACCRAwAACQAgBSYAALYHACAnAAC3BwAgpQIBAAAAAakCQAAAAAGqAkAAAAABAgAAAJ4BACA2AACDBwAgAwAAAAMAIDYAAIMHACA3AACHBwAgBwAAAAMAICYAAIgHACAnAACJBwAgLwAAhwcAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIQUmAACIBwAgJwAAiQcAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIQs2AACTBwAwNwAAmAcAMIsDAACUBwAwjAMAAJUHADCNAwAAlgcAII4DAACXBwAwjwMAAJcHADCQAwAAlwcAMJEDAACXBwAwkgMAAJkHADCTAwAAmgcAMAs2AACKBwAwNwAAjgcAMIsDAACLBwAwjAMAAIwHADCNAwAAjQcAII4DAACNBQAwjwMAAI0FADCQAwAAjQUAMJEDAACNBQAwkgMAAI8HADCTAwAAkAUAMBsKAAD-BQAgCwAA_wUAIAwAAIAGACANAACSBgAgEAAAgQYAIBMAAIIGACAXAACDBgAgGQAAhQYAIBoAAIQGACAbAACGBgAgHAAAhwYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcsCAQAAAAHMAgEAAAABzQIBAAAAAc4CAQAAAAHPAgEAAAAB0AIQAAAAAdECAQAAAAHSAgEAAAAB0wIQAAAAAdUCAAAA1QIC1gJAAAAAAQIAAAAWACA2AACSBwAgAwAAABYAIDYAAJIHACA3AACRBwAgAS8AAKcIADACAAAAFgAgLwAAkQcAIAIAAACRBQAgLwAAkAcAIBClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAAkwXGAiLJAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhGwoAAJcFACALAACYBQAgDAAAmQUAIA0AAJAGACAQAACaBQAgEwAAmwUAIBcAAJwFACAZAACeBQAgGgAAnQUAIBsAAJ8FACAcAACgBQAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHLAgEAxwQAIcwCAQDHBAAhzQIBAOMEACHOAgEA4wQAIc8CAQDHBAAh0AIQANYEACHRAgEA4wQAIdICAQDHBAAh0wIQANYEACHVAgAAlAXVAiLWAkAA9QQAIRsKAAD-BQAgCwAA_wUAIAwAAIAGACANAACSBgAgEAAAgQYAIBMAAIIGACAXAACDBgAgGQAAhQYAIBoAAIQGACAbAACGBgAgHAAAhwYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcsCAQAAAAHMAgEAAAABzQIBAAAAAc4CAQAAAAHPAgEAAAAB0AIQAAAAAdECAQAAAAHSAgEAAAAB0wIQAAAAAdUCAAAA1QIC1gJAAAAAAQwoAAC0BwAgKQAAtQcAIKUCAQAAAAGpAkAAAAABqgJAAAAAAYIDAQAAAAGDAwEAAAABhAMBAAAAAYUDAQAAAAGGAwEAAAABhwMQAAAAAYgDEAAAAAECAAAAAQAgNgAAswcAIAMAAAABACA2AACzBwAgNwAAngcAIAEvAACmCAAwEQEAAKcEACAoAACYBAAgKQAAmAQAIKICAAClBAAwowIAAFEAEKQCAAClBAAwpQIBAAAAAakCQADMAwAhqgJAAMwDACHKAgEAyQMAIYIDAQDiAwAhgwMBAMoDACGEAwEAygMAIYUDAQDKAwAhhgMBAOIDACGHAxAApgQAIYgDEACmBAAhAgAAAAEAIC8AAJ4HACACAAAAmwcAIC8AAJwHACAOogIAAJoHADCjAgAAmwcAEKQCAACaBwAwpQIBAMkDACGpAkAAzAMAIaoCQADMAwAhygIBAMkDACGCAwEA4gMAIYMDAQDKAwAhhAMBAMoDACGFAwEAygMAIYYDAQDiAwAhhwMQAKYEACGIAxAApgQAIQ6iAgAAmgcAMKMCAACbBwAQpAIAAJoHADClAgEAyQMAIakCQADMAwAhqgJAAMwDACHKAgEAyQMAIYIDAQDiAwAhgwMBAMoDACGEAwEAygMAIYUDAQDKAwAhhgMBAOIDACGHAxAApgQAIYgDEACmBAAhCqUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIYIDAQDjBAAhgwMBAMcEACGEAwEAxwQAIYUDAQDHBAAhhgMBAOMEACGHAxAAnQcAIYgDEACdBwAhBY4DEAAAAAGUAxAAAAABlQMQAAAAAZYDEAAAAAGXAxAAAAABDCgAAJ8HACApAACgBwAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhggMBAOMEACGDAwEAxwQAIYQDAQDHBAAhhQMBAMcEACGGAwEA4wQAIYcDEACdBwAhiAMQAJ0HACELNgAAqgcAMDcAAK4HADCLAwAAqwcAMIwDAACsBwAwjQMAAK0HACCOAwAAjQUAMI8DAACNBQAwkAMAAI0FADCRAwAAjQUAMJIDAACvBwAwkwMAAJAFADALNgAAoQcAMDcAAKUHADCLAwAAogcAMIwDAACjBwAwjQMAAKQHACCOAwAAjQUAMI8DAACNBQAwkAMAAI0FADCRAwAAjQUAMJIDAACmBwAwkwMAAJAFADAbAQAA_QUAIAoAAP4FACAMAACABgAgDQAAkgYAIBAAAIEGACATAACCBgAgFwAAgwYAIBkAAIUGACAaAACEBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAc0CAQAAAAHOAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAECAAAAFgAgNgAAqQcAIAMAAAAWACA2AACpBwAgNwAAqAcAIAEvAAClCAAwAgAAABYAIC8AAKgHACACAAAAkQUAIC8AAKcHACAQpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzQIBAOMEACHOAgEA4wQAIc8CAQDHBAAh0AIQANYEACHRAgEA4wQAIdICAQDHBAAh0wIQANYEACHVAgAAlAXVAiLWAkAA9QQAIRsBAACWBQAgCgAAlwUAIAwAAJkFACANAACQBgAgEAAAmgUAIBMAAJsFACAXAACcBQAgGQAAngUAIBoAAJ0FACAbAACfBQAgHAAAoAUAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAACTBcYCIskCAQDHBAAhygIBAMcEACHLAgEAxwQAIc0CAQDjBAAhzgIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEbAQAA_QUAIAoAAP4FACAMAACABgAgDQAAkgYAIBAAAIEGACATAACCBgAgFwAAgwYAIBkAAIUGACAaAACEBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAc0CAQAAAAHOAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAEbAQAA_QUAIAsAAP8FACAMAACABgAgDQAAkgYAIBAAAIEGACATAACCBgAgFwAAgwYAIBkAAIUGACAaAACEBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABzAIBAAAAAc0CAQAAAAHOAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAECAAAAFgAgNgAAsgcAIAMAAAAWACA2AACyBwAgNwAAsQcAIAEvAACkCAAwAgAAABYAIC8AALEHACACAAAAkQUAIC8AALAHACAQpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcwCAQDHBAAhzQIBAOMEACHOAgEA4wQAIc8CAQDHBAAh0AIQANYEACHRAgEA4wQAIdICAQDHBAAh0wIQANYEACHVAgAAlAXVAiLWAkAA9QQAIRsBAACWBQAgCwAAmAUAIAwAAJkFACANAACQBgAgEAAAmgUAIBMAAJsFACAXAACcBQAgGQAAngUAIBoAAJ0FACAbAACfBQAgHAAAoAUAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIcMCAACTBcYCIskCAQDHBAAhygIBAMcEACHMAgEAxwQAIc0CAQDjBAAhzgIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEbAQAA_QUAIAsAAP8FACAMAACABgAgDQAAkgYAIBAAAIEGACATAACCBgAgFwAAgwYAIBkAAIUGACAaAACEBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABzAIBAAAAAc0CAQAAAAHOAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAEMKAAAtAcAICkAALUHACClAgEAAAABqQJAAAAAAaoCQAAAAAGCAwEAAAABgwMBAAAAAYQDAQAAAAGFAwEAAAABhgMBAAAAAYcDEAAAAAGIAxAAAAABBDYAAKoHADCLAwAAqwcAMI0DAACtBwAgkQMAAI0FADAENgAAoQcAMIsDAACiBwAwjQMAAKQHACCRAwAAjQUAMAQ2AACTBwAwiwMAAJQHADCNAwAAlgcAIJEDAACXBwAwBDYAAIoHADCLAwAAiwcAMI0DAACNBwAgkQMAAI0FADADNgAAgwcAIIsDAACEBwAgkQMAAJ4BACADNgAA_AYAIIsDAAD9BgAgkQMAABIAIAQ2AADxBgAwiwMAAPIGADCNAwAA9AYAIJEDAADyBQAwBDYAAOgGADCLAwAA6QYAMI0DAADrBgAgkQMAAOEFADAENgAA3wYAMIsDAADgBgAwjQMAAOIGACCRAwAA7gQAMAQ2AADUBgAwiwMAANUGADCNAwAA1wYAIJEDAAClBQAwAwIAAPQHACAmAAD1BwAgJwAA9gcAIAQCAAD0BwAgGgAAhwgAICEAAIUIACAiAADBBwAgAAAAAAAAAAAAAAAAAAAAEAEAAL4HACAKAACGCAAgCwAAhggAIAwAAIUIACANAACFCAAgEAAAwAcAIBMAAMEHACAXAADCBwAgGQAAhAgAIBoAAIcIACAbAACICAAgHAAAwwcAIM0CAADGBgAgzgIAAMYGACDRAgAAxgYAINYCAADGBgAgBQ4AAM8HACARAAC_BwAgGQAAhAgAINwCAADGBgAg9gIAAMYGACAAAAAAAAU2AACfCAAgNwAAoggAIIsDAACgCAAgjAMAAKEIACCRAwAAogMAIAM2AACfCAAgiwMAAKAIACCRAwAAogMAIAAAAAAABTYAAJoIACA3AACdCAAgiwMAAJsIACCMAwAAnAgAIJEDAAAWACADNgAAmggAIIsDAACbCAAgkQMAABYAIAAAAAAAAAAAAAU2AACVCAAgNwAAmAgAIIsDAACWCAAgjAMAAJcIACCRAwAAogMAIAM2AACVCAAgiwMAAJYIACCRAwAAogMAIAAAAAAAAAAABTYAAJAIACA3AACTCAAgiwMAAJEIACCMAwAAkggAIJEDAACKAwAgAzYAAJAIACCLAwAAkQgAIJEDAACKAwAgCgEAAL4HACARAAC_BwAgHAAAwwcAICMAAMAHACAkAADBBwAgJQAAwgcAILoCAADGBgAguwIAAMYGACC-AgAAxgYAIL8CAADGBgAgAAAAAAAAAAAAAAAAAAU2AACLCAAgNwAAjggAIIsDAACMCAAgjAMAAI0IACCRAwAAngEAIAM2AACLCAAgiwMAAIwIACCRAwAAngEAIAUOAADPBwAgGAAA0AcAINoCAADGBgAg2wIAAMYGACDcAgAAxgYAIAcGAACJCAAgCQAAiggAIB0AAPYHACAeAAD2BwAgHwAAwgcAICAAAMIHACC_AgAAxgYAIAcBAAC-BwAgKAAA9gcAICkAAPYHACCCAwAAxgYAIIYDAADGBgAghwMAAMYGACCIAwAAxgYAIAADDgAAzwcAIOUCAADGBgAg5gIAAMYGACACBQAAxAYAIAcAAMUGACAABgIAAPMHACAnAAC3BwAgpQIBAAAAAakCQAAAAAGqAkAAAAAB5wIBAAAAAQIAAACeAQAgNgAAiwgAIAMAAAADACA2AACLCAAgNwAAjwgAIAgAAAADACACAADyBwAgJwAAiQcAIC8AAI8IACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHnAgEAxwQAIQYCAADyBwAgJwAAiQcAIKUCAQDHBAAhqQJAAMkEACGqAkAAyQQAIecCAQDHBAAhEREAALkHACAcAAC9BwAgIwAAugcAICQAALsHACAlAAC8BwAgpQIBAAAAAaYCAQAAAAGpAkAAAAABqgJAAAAAAbkCAQAAAAG6AgEAAAABuwIBAAAAAb0CAAAAvQICvgIgAAAAAb8CAQAAAAHBAgAAAMECAsMCAAAAwwICAgAAAIoDACA2AACQCAAgAwAAAB4AIDYAAJAIACA3AACUCAAgEwAAAB4AIBEAAM8GACAcAADTBgAgIwAA0AYAICQAANEGACAlAADSBgAgLwAAlAgAIKUCAQDHBAAhpgIBAMcEACGpAkAAyQQAIaoCQADJBAAhuQIBAMcEACG6AgEA4wQAIbsCAQDjBAAhvQIAAMoGvQIivgIgAMsGACG_AgEA4wQAIcECAADMBsECIsMCAADNBsMCIhERAADPBgAgHAAA0wYAICMAANAGACAkAADRBgAgJQAA0gYAIKUCAQDHBAAhpgIBAMcEACGpAkAAyQQAIaoCQADJBAAhuQIBAMcEACG6AgEA4wQAIbsCAQDjBAAhvQIAAMoGvQIivgIgAMsGACG_AgEA4wQAIcECAADMBsECIsMCAADNBsMCIgcHAADDBgAgpQIBAAAAAaYCAQAAAAGnAgEAAAABqAIgAAAAAakCQAAAAAGqAkAAAAABAgAAAKIDACA2AACVCAAgAwAAAKUDACA2AACVCAAgNwAAmQgAIAkAAAClAwAgBwAAywQAIC8AAJkIACClAgEAxwQAIaYCAQDHBAAhpwIBAMcEACGoAiAAyAQAIakCQADJBAAhqgJAAMkEACEHBwAAywQAIKUCAQDHBAAhpgIBAMcEACGnAgEAxwQAIagCIADIBAAhqQJAAMkEACGqAkAAyQQAIRwBAAD9BQAgCgAA_gUAIAsAAP8FACAMAACABgAgDQAAkgYAIBAAAIEGACATAACCBgAgFwAAgwYAIBkAAIUGACAaAACEBgAgHAAAhwYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcoCAQAAAAHLAgEAAAABzAIBAAAAAc0CAQAAAAHOAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAECAAAAFgAgNgAAmggAIAMAAAAUACA2AACaCAAgNwAAnggAIB4AAAAUACABAACWBQAgCgAAlwUAIAsAAJgFACAMAACZBQAgDQAAkAYAIBAAAJoFACATAACbBQAgFwAAnAUAIBkAAJ4FACAaAACdBQAgHAAAoAUAIC8AAJ4IACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAAkwXGAiLJAgEAxwQAIcoCAQDHBAAhywIBAMcEACHMAgEAxwQAIc0CAQDjBAAhzgIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEcAQAAlgUAIAoAAJcFACALAACYBQAgDAAAmQUAIA0AAJAGACAQAACaBQAgEwAAmwUAIBcAAJwFACAZAACeBQAgGgAAnQUAIBwAAKAFACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAAkwXGAiLJAgEAxwQAIcoCAQDHBAAhywIBAMcEACHMAgEAxwQAIc0CAQDjBAAhzgIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEHBQAAwgYAIKUCAQAAAAGmAgEAAAABpwIBAAAAAagCIAAAAAGpAkAAAAABqgJAAAAAAQIAAACiAwAgNgAAnwgAIAMAAAClAwAgNgAAnwgAIDcAAKMIACAJAAAApQMAIAUAAMoEACAvAACjCAAgpQIBAMcEACGmAgEAxwQAIacCAQDHBAAhqAIgAMgEACGpAkAAyQQAIaoCQADJBAAhBwUAAMoEACClAgEAxwQAIaYCAQDHBAAhpwIBAMcEACGoAiAAyAQAIakCQADJBAAhqgJAAMkEACEQpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADGAgLJAgEAAAABygIBAAAAAcwCAQAAAAHNAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABEKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcoCAQAAAAHLAgEAAAABzQIBAAAAAc4CAQAAAAHPAgEAAAAB0AIQAAAAAdECAQAAAAHSAgEAAAAB0wIQAAAAAdUCAAAA1QIC1gJAAAAAAQqlAgEAAAABqQJAAAAAAaoCQAAAAAGCAwEAAAABgwMBAAAAAYQDAQAAAAGFAwEAAAABhgMBAAAAAYcDEAAAAAGIAxAAAAABEKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcsCAQAAAAHMAgEAAAABzQIBAAAAAc4CAQAAAAHPAgEAAAAB0AIQAAAAAdECAQAAAAHSAgEAAAAB0wIQAAAAAdUCAAAA1QIC1gJAAAAAAQ4GAADpBwAgHQAAvgYAIB4AAL8GACAfAADABgAgIAAAwQYAIKUCAQAAAAGmAgEAAAABpwIBAAAAAagCIAAAAAGpAkAAAAABqgJAAAAAAb8CAQAAAAHdAgEAAAAB8gIBAAAAAQIAAAAJACA2AACoCAAgAwAAAAcAIDYAAKgIACA3AACsCAAgEAAAAAcAIAYAAOgHACAdAADmBAAgHgAA5wQAIB8AAOgEACAgAADpBAAgLwAArAgAIKUCAQDHBAAhpgIBAMcEACGnAgEAxwQAIagCIADIBAAhqQJAAMkEACGqAkAAyQQAIb8CAQDjBAAh3QIBAMcEACHyAgEAxwQAIQ4GAADoBwAgHQAA5gQAIB4AAOcEACAfAADoBAAgIAAA6QQAIKUCAQDHBAAhpgIBAMcEACGnAgEAxwQAIagCIADIBAAhqQJAAMkEACGqAkAAyQQAIb8CAQDjBAAh3QIBAMcEACHyAgEAxwQAIRwBAAD9BQAgCgAA_gUAIAsAAP8FACAMAACABgAgDQAAkgYAIBMAAIIGACAXAACDBgAgGQAAhQYAIBoAAIQGACAbAACGBgAgHAAAhwYAIKUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAAxgICyQIBAAAAAcoCAQAAAAHLAgEAAAABzAIBAAAAAc0CAQAAAAHOAgEAAAABzwIBAAAAAdACEAAAAAHRAgEAAAAB0gIBAAAAAdMCEAAAAAHVAgAAANUCAtYCQAAAAAECAAAAFgAgNgAArQgAIAMAAAAUACA2AACtCAAgNwAAsQgAIB4AAAAUACABAACWBQAgCgAAlwUAIAsAAJgFACAMAACZBQAgDQAAkAYAIBMAAJsFACAXAACcBQAgGQAAngUAIBoAAJ0FACAbAACfBQAgHAAAoAUAIC8AALEIACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAAkwXGAiLJAgEAxwQAIcoCAQDHBAAhywIBAMcEACHMAgEAxwQAIc0CAQDjBAAhzgIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEcAQAAlgUAIAoAAJcFACALAACYBQAgDAAAmQUAIA0AAJAGACATAACbBQAgFwAAnAUAIBkAAJ4FACAaAACdBQAgGwAAnwUAIBwAAKAFACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHDAgAAkwXGAiLJAgEAxwQAIcoCAQDHBAAhywIBAMcEACHMAgEAxwQAIc0CAQDjBAAhzgIBAOMEACHPAgEAxwQAIdACEADWBAAh0QIBAOMEACHSAgEAxwQAIdMCEADWBAAh1QIAAJQF1QIi1gJAAPUEACEGpQIBAAAAAakCQAAAAAHDAgAAAMYCAsQCAQAAAAHGAgEAAAABxwIBAAAAAQmlAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAPoCAsQCAQAAAAHzAgEAAAAB-gJAAAAAAfsCQAAAAAH8AkAAAAABCaUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA7wICxAIBAAAAAewCAQAAAAHtAgEAAAAB7wJAAAAAAfACQAAAAAEcAQAA_QUAIAoAAP4FACALAAD_BQAgDAAAgAYAIA0AAJIGACAQAACBBgAgEwAAggYAIBcAAIMGACAZAACFBgAgGgAAhAYAIBsAAIYGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAcwCAQAAAAHNAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABAgAAABYAIDYAALUIACADAAAAFAAgNgAAtQgAIDcAALkIACAeAAAAFAAgAQAAlgUAIAoAAJcFACALAACYBQAgDAAAmQUAIA0AAJAGACAQAACaBQAgEwAAmwUAIBcAAJwFACAZAACeBQAgGgAAnQUAIBsAAJ8FACAvAAC5CAAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhHAEAAJYFACAKAACXBQAgCwAAmAUAIAwAAJkFACANAACQBgAgEAAAmgUAIBMAAJsFACAXAACcBQAgGQAAngUAIBoAAJ0FACAbAACfBQAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhB6UCAQAAAAGpAkAAAAABxAIBAAAAAegCAQAAAAHpAgEAAAAB6gIBAAAAAesCIAAAAAERAQAAuAcAIBwAAL0HACAjAAC6BwAgJAAAuwcAICUAALwHACClAgEAAAABpgIBAAAAAakCQAAAAAGqAkAAAAABuQIBAAAAAboCAQAAAAG7AgEAAAABvQIAAAC9AgK-AiAAAAABvwIBAAAAAcECAAAAwQICwwIAAADDAgICAAAAigMAIDYAALsIACAcAQAA_QUAIAoAAP4FACALAAD_BQAgDAAAgAYAIA0AAJIGACAQAACBBgAgFwAAgwYAIBkAAIUGACAaAACEBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAcwCAQAAAAHNAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABAgAAABYAIDYAAL0IACADAAAAFAAgNgAAvQgAIDcAAMEIACAeAAAAFAAgAQAAlgUAIAoAAJcFACALAACYBQAgDAAAmQUAIA0AAJAGACAQAACaBQAgFwAAnAUAIBkAAJ4FACAaAACdBQAgGwAAnwUAIBwAAKAFACAvAADBCAAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhHAEAAJYFACAKAACXBQAgCwAAmAUAIAwAAJkFACANAACQBgAgEAAAmgUAIBcAAJwFACAZAACeBQAgGgAAnQUAIBsAAJ8FACAcAACgBQAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhCaUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA-gICxAIBAAAAAfgCAQAAAAH6AkAAAAAB-wJAAAAAAfwCQAAAAAEcAQAA_QUAIAoAAP4FACALAAD_BQAgDAAAgAYAIA0AAJIGACAQAACBBgAgEwAAggYAIBcAAIMGACAZAACFBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAcwCAQAAAAHNAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABAgAAABYAIDYAAMMIACADAAAAFAAgNgAAwwgAIDcAAMcIACAeAAAAFAAgAQAAlgUAIAoAAJcFACALAACYBQAgDAAAmQUAIA0AAJAGACAQAACaBQAgEwAAmwUAIBcAAJwFACAZAACeBQAgGwAAnwUAIBwAAKAFACAvAADHCAAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhHAEAAJYFACAKAACXBQAgCwAAmAUAIAwAAJkFACANAACQBgAgEAAAmgUAIBMAAJsFACAXAACcBQAgGQAAngUAIBsAAJ8FACAcAACgBQAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhCKUCAQAAAAGpAkAAAAABwwIAAAD2AgLEAgEAAAAB3AIBAAAAAfQCAgAAAAH2AgEAAAAB9wJAAAAAAQMAAAAeACA2AAC7CAAgNwAAywgAIBMAAAAeACABAADOBgAgHAAA0wYAICMAANAGACAkAADRBgAgJQAA0gYAIC8AAMsIACClAgEAxwQAIaYCAQDHBAAhqQJAAMkEACGqAkAAyQQAIbkCAQDHBAAhugIBAOMEACG7AgEA4wQAIb0CAADKBr0CIr4CIADLBgAhvwIBAOMEACHBAgAAzAbBAiLDAgAAzQbDAiIRAQAAzgYAIBwAANMGACAjAADQBgAgJAAA0QYAICUAANIGACClAgEAxwQAIaYCAQDHBAAhqQJAAMkEACGqAkAAyQQAIbkCAQDHBAAhugIBAOMEACG7AgEA4wQAIb0CAADKBr0CIr4CIADLBgAhvwIBAOMEACHBAgAAzAbBAiLDAgAAzQbDAiIHpQIBAAAAAakCQAAAAAGqAkAAAAAB5wIBAAAAAf4CAQAAAAH_AgEAAAABgQMAAACBAwIOBgAA6QcAIAkAAL0GACAdAAC-BgAgHwAAwAYAICAAAMEGACClAgEAAAABpgIBAAAAAacCAQAAAAGoAiAAAAABqQJAAAAAAaoCQAAAAAG_AgEAAAAB3QIBAAAAAfICAQAAAAECAAAACQAgNgAAzQgAIAMAAAAHACA2AADNCAAgNwAA0QgAIBAAAAAHACAGAADoBwAgCQAA5QQAIB0AAOYEACAfAADoBAAgIAAA6QQAIC8AANEIACClAgEAxwQAIaYCAQDHBAAhpwIBAMcEACGoAiAAyAQAIakCQADJBAAhqgJAAMkEACG_AgEA4wQAId0CAQDHBAAh8gIBAMcEACEOBgAA6AcAIAkAAOUEACAdAADmBAAgHwAA6AQAICAAAOkEACClAgEAxwQAIaYCAQDHBAAhpwIBAMcEACGoAiAAyAQAIakCQADJBAAhqgJAAMkEACG_AgEA4wQAId0CAQDHBAAh8gIBAMcEACEQpQIBAAAAAakCQAAAAAGqAkAAAAABwwIAAADGAgLJAgEAAAABygIBAAAAAcsCAQAAAAHMAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABDgYAAOkHACAJAAC9BgAgHgAAvwYAIB8AAMAGACAgAADBBgAgpQIBAAAAAaYCAQAAAAGnAgEAAAABqAIgAAAAAakCQAAAAAGqAkAAAAABvwIBAAAAAd0CAQAAAAHyAgEAAAABAgAAAAkAIDYAANMIACANAQAAgwgAICgAALQHACClAgEAAAABqQJAAAAAAaoCQAAAAAHKAgEAAAABggMBAAAAAYMDAQAAAAGEAwEAAAABhQMBAAAAAYYDAQAAAAGHAxAAAAABiAMQAAAAAQIAAAABACA2AADVCAAgDQEAAIMIACApAAC1BwAgpQIBAAAAAakCQAAAAAGqAkAAAAABygIBAAAAAYIDAQAAAAGDAwEAAAABhAMBAAAAAYUDAQAAAAGGAwEAAAABhwMQAAAAAYgDEAAAAAECAAAAAQAgNgAA1wgAIAYCAADzBwAgJgAAtgcAIKUCAQAAAAGpAkAAAAABqgJAAAAAAecCAQAAAAECAAAAngEAIDYAANkIACARAQAAuAcAIBEAALkHACAcAAC9BwAgJAAAuwcAICUAALwHACClAgEAAAABpgIBAAAAAakCQAAAAAGqAkAAAAABuQIBAAAAAboCAQAAAAG7AgEAAAABvQIAAAC9AgK-AiAAAAABvwIBAAAAAcECAAAAwQICwwIAAADDAgICAAAAigMAIDYAANsIACADAAAAHgAgNgAA2wgAIDcAAN8IACATAAAAHgAgAQAAzgYAIBEAAM8GACAcAADTBgAgJAAA0QYAICUAANIGACAvAADfCAAgpQIBAMcEACGmAgEAxwQAIakCQADJBAAhqgJAAMkEACG5AgEAxwQAIboCAQDjBAAhuwIBAOMEACG9AgAAyga9AiK-AiAAywYAIb8CAQDjBAAhwQIAAMwGwQIiwwIAAM0GwwIiEQEAAM4GACARAADPBgAgHAAA0wYAICQAANEGACAlAADSBgAgpQIBAMcEACGmAgEAxwQAIakCQADJBAAhqgJAAMkEACG5AgEAxwQAIboCAQDjBAAhuwIBAOMEACG9AgAAyga9AiK-AiAAywYAIb8CAQDjBAAhwQIAAMwGwQIiwwIAAM0GwwIiBqUCAQAAAAGpAkAAAAABwwIAAADGAgLGAgEAAAABxwIBAAAAAcgCAQAAAAERAQAAuAcAIBEAALkHACAcAAC9BwAgIwAAugcAICUAALwHACClAgEAAAABpgIBAAAAAakCQAAAAAGqAkAAAAABuQIBAAAAAboCAQAAAAG7AgEAAAABvQIAAAC9AgK-AiAAAAABvwIBAAAAAcECAAAAwQICwwIAAADDAgICAAAAigMAIDYAAOEIACALAgAAuQYAIBoAALsGACAhAACCBwAgpQIBAAAAAakCQAAAAAGqAkAAAAAB5wIBAAAAAf0CAQAAAAH-AgEAAAAB_wIBAAAAAYEDAAAAgQMCAgAAABIAIDYAAOMIACADAAAAHgAgNgAA4QgAIDcAAOcIACATAAAAHgAgAQAAzgYAIBEAAM8GACAcAADTBgAgIwAA0AYAICUAANIGACAvAADnCAAgpQIBAMcEACGmAgEAxwQAIakCQADJBAAhqgJAAMkEACG5AgEAxwQAIboCAQDjBAAhuwIBAOMEACG9AgAAyga9AiK-AiAAywYAIb8CAQDjBAAhwQIAAMwGwQIiwwIAAM0GwwIiEQEAAM4GACARAADPBgAgHAAA0wYAICMAANAGACAlAADSBgAgpQIBAMcEACGmAgEAxwQAIakCQADJBAAhqgJAAMkEACG5AgEAxwQAIboCAQDjBAAhuwIBAOMEACG9AgAAyga9AiK-AiAAywYAIb8CAQDjBAAhwQIAAMwGwQIiwwIAAM0GwwIiAwAAAAUAIDYAAOMIACA3AADqCAAgDQAAAAUAIAIAAJ8GACAaAAChBgAgIQAAgQcAIC8AAOoIACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHnAgEAxwQAIf0CAQDHBAAh_gIBAMcEACH_AgEAxwQAIYEDAACdBoEDIgsCAACfBgAgGgAAoQYAICEAAIEHACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHnAgEAxwQAIf0CAQDHBAAh_gIBAMcEACH_AgEAxwQAIYEDAACdBoEDIgmlAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAPoCAvMCAQAAAAH4AgEAAAAB-gJAAAAAAfsCQAAAAAH8AkAAAAABCaUCAQAAAAGpAkAAAAABqgJAAAAAAcMCAAAA7wIC7AIBAAAAAe0CAQAAAAHvAkAAAAAB8AJAAAAAAfECAQAAAAELAgAAuQYAICEAAIIHACAiAAC6BgAgpQIBAAAAAakCQAAAAAGqAkAAAAAB5wIBAAAAAf0CAQAAAAH-AgEAAAAB_wIBAAAAAYEDAAAAgQMCAgAAABIAIDYAAO0IACAcAQAA_QUAIAoAAP4FACALAAD_BQAgDAAAgAYAIA0AAJIGACAQAACBBgAgEwAAggYAIBcAAIMGACAaAACEBgAgGwAAhgYAIBwAAIcGACClAgEAAAABqQJAAAAAAaoCQAAAAAHDAgAAAMYCAskCAQAAAAHKAgEAAAABywIBAAAAAcwCAQAAAAHNAgEAAAABzgIBAAAAAc8CAQAAAAHQAhAAAAAB0QIBAAAAAdICAQAAAAHTAhAAAAAB1QIAAADVAgLWAkAAAAABAgAAABYAIDYAAO8IACADAAAAFAAgNgAA7wgAIDcAAPMIACAeAAAAFAAgAQAAlgUAIAoAAJcFACALAACYBQAgDAAAmQUAIA0AAJAGACAQAACaBQAgEwAAmwUAIBcAAJwFACAaAACdBQAgGwAAnwUAIBwAAKAFACAvAADzCAAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhHAEAAJYFACAKAACXBQAgCwAAmAUAIAwAAJkFACANAACQBgAgEAAAmgUAIBMAAJsFACAXAACcBQAgGgAAnQUAIBsAAJ8FACAcAACgBQAgpQIBAMcEACGpAkAAyQQAIaoCQADJBAAhwwIAAJMFxgIiyQIBAMcEACHKAgEAxwQAIcsCAQDHBAAhzAIBAMcEACHNAgEA4wQAIc4CAQDjBAAhzwIBAMcEACHQAhAA1gQAIdECAQDjBAAh0gIBAMcEACHTAhAA1gQAIdUCAACUBdUCItYCQAD1BAAhAwAAAAUAIDYAAO0IACA3AAD2CAAgDQAAAAUAIAIAAJ8GACAhAACBBwAgIgAAoAYAIC8AAPYIACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHnAgEAxwQAIf0CAQDHBAAh_gIBAMcEACH_AgEAxwQAIYEDAACdBoEDIgsCAACfBgAgIQAAgQcAICIAAKAGACClAgEAxwQAIakCQADJBAAhqgJAAMkEACHnAgEAxwQAIf0CAQDHBAAh_gIBAMcEACH_AgEAxwQAIYEDAACdBoEDIgilAgEAAAABqQJAAAAAAcMCAAAA9gIC3AIBAAAAAfMCAQAAAAH0AgIAAAAB9gIBAAAAAfcCQAAAAAELDgAArAYAIBEAANIFACClAgEAAAABqQJAAAAAAcMCAAAA9gICxAIBAAAAAdwCAQAAAAHzAgEAAAAB9AICAAAAAfYCAQAAAAH3AkAAAAABAgAAACwAIDYAAPgIACADAAAAKgAgNgAA-AgAIDcAAPwIACANAAAAKgAgDgAAqgYAIBEAAMgFACAvAAD8CAAgpQIBAMcEACGpAkAAyQQAIcMCAADGBfYCIsQCAQDHBAAh3AIBAOMEACHzAgEAxwQAIfQCAgDFBQAh9gIBAOMEACH3AkAAyQQAIQsOAACqBgAgEQAAyAUAIKUCAQDHBAAhqQJAAMkEACHDAgAAxgX2AiLEAgEAxwQAIdwCAQDjBAAh8wIBAMcEACH0AgIAxQUAIfYCAQDjBAAh9wJAAMkEACERAQAAuAcAIBEAALkHACAjAAC6BwAgJAAAuwcAICUAALwHACClAgEAAAABpgIBAAAAAakCQAAAAAGqAkAAAAABuQIBAAAAAboCAQAAAAG7AgEAAAABvQIAAAC9AgK-AiAAAAABvwIBAAAAAcECAAAAwQICwwIAAADDAgICAAAAigMAIDYAAP0IACADAAAAHgAgNgAA_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_AgEAAAAB3QIBAAAAAfICAQAAAAECAAAACQAgNgAAmAkAIBwBAAD9BQAgCgAA_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-ADM_ADQCDgAJEQAEAg4ACREABAUIADk8ADo9ADs-ADw_AD0AAAAAAAUIADk8ADo9ADs-ADw_AD0BBgAGAQYABgMIAEI-AEM_AEQAAAADCABCPgBDPwBEBA4ACRQABRUABRbsAQMEDgAJFAAFFQAFFvIBAwMIAEk-AEo_AEsAAAADCABJPgBKPwBLAgIAAw6EAgkCAgADDooCCQMIAFA-AFE_AFIAAAADCABQPgBRPwBSAQ4ACQEOAAkFCABXPABYPQBZPgBaPwBbAAAAAAAFCABXPABYPQBZPgBaPwBbAQYABgEGAAYFCABgPABhPQBiPgBjPwBkAAAAAAAFCABgPABhPQBiPgBjPwBkAg4ACRgADQIOAAkYAA0DCABpPgBqPwBrAAAAAwgAaT4Aaj8AawUBAAIKAAELAAEM4gIFDeMCBQUBAAIKAAELAAEM6QIFDeoCBQUIAHA8AHE9AHI-AHM_AHQAAAAAAAUIAHA8AHE9AHI-AHM_AHQCDgAJD_wCAwIOAAkPggMDAwgAeT4Aej8AewAAAAMIAHk-AHo_AHsAAAMIAIABPgCBAT8AggEAAAADCACAAT4AgQE_AIIBAAADCACHAT4AiAE_AIkBAAAAAwgAhwE-AIgBPwCJASoCAStbASxcAS1dAS5eATBgATFiFzJjGDNlATRnFzVoGThpATlqATprF0BuGkFvIEJwBENxBERyBEVzBEZ0BEd2BEh4F0l5IUp7BEt9F0x-Ik1_BE6AAQRPgQEXUIQBI1GFASdShgELU4cBC1SIAQtViQELVooBC1eMAQtYjgEXWY8BKFqSAQtblAEXXJUBKV2XAQtemAELX5kBF2CcASphnQEuYp8BAmOgAQJkogECZaMBAmakAQJnpgECaKgBF2mpAS9qqwECa60BF2yuATBtrwECbrABAm-xARdwtAExcbUBNXK2AQ1ztwENdLgBDXW5AQ12ugENd7wBDXi-ARd5vwE2esEBDXvDARd8xAE3fcUBDX7GAQ1_xwEXgAHKATiBAcsBPoIBzAEFgwHNAQWEAc4BBYUBzwEFhgHQAQWHAdIBBYgB1AEXiQHVAT-KAdcBBYsB2QEXjAHaAUCNAdsBBY4B3AEFjwHdAReQAeABQZEB4QFFkgHiAQyTAeMBDJQB5AEMlQHlAQyWAeYBDJcB6AEMmAHqAReZAesBRpoB7gEMmwHwARecAfEBR50B8wEMngH0AQyfAfUBF6AB-AFIoQH5AUyiAfoBEKMB-wEQpAH8ARClAf0BEKYB_gEQpwGAAhCoAYICF6kBgwJNqgGGAhCrAYgCF6wBiQJOrQGLAhCuAYwCEK8BjQIXsAGQAk-xAZECU7IBkwIPswGUAg-0AZYCD7UBlwIPtgGYAg-3AZoCD7gBnAIXuQGdAlS6AZ8CD7sBoQIXvAGiAlW9AaMCD74BpAIPvwGlAhfAAagCVsEBqQJcwgGqAgfDAasCB8QBrAIHxQGtAgfGAa4CB8cBsAIHyAGyAhfJAbMCXcoBtQIHywG3AhfMAbgCXs0BuQIHzgG6AgfPAbsCF9ABvgJf0QG_AmXSAcECDtMBwgIO1AHEAg7VAcUCDtYBxgIO1wHIAg7YAcoCF9kBywJm2gHNAg7bAc8CF9wB0AJn3QHRAg7eAdICDt8B0wIX4AHWAmjhAdcCbOIB2AIJ4wHZAgnkAdoCCeUB2wIJ5gHcAgnnAd4CCegB4AIX6QHhAm3qAeUCCesB5wIX7AHoAm7tAesCCe4B7AIJ7wHtAhfwAfACb_EB8QJ18gHyAgrzAfMCCvQB9AIK9QH1Agr2AfYCCvcB-AIK-AH6Ahf5AfsCdvoB_gIK-wGAAxf8AYEDd_0BgwMK_gGEAwr_AYUDF4ACiAN4gQKJA3yCAosDA4MCjAMDhAKOAwOFAo8DA4YCkAMDhwKSAwOIApQDF4kClQN9igKXAwOLApkDF4wCmgN-jQKbAwOOApwDA48CnQMXkAKgA3-RAqEDgwGSAqMDBpMCpAMGlAKnAwaVAqgDBpYCqQMGlwKrAwaYAq0DF5kCrgOEAZoCsAMGmwKyAxecArMDhQGdArQDBp4CtQMGnwK2AxegArkDhgGhAroDigE"
+  strings: JSON.parse('["where","customer","user","orderBy","cursor","hubs","zone","pricingRules","_count","couriers","pickupAddress","deliveryAddress","originHub","destinationHub","shipment","updater","statusHistory","courier","assigner","courierAssignments","fromHub","toHub","creator","hubTransfers","deliveryAttempt","proofOfDelivery","deliveryAttempts","payment","notifications","originShipments","destinationShipments","transfersFrom","transfersTo","hub","roleApplications","assignments","statusUpdates","assignedCouriers","createdTransfers","addresses","shipments","pickupShipments","deliveryShipments","Address.findUnique","Address.findUniqueOrThrow","Address.findFirst","Address.findFirstOrThrow","Address.findMany","data","Address.createOne","Address.createMany","Address.createManyAndReturn","Address.updateOne","Address.updateMany","Address.updateManyAndReturn","create","update","Address.upsertOne","Address.deleteOne","Address.deleteMany","having","_avg","_sum","_min","_max","Address.groupBy","Address.aggregate","Courier.findUnique","Courier.findUniqueOrThrow","Courier.findFirst","Courier.findFirstOrThrow","Courier.findMany","Courier.createOne","Courier.createMany","Courier.createManyAndReturn","Courier.updateOne","Courier.updateMany","Courier.updateManyAndReturn","Courier.upsertOne","Courier.deleteOne","Courier.deleteMany","Courier.groupBy","Courier.aggregate","CourierParcel.findUnique","CourierParcel.findUniqueOrThrow","CourierParcel.findFirst","CourierParcel.findFirstOrThrow","CourierParcel.findMany","CourierParcel.createOne","CourierParcel.createMany","CourierParcel.createManyAndReturn","CourierParcel.updateOne","CourierParcel.updateMany","CourierParcel.updateManyAndReturn","CourierParcel.upsertOne","CourierParcel.deleteOne","CourierParcel.deleteMany","CourierParcel.groupBy","CourierParcel.aggregate","Customer.findUnique","Customer.findUniqueOrThrow","Customer.findFirst","Customer.findFirstOrThrow","Customer.findMany","Customer.createOne","Customer.createMany","Customer.createManyAndReturn","Customer.updateOne","Customer.updateMany","Customer.updateManyAndReturn","Customer.upsertOne","Customer.deleteOne","Customer.deleteMany","Customer.groupBy","Customer.aggregate","DeliveryAttempt.findUnique","DeliveryAttempt.findUniqueOrThrow","DeliveryAttempt.findFirst","DeliveryAttempt.findFirstOrThrow","DeliveryAttempt.findMany","DeliveryAttempt.createOne","DeliveryAttempt.createMany","DeliveryAttempt.createManyAndReturn","DeliveryAttempt.updateOne","DeliveryAttempt.updateMany","DeliveryAttempt.updateManyAndReturn","DeliveryAttempt.upsertOne","DeliveryAttempt.deleteOne","DeliveryAttempt.deleteMany","DeliveryAttempt.groupBy","DeliveryAttempt.aggregate","Hub.findUnique","Hub.findUniqueOrThrow","Hub.findFirst","Hub.findFirstOrThrow","Hub.findMany","Hub.createOne","Hub.createMany","Hub.createManyAndReturn","Hub.updateOne","Hub.updateMany","Hub.updateManyAndReturn","Hub.upsertOne","Hub.deleteOne","Hub.deleteMany","Hub.groupBy","Hub.aggregate","HubTransfer.findUnique","HubTransfer.findUniqueOrThrow","HubTransfer.findFirst","HubTransfer.findFirstOrThrow","HubTransfer.findMany","HubTransfer.createOne","HubTransfer.createMany","HubTransfer.createManyAndReturn","HubTransfer.updateOne","HubTransfer.updateMany","HubTransfer.updateManyAndReturn","HubTransfer.upsertOne","HubTransfer.deleteOne","HubTransfer.deleteMany","HubTransfer.groupBy","HubTransfer.aggregate","Notification.findUnique","Notification.findUniqueOrThrow","Notification.findFirst","Notification.findFirstOrThrow","Notification.findMany","Notification.createOne","Notification.createMany","Notification.createManyAndReturn","Notification.updateOne","Notification.updateMany","Notification.updateManyAndReturn","Notification.upsertOne","Notification.deleteOne","Notification.deleteMany","Notification.groupBy","Notification.aggregate","Payment.findUnique","Payment.findUniqueOrThrow","Payment.findFirst","Payment.findFirstOrThrow","Payment.findMany","Payment.createOne","Payment.createMany","Payment.createManyAndReturn","Payment.updateOne","Payment.updateMany","Payment.updateManyAndReturn","Payment.upsertOne","Payment.deleteOne","Payment.deleteMany","Payment.groupBy","Payment.aggregate","PricingRule.findUnique","PricingRule.findUniqueOrThrow","PricingRule.findFirst","PricingRule.findFirstOrThrow","PricingRule.findMany","PricingRule.createOne","PricingRule.createMany","PricingRule.createManyAndReturn","PricingRule.updateOne","PricingRule.updateMany","PricingRule.updateManyAndReturn","PricingRule.upsertOne","PricingRule.deleteOne","PricingRule.deleteMany","PricingRule.groupBy","PricingRule.aggregate","ProofOfDelivery.findUnique","ProofOfDelivery.findUniqueOrThrow","ProofOfDelivery.findFirst","ProofOfDelivery.findFirstOrThrow","ProofOfDelivery.findMany","ProofOfDelivery.createOne","ProofOfDelivery.createMany","ProofOfDelivery.createManyAndReturn","ProofOfDelivery.updateOne","ProofOfDelivery.updateMany","ProofOfDelivery.updateManyAndReturn","ProofOfDelivery.upsertOne","ProofOfDelivery.deleteOne","ProofOfDelivery.deleteMany","ProofOfDelivery.groupBy","ProofOfDelivery.aggregate","RoleApplication.findUnique","RoleApplication.findUniqueOrThrow","RoleApplication.findFirst","RoleApplication.findFirstOrThrow","RoleApplication.findMany","RoleApplication.createOne","RoleApplication.createMany","RoleApplication.createManyAndReturn","RoleApplication.updateOne","RoleApplication.updateMany","RoleApplication.updateManyAndReturn","RoleApplication.upsertOne","RoleApplication.deleteOne","RoleApplication.deleteMany","RoleApplication.groupBy","RoleApplication.aggregate","Shipment.findUnique","Shipment.findUniqueOrThrow","Shipment.findFirst","Shipment.findFirstOrThrow","Shipment.findMany","Shipment.createOne","Shipment.createMany","Shipment.createManyAndReturn","Shipment.updateOne","Shipment.updateMany","Shipment.updateManyAndReturn","Shipment.upsertOne","Shipment.deleteOne","Shipment.deleteMany","Shipment.groupBy","Shipment.aggregate","ShipmentStatusHistory.findUnique","ShipmentStatusHistory.findUniqueOrThrow","ShipmentStatusHistory.findFirst","ShipmentStatusHistory.findFirstOrThrow","ShipmentStatusHistory.findMany","ShipmentStatusHistory.createOne","ShipmentStatusHistory.createMany","ShipmentStatusHistory.createManyAndReturn","ShipmentStatusHistory.updateOne","ShipmentStatusHistory.updateMany","ShipmentStatusHistory.updateManyAndReturn","ShipmentStatusHistory.upsertOne","ShipmentStatusHistory.deleteOne","ShipmentStatusHistory.deleteMany","ShipmentStatusHistory.groupBy","ShipmentStatusHistory.aggregate","User.findUnique","User.findUniqueOrThrow","User.findFirst","User.findFirstOrThrow","User.findMany","User.createOne","User.createMany","User.createManyAndReturn","User.updateOne","User.updateMany","User.updateManyAndReturn","User.upsertOne","User.deleteOne","User.deleteMany","User.groupBy","User.aggregate","Zone.findUnique","Zone.findUniqueOrThrow","Zone.findFirst","Zone.findFirstOrThrow","Zone.findMany","Zone.createOne","Zone.createMany","Zone.createManyAndReturn","Zone.updateOne","Zone.updateMany","Zone.updateManyAndReturn","Zone.upsertOne","Zone.deleteOne","Zone.deleteMany","Zone.groupBy","Zone.aggregate","AND","OR","NOT","id","name","code","isActive","createdAt","updatedAt","equals","in","notIn","lt","lte","gt","gte","not","contains","startsWith","endsWith","every","some","none","email","password","googleId","AuthProvider","authProvider","emailVerified","phone","UserRole","role","UserStatus","status","profilePicture","shipmentId","ShipmentStatus","location","note","updatedBy","trackingNumber","customerId","pickupAddressId","deliveryAddressId","originHubId","destinationHubId","parcelType","weight","description","deliveryType","deliveryCharge","PaymentStatus","paymentStatus","scheduledPickupAt","userId","desiredRole","ApplicationStatus","notes","experience","vehicleType","vehicleNumber","hubId","reviewedBy","reviewedAt","rejectionReason","deliveryAttemptId","recipientName","recipientPhone","imageUrl","signatureUrl","zoneId","minWeight","maxWeight","baseCharge","perKgCharge","amount","currency","provider","transactionId","paidAt","title","message","type","isRead","fromHubId","toHubId","TransferStatus","dispatchedAt","receivedAt","createdBy","address","courierId","attemptNumber","AttemptStatus","failureReason","attemptedAt","assignedBy","AssignmentStatus","assignedAt","acceptedAt","completedAt","CourierAvailability","availabilityStatus","label","addressLine","city","area","postalCode","latitude","longitude","is","isNot","connectOrCreate","upsert","createMany","set","disconnect","delete","connect","updateMany","deleteMany","increment","decrement","multiply","divide"]'),
+  graph: "_AmSAYACEQEAAMwEACApAAC9BAAgKgAAvQQAILMCAADKBAAwtAIAAFkAELUCAADKBAAwtgIBAAAAAboCQADsAwAhuwJAAOwDACHcAgEA6QMAIZoDAQCCBAAhmwMBAOoDACGcAwEA6gMAIZ0DAQDqAwAhngMBAIIEACGfAxAAywQAIaADEADLBAAhAQAAAAEAIAoCAAC7BAAgJwAAvAQAICgAAL0EACCzAgAAugQAMLQCAAADABC1AgAAugQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIekCAQDpAwAhAQAAAAMAIA8CAAC7BAAgGgAA4wQAICEAANsEACAjAACLBAAgswIAAOUEADC0AgAABQAQtQIAAOUEADC2AgEA6QMAIboCQADsAwAhuwJAAOwDACHpAgEA6QMAIe4CAQDqAwAh7wIBAOoDACHwAgEA6QMAIZkDAADmBJkDIgEAAAAFACATBgAA6AQAIAkAAOoEACAdAAC9BAAgHgAAvQQAIB8AAIwEACAgAACMBAAgIgAAiQQAILMCAADpBAAwtAIAAAcAELUCAADpBAAwtgIBAOkDACG3AgEA6gMAIbgCAQDqAwAhuQIgAOsDACG6AkAA7AMAIbsCQADsAwAh0AIBAIIEACH5AgEA6QMAIY0DAQDqAwAhCAYAANIIACAJAADTCAAgHQAAvwgAIB4AAL8IACAfAACICAAgIAAAiAgAICIAAIUIACDQAgAA_wYAIBMGAADoBAAgCQAA6gQAIB0AAL0EACAeAAC9BAAgHwAAjAQAICAAAIwEACAiAACJBAAgswIAAOkEADC0AgAABwAQtQIAAOkEADC2AgEAAAABtwIBAOoDACG4AgEAAAABuQIgAOsDACG6AkAA7AMAIbsCQADsAwAh0AIBAIIEACH5AgEA6QMAIY0DAQDqAwAhAwAAAAcAIAMAAAgAMAQAAAkAIA4GAADoBAAgswIAAOcEADC0AgAACwAQtQIAAOcEADC2AgEA6QMAIbkCIADrAwAhugJAAOwDACG7AkAA7AMAIeQCAQDqAwAh-QIBAOkDACH6AhAAqQQAIfsCEACpBAAh_AIQAKkEACH9AhAAqQQAIQEGAADSCAAgDgYAAOgEACCzAgAA5wQAMLQCAAALABC1AgAA5wQAMLYCAQAAAAG5AiAA6wMAIboCQADsAwAhuwJAAOwDACHkAgEA6gMAIfkCAQDpAwAh-gIQAKkEACH7AhAAqQQAIfwCEACpBAAh_QIQAKkEACEDAAAACwAgAwAADAAwBAAADQAgAQAAAAcAIAEAAAALACAEAgAAvQgAIBoAANAIACAhAADNCAAgIwAAhwgAIA8CAAC7BAAgGgAA4wQAICEAANsEACAjAACLBAAgswIAAOUEADC0AgAABQAQtQIAAOUEADC2AgEAAAABugJAAOwDACG7AkAA7AMAIekCAQAAAAHuAgEA6gMAIe8CAQDqAwAh8AIBAOkDACGZAwAA5gSZAyIDAAAABQAgAwAAEQAwBAAAEgAgIAEAAMwEACAKAADiBAAgCwAA4gQAIAwAANAEACANAADQBAAgEAAAigQAIBMAAIsEACAXAACMBAAgGQAA2AQAIBoAAOMEACAbAADkBAAgHAAAjQQAILMCAADhBAAwtAIAABQAELUCAADhBAAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh1AIAAOAE2AIi2wIBAOoDACHcAgEA6QMAId0CAQDpAwAh3gIBAOkDACHfAgEAzwQAIeACAQDPBAAh4QIBAOoDACHiAhAAqQQAIeMCAQCCBAAh5AIBAOoDACHlAhAAqQQAIecCAACqBOcCIugCQACrBAAhEAEAAIMIACAKAADPCAAgCwAAzwgAIAwAAM0IACANAADNCAAgEAAAhggAIBMAAIcIACAXAACICAAgGQAAzggAIBoAANAIACAbAADRCAAgHAAAiQgAIN8CAAD_BgAg4AIAAP8GACDjAgAA_wYAIOgCAAD_BgAgIAEAAMwEACAKAADiBAAgCwAA4gQAIAwAANAEACANAADQBAAgEAAAigQAIBMAAIsEACAXAACMBAAgGQAA2AQAIBoAAOMEACAbAADkBAAgHAAAjQQAILMCAADhBAAwtAIAABQAELUCAADhBAAwtgIBAAAAAboCQADsAwAhuwJAAOwDACHUAgAA4ATYAiLbAgEAAAAB3AIBAOkDACHdAgEA6QMAId4CAQDpAwAh3wIBAM8EACHgAgEAzwQAIeECAQDqAwAh4gIQAKkEACHjAgEAggQAIeQCAQDqAwAh5QIQAKkEACHnAgAAqgTnAiLoAkAAqwQAIQMAAAAUACADAAAVADAEAAAWACABAAAABwAgAQAAAAcAIAwOAACkBAAgDwAA3AQAILMCAADfBAAwtAIAABoAELUCAADfBAAwtgIBAOkDACG6AkAA7AMAIdQCAADgBNgCItYCAQDpAwAh2AIBAIIEACHZAgEAggQAIdoCAQDPBAAhBQ4AAJgIACAPAAC9CAAg2AIAAP8GACDZAgAA_wYAINoCAAD_BgAgDA4AAKQEACAPAADcBAAgswIAAN8EADC0AgAAGgAQtQIAAN8EADC2AgEAAAABugJAAOwDACHUAgAA4ATYAiLWAgEA6QMAIdgCAQCCBAAh2QIBAIIEACHaAgEAzwQAIQMAAAAaACADAAAbADAEAAAcACAXAQAAhwQAIBEAAIgEACAcAACNBAAgIgAAiQQAICQAAIoEACAlAACLBAAgJgAAjAQAILMCAACBBAAwtAIAAB4AELUCAACBBAAwtgIBAOkDACG3AgEA6gMAIboCQADsAwAhuwJAAOwDACHKAgEA6gMAIcsCAQCCBAAhzAIBAIIEACHOAgAAgwTOAiLPAiAAhAQAIdACAQCCBAAh0gIAAIUE0gIi1AIAAIYE1AIi1QIBAIIEACEBAAAAHgAgEA4AAKQEACARAADXBAAgEgAA3AQAILMCAADdBAAwtAIAACAAELUCAADdBAAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh1AIAAN4ElQMi1gIBAOkDACGOAwEA6QMAIZMDAQDPBAAhlQNAAOwDACGWA0AAqwQAIZcDQACrBAAhBg4AAJgIACARAACECAAgEgAAvQgAIJMDAAD_BgAglgMAAP8GACCXAwAA_wYAIBAOAACkBAAgEQAA1wQAIBIAANwEACCzAgAA3QQAMLQCAAAgABC1AgAA3QQAMLYCAQAAAAG6AkAA7AMAIbsCQADsAwAh1AIAAN4ElQMi1gIBAOkDACGOAwEA6QMAIZMDAQDPBAAhlQNAAOwDACGWA0AAqwQAIZcDQACrBAAhAwAAACAAIAMAACEAMAQAACIAIAEAAAAeACARDgAApAQAIBQAANsEACAVAADbBAAgFgAA3AQAILMCAADZBAAwtAIAACUAELUCAADZBAAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh1AIAANoEigMi1gIBAOkDACGHAwEA6QMAIYgDAQDpAwAhigNAAKsEACGLA0AAqwQAIYwDAQDPBAAhBw4AAJgIACAUAADNCAAgFQAAzQgAIBYAAL0IACCKAwAA_wYAIIsDAAD_BgAgjAMAAP8GACARDgAApAQAIBQAANsEACAVAADbBAAgFgAA3AQAILMCAADZBAAwtAIAACUAELUCAADZBAAwtgIBAAAAAboCQADsAwAhuwJAAOwDACHUAgAA2gSKAyLWAgEA6QMAIYcDAQDpAwAhiAMBAOkDACGKA0AAqwQAIYsDQACrBAAhjAMBAM8EACEDAAAAJQAgAwAAJgAwBAAAJwAgAQAAAB4AIA8OAACkBAAgEQAA1wQAIBkAANgEACCzAgAA1AQAMLQCAAAqABC1AgAA1AQAMLYCAQDpAwAhugJAAOwDACHUAgAA1gSRAyLWAgEA6QMAIewCAQCCBAAhjgMBAOkDACGPAwIA1QQAIZEDAQCCBAAhkgNAAOwDACEFDgAAmAgAIBEAAIQIACAZAADOCAAg7AIAAP8GACCRAwAA_wYAIA8OAACkBAAgEQAA1wQAIBkAANgEACCzAgAA1AQAMLQCAAAqABC1AgAA1AQAMLYCAQAAAAG6AkAA7AMAIdQCAADWBJEDItYCAQDpAwAh7AIBAIIEACGOAwEA6QMAIY8DAgDVBAAhkQMBAIIEACGSA0AA7AMAIQMAAAAqACADAAArADAEAAAsACAODgAApAQAIBgAAKUEACCzAgAAowQAMLQCAAAuABC1AgAAowQAMLYCAQDpAwAhugJAAOwDACHWAgEA6QMAIewCAQCCBAAh9AIBAOkDACH1AgEA6gMAIfYCAQDqAwAh9wIBAIIEACH4AgEAggQAIQEAAAAuACABAAAALgAgDg4AAKQEACCzAgAAqAQAMLQCAAAxABC1AgAAqAQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIdQCAACqBOcCItYCAQDpAwAh_gIQAKkEACH_AgEA6gMAIYADAQDqAwAhgQMBAIIEACGCA0AAqwQAIQEAAAAxACANAgAAuwQAIA4AANMEACCzAgAA0gQAMLQCAAAzABC1AgAA0gQAMLYCAQDpAwAhugJAAOwDACHWAgEAzwQAIekCAQDpAwAhgwMBAOoDACGEAwEA6gMAIYUDAQDqAwAhhgMgAOsDACEDAgAAvQgAIA4AAJgIACDWAgAA_wYAIA0CAAC7BAAgDgAA0wQAILMCAADSBAAwtAIAADMAELUCAADSBAAwtgIBAAAAAboCQADsAwAh1gIBAM8EACHpAgEA6QMAIYMDAQDqAwAhhAMBAOoDACGFAwEA6gMAIYYDIADrAwAhAwAAADMAIAMAADQAMAQAADUAIAEAAAAUACABAAAAGgAgAQAAACAAIAEAAAAlACABAAAAKgAgAQAAADMAIAMAAAAUACADAAAVADAEAAAWACADAAAAJQAgAwAAJgAwBAAAJwAgAwAAACUAIAMAACYAMAQAACcAIBMCAAC7BAAgIQAA0AQAILMCAADNBAAwtAIAAEAAELUCAADNBAAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh1AIAAM4E7AIi6QIBAOkDACHqAgAAhQTSAiLsAgEAggQAIe0CAQCCBAAh7gIBAIIEACHvAgEAggQAIfACAQDPBAAh8QIBAM8EACHyAkAAqwQAIfMCAQCCBAAhCgIAAL0IACAhAADNCAAg7AIAAP8GACDtAgAA_wYAIO4CAAD_BgAg7wIAAP8GACDwAgAA_wYAIPECAAD_BgAg8gIAAP8GACDzAgAA_wYAIBMCAAC7BAAgIQAA0AQAILMCAADNBAAwtAIAAEAAELUCAADNBAAwtgIBAAAAAboCQADsAwAhuwJAAOwDACHUAgAAzgTsAiLpAgEA6QMAIeoCAACFBNICIuwCAQCCBAAh7QIBAIIEACHuAgEAggQAIe8CAQCCBAAh8AIBAM8EACHxAgEAzwQAIfICQACrBAAh8wIBAIIEACEDAAAAQAAgAwAAQQAwBAAAQgAgAQAAAAcAIAEAAAAFACABAAAAFAAgAQAAABQAIAEAAAAlACABAAAAJQAgAQAAAEAAIAMAAAAgACADAAAhADAEAAAiACADAAAAKgAgAwAAKwAwBAAALAAgAQAAACAAIAEAAAAqACADAAAAQAAgAwAAQQAwBAAAQgAgAwAAABoAIAMAABsAMAQAABwAIAMAAAAgACADAAAhADAEAAAiACADAAAAJQAgAwAAJgAwBAAAJwAgAwAAADMAIAMAADQAMAQAADUAIAEAAABAACABAAAAGgAgAQAAACAAIAEAAAAlACABAAAAMwAgEQEAAMwEACApAAC9BAAgKgAAvQQAILMCAADKBAAwtAIAAFkAELUCAADKBAAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh3AIBAOkDACGaAwEAggQAIZsDAQDqAwAhnAMBAOoDACGdAwEA6gMAIZ4DAQCCBAAhnwMQAMsEACGgAxAAywQAIQcBAACDCAAgKQAAvwgAICoAAL8IACCaAwAA_wYAIJ4DAAD_BgAgnwMAAP8GACCgAwAA_wYAIAMAAABZACADAABaADAEAAABACADAAAAFAAgAwAAFQAwBAAAFgAgAQAAAFkAIAEAAAAUACADAAAAFAAgAwAAFQAwBAAAFgAgAwAAABQAIAMAABUAMAQAABYAIAEAAAAUACABAAAAFAAgAQAAAAEAIAMAAABZACADAABaADAEAAABACADAAAAWQAgAwAAWgAwBAAAAQAgAwAAAFkAIAMAAFoAMAQAAAEAIA4BAADMCAAgKQAA-AcAICoAAPkHACC2AgEAAAABugJAAAAAAbsCQAAAAAHcAgEAAAABmgMBAAAAAZsDAQAAAAGcAwEAAAABnQMBAAAAAZ4DAQAAAAGfAxAAAAABoAMQAAAAAQEwAABnACALtgIBAAAAAboCQAAAAAG7AkAAAAAB3AIBAAAAAZoDAQAAAAGbAwEAAAABnAMBAAAAAZ0DAQAAAAGeAwEAAAABnwMQAAAAAaADEAAAAAEBMAAAaQAwATAAAGkAMA4BAADLCAAgKQAA4wcAICoAAOQHACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHcAgEA7gQAIZoDAQCKBQAhmwMBAO4EACGcAwEA7gQAIZ0DAQDuBAAhngMBAIoFACGfAxAA4QcAIaADEADhBwAhAgAAAAEAIDAAAGwAIAu2AgEA7gQAIboCQADwBAAhuwJAAPAEACHcAgEA7gQAIZoDAQCKBQAhmwMBAO4EACGcAwEA7gQAIZ0DAQDuBAAhngMBAIoFACGfAxAA4QcAIaADEADhBwAhAgAAAFkAIDAAAG4AIAIAAABZACAwAABuACADAAAAAQAgNwAAZwAgOAAAbAAgAQAAAAEAIAEAAABZACAJCAAAxggAID0AAMcIACA-AADKCAAgPwAAyQgAIEAAAMgIACCaAwAA_wYAIJ4DAAD_BgAgnwMAAP8GACCgAwAA_wYAIA6zAgAAxgQAMLQCAAB1ABC1AgAAxgQAMLYCAQDcAwAhugJAAN8DACG7AkAA3wMAIdwCAQDcAwAhmgMBAPEDACGbAwEA3QMAIZwDAQDdAwAhnQMBAN0DACGeAwEA8QMAIZ8DEADHBAAhoAMQAMcEACEDAAAAWQAgAwAAdAAwPAAAdQAgAwAAAFkAIAMAAFoAMAQAAAEAIAEAAAASACABAAAAEgAgAwAAAAUAIAMAABEAMAQAABIAIAMAAAAFACADAAARADAEAAASACADAAAABQAgAwAAEQAwBAAAEgAgDAIAAPEGACAaAADzBgAgIQAAxgcAICMAAPIGACC2AgEAAAABugJAAAAAAbsCQAAAAAHpAgEAAAAB7gIBAAAAAe8CAQAAAAHwAgEAAAABmQMAAACZAwIBMAAAfQAgCLYCAQAAAAG6AkAAAAABuwJAAAAAAekCAQAAAAHuAgEAAAAB7wIBAAAAAfACAQAAAAGZAwAAAJkDAgEwAAB_ADABMAAAfwAwDAIAANcGACAaAADZBgAgIQAAxQcAICMAANgGACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHpAgEA7gQAIe4CAQDuBAAh7wIBAO4EACHwAgEA7gQAIZkDAADVBpkDIgIAAAASACAwAACCAQAgCLYCAQDuBAAhugJAAPAEACG7AkAA8AQAIekCAQDuBAAh7gIBAO4EACHvAgEA7gQAIfACAQDuBAAhmQMAANUGmQMiAgAAAAUAIDAAAIQBACACAAAABQAgMAAAhAEAIAMAAAASACA3AAB9ACA4AACCAQAgAQAAABIAIAEAAAAFACADCAAAwwgAID8AAMUIACBAAADECAAgC7MCAADCBAAwtAIAAIsBABC1AgAAwgQAMLYCAQDcAwAhugJAAN8DACG7AkAA3wMAIekCAQDcAwAh7gIBAN0DACHvAgEA3QMAIfACAQDcAwAhmQMAAMMEmQMiAwAAAAUAIAMAAIoBADA8AACLAQAgAwAAAAUAIAMAABEAMAQAABIAIAEAAAAiACABAAAAIgAgAwAAACAAIAMAACEAMAQAACIAIAMAAAAgACADAAAhADAEAAAiACADAAAAIAAgAwAAIQAwBAAAIgAgDQ4AAO8GACARAACkBgAgEgAApQYAILYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAAlQMC1gIBAAAAAY4DAQAAAAGTAwEAAAABlQNAAAAAAZYDQAAAAAGXA0AAAAABATAAAJMBACAKtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAACVAwLWAgEAAAABjgMBAAAAAZMDAQAAAAGVA0AAAAABlgNAAAAAAZcDQAAAAAEBMAAAlQEAMAEwAACVAQAwAQAAAB4AIA0OAADtBgAgEQAAoQYAIBIAAKIGACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHUAgAAnwaVAyLWAgEA7gQAIY4DAQDuBAAhkwMBAIoFACGVA0AA8AQAIZYDQACeBQAhlwNAAJ4FACECAAAAIgAgMAAAmQEAIAq2AgEA7gQAIboCQADwBAAhuwJAAPAEACHUAgAAnwaVAyLWAgEA7gQAIY4DAQDuBAAhkwMBAIoFACGVA0AA8AQAIZYDQACeBQAhlwNAAJ4FACECAAAAIAAgMAAAmwEAIAIAAAAgACAwAACbAQAgAQAAAB4AIAMAAAAiACA3AACTAQAgOAAAmQEAIAEAAAAiACABAAAAIAAgBggAAMAIACA_AADCCAAgQAAAwQgAIJMDAAD_BgAglgMAAP8GACCXAwAA_wYAIA2zAgAAvgQAMLQCAACjAQAQtQIAAL4EADC2AgEA3AMAIboCQADfAwAhuwJAAN8DACHUAgAAvwSVAyLWAgEA3AMAIY4DAQDcAwAhkwMBAJAEACGVA0AA3wMAIZYDQACXBAAhlwNAAJcEACEDAAAAIAAgAwAAogEAMDwAAKMBACADAAAAIAAgAwAAIQAwBAAAIgAgCgIAALsEACAnAAC8BAAgKAAAvQQAILMCAAC6BAAwtAIAAAMAELUCAAC6BAAwtgIBAAAAAboCQADsAwAhuwJAAOwDACHpAgEAAAABAQAAAKYBACABAAAApgEAIAMCAAC9CAAgJwAAvggAICgAAL8IACADAAAAAwAgAwAAqQEAMAQAAKYBACADAAAAAwAgAwAAqQEAMAQAAKYBACADAAAAAwAgAwAAqQEAMAQAAKYBACAHAgAAvAgAICcAAPoHACAoAAD7BwAgtgIBAAAAAboCQAAAAAG7AkAAAAAB6QIBAAAAAQEwAACtAQAgBLYCAQAAAAG6AkAAAAABuwJAAAAAAekCAQAAAAEBMAAArwEAMAEwAACvAQAwBwIAALsIACAnAADMBwAgKAAAzQcAILYCAQDuBAAhugJAAPAEACG7AkAA8AQAIekCAQDuBAAhAgAAAKYBACAwAACyAQAgBLYCAQDuBAAhugJAAPAEACG7AkAA8AQAIekCAQDuBAAhAgAAAAMAIDAAALQBACACAAAAAwAgMAAAtAEAIAMAAACmAQAgNwAArQEAIDgAALIBACABAAAApgEAIAEAAAADACADCAAAuAgAID8AALoIACBAAAC5CAAgB7MCAAC5BAAwtAIAALsBABC1AgAAuQQAMLYCAQDcAwAhugJAAN8DACG7AkAA3wMAIekCAQDcAwAhAwAAAAMAIAMAALoBADA8AAC7AQAgAwAAAAMAIAMAAKkBADAEAACmAQAgAQAAACwAIAEAAAAsACADAAAAKgAgAwAAKwAwBAAALAAgAwAAACoAIAMAACsAMAQAACwAIAMAAAAqACADAAArADAEAAAsACAMDgAA5AYAIBEAAIoGACAZAACLBgAgtgIBAAAAAboCQAAAAAHUAgAAAJEDAtYCAQAAAAHsAgEAAAABjgMBAAAAAY8DAgAAAAGRAwEAAAABkgNAAAAAAQEwAADDAQAgCbYCAQAAAAG6AkAAAAAB1AIAAACRAwLWAgEAAAAB7AIBAAAAAY4DAQAAAAGPAwIAAAABkQMBAAAAAZIDQAAAAAEBMAAAxQEAMAEwAADFAQAwDA4AAOIGACARAACABgAgGQAAgQYAILYCAQDuBAAhugJAAPAEACHUAgAA_gWRAyLWAgEA7gQAIewCAQCKBQAhjgMBAO4EACGPAwIA_QUAIZEDAQCKBQAhkgNAAPAEACECAAAALAAgMAAAyAEAIAm2AgEA7gQAIboCQADwBAAh1AIAAP4FkQMi1gIBAO4EACHsAgEAigUAIY4DAQDuBAAhjwMCAP0FACGRAwEAigUAIZIDQADwBAAhAgAAACoAIDAAAMoBACACAAAAKgAgMAAAygEAIAMAAAAsACA3AADDAQAgOAAAyAEAIAEAAAAsACABAAAAKgAgBwgAALMIACA9AAC0CAAgPgAAtwgAID8AALYIACBAAAC1CAAg7AIAAP8GACCRAwAA_wYAIAyzAgAAsgQAMLQCAADRAQAQtQIAALIEADC2AgEA3AMAIboCQADfAwAh1AIAALQEkQMi1gIBANwDACHsAgEA8QMAIY4DAQDcAwAhjwMCALMEACGRAwEA8QMAIZIDQADfAwAhAwAAACoAIAMAANABADA8AADRAQAgAwAAACoAIAMAACsAMAQAACwAIAEAAAAJACABAAAACQAgAwAAAAcAIAMAAAgAMAQAAAkAIAMAAAAHACADAAAIADAEAAAJACADAAAABwAgAwAACAAwBAAACQAgEAYAALIIACAJAAD1BgAgHQAA9gYAIB4AAPcGACAfAAD4BgAgIAAA-QYAICIAAPoGACC2AgEAAAABtwIBAAAAAbgCAQAAAAG5AiAAAAABugJAAAAAAbsCQAAAAAHQAgEAAAAB-QIBAAAAAY0DAQAAAAEBMAAA2QEAIAm2AgEAAAABtwIBAAAAAbgCAQAAAAG5AiAAAAABugJAAAAAAbsCQAAAAAHQAgEAAAAB-QIBAAAAAY0DAQAAAAEBMAAA2wEAMAEwAADbAQAwEAYAALEIACAJAACMBQAgHQAAjQUAIB4AAI4FACAfAACPBQAgIAAAkAUAICIAAJEFACC2AgEA7gQAIbcCAQDuBAAhuAIBAO4EACG5AiAA7wQAIboCQADwBAAhuwJAAPAEACHQAgEAigUAIfkCAQDuBAAhjQMBAO4EACECAAAACQAgMAAA3gEAIAm2AgEA7gQAIbcCAQDuBAAhuAIBAO4EACG5AiAA7wQAIboCQADwBAAhuwJAAPAEACHQAgEAigUAIfkCAQDuBAAhjQMBAO4EACECAAAABwAgMAAA4AEAIAIAAAAHACAwAADgAQAgAwAAAAkAIDcAANkBACA4AADeAQAgAQAAAAkAIAEAAAAHACAECAAArggAID8AALAIACBAAACvCAAg0AIAAP8GACAMswIAALEEADC0AgAA5wEAELUCAACxBAAwtgIBANwDACG3AgEA3QMAIbgCAQDdAwAhuQIgAN4DACG6AkAA3wMAIbsCQADfAwAh0AIBAPEDACH5AgEA3AMAIY0DAQDdAwAhAwAAAAcAIAMAAOYBADA8AADnAQAgAwAAAAcAIAMAAAgAMAQAAAkAIAEAAAAnACABAAAAJwAgAwAAACUAIAMAACYAMAQAACcAIAMAAAAlACADAAAmADAEAAAnACADAAAAJQAgAwAAJgAwBAAAJwAgDg4AALMFACAUAAC0BQAgFQAAwAUAIBYAALUFACC2AgEAAAABugJAAAAAAbsCQAAAAAHUAgAAAIoDAtYCAQAAAAGHAwEAAAABiAMBAAAAAYoDQAAAAAGLA0AAAAABjAMBAAAAAQEwAADvAQAgCrYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAAigMC1gIBAAAAAYcDAQAAAAGIAwEAAAABigNAAAAAAYsDQAAAAAGMAwEAAAABATAAAPEBADABMAAA8QEAMAEAAAAeACAODgAArwUAIBQAALAFACAVAAC-BQAgFgAAsQUAILYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAACtBYoDItYCAQDuBAAhhwMBAO4EACGIAwEA7gQAIYoDQACeBQAhiwNAAJ4FACGMAwEAigUAIQIAAAAnACAwAAD1AQAgCrYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAACtBYoDItYCAQDuBAAhhwMBAO4EACGIAwEA7gQAIYoDQACeBQAhiwNAAJ4FACGMAwEAigUAIQIAAAAlACAwAAD3AQAgAgAAACUAIDAAAPcBACABAAAAHgAgAwAAACcAIDcAAO8BACA4AAD1AQAgAQAAACcAIAEAAAAlACAGCAAAqwgAID8AAK0IACBAAACsCAAgigMAAP8GACCLAwAA_wYAIIwDAAD_BgAgDbMCAACtBAAwtAIAAP8BABC1AgAArQQAMLYCAQDcAwAhugJAAN8DACG7AkAA3wMAIdQCAACuBIoDItYCAQDcAwAhhwMBANwDACGIAwEA3AMAIYoDQACXBAAhiwNAAJcEACGMAwEAkAQAIQMAAAAlACADAAD-AQAwPAAA_wEAIAMAAAAlACADAAAmADAEAAAnACABAAAANQAgAQAAADUAIAMAAAAzACADAAA0ADAEAAA1ACADAAAAMwAgAwAANAAwBAAANQAgAwAAADMAIAMAADQAMAQAADUAIAoCAADmBQAgDgAAlwcAILYCAQAAAAG6AkAAAAAB1gIBAAAAAekCAQAAAAGDAwEAAAABhAMBAAAAAYUDAQAAAAGGAyAAAAABATAAAIcCACAItgIBAAAAAboCQAAAAAHWAgEAAAAB6QIBAAAAAYMDAQAAAAGEAwEAAAABhQMBAAAAAYYDIAAAAAEBMAAAiQIAMAEwAACJAgAwAQAAABQAIAoCAADkBQAgDgAAlQcAILYCAQDuBAAhugJAAPAEACHWAgEAigUAIekCAQDuBAAhgwMBAO4EACGEAwEA7gQAIYUDAQDuBAAhhgMgAO8EACECAAAANQAgMAAAjQIAIAi2AgEA7gQAIboCQADwBAAh1gIBAIoFACHpAgEA7gQAIYMDAQDuBAAhhAMBAO4EACGFAwEA7gQAIYYDIADvBAAhAgAAADMAIDAAAI8CACACAAAAMwAgMAAAjwIAIAEAAAAUACADAAAANQAgNwAAhwIAIDgAAI0CACABAAAANQAgAQAAADMAIAQIAACoCAAgPwAAqggAIEAAAKkIACDWAgAA_wYAIAuzAgAArAQAMLQCAACXAgAQtQIAAKwEADC2AgEA3AMAIboCQADfAwAh1gIBAJAEACHpAgEA3AMAIYMDAQDdAwAhhAMBAN0DACGFAwEA3QMAIYYDIADeAwAhAwAAADMAIAMAAJYCADA8AACXAgAgAwAAADMAIAMAADQAMAQAADUAIA4OAACkBAAgswIAAKgEADC0AgAAMQAQtQIAAKgEADC2AgEAAAABugJAAOwDACG7AkAA7AMAIdQCAACqBOcCItYCAQAAAAH-AhAAqQQAIf8CAQDqAwAhgAMBAOoDACGBAwEAAAABggNAAKsEACEBAAAAmgIAIAEAAACaAgAgAw4AAJgIACCBAwAA_wYAIIIDAAD_BgAgAwAAADEAIAMAAJ0CADAEAACaAgAgAwAAADEAIAMAAJ0CADAEAACaAgAgAwAAADEAIAMAAJ0CADAEAACaAgAgCw4AAKcIACC2AgEAAAABugJAAAAAAbsCQAAAAAHUAgAAAOcCAtYCAQAAAAH-AhAAAAAB_wIBAAAAAYADAQAAAAGBAwEAAAABggNAAAAAAQEwAAChAgAgCrYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAA5wIC1gIBAAAAAf4CEAAAAAH_AgEAAAABgAMBAAAAAYEDAQAAAAGCA0AAAAABATAAAKMCADABMAAAowIAMAsOAACmCAAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMwF5wIi1gIBAO4EACH-AhAA_QQAIf8CAQDuBAAhgAMBAO4EACGBAwEAigUAIYIDQACeBQAhAgAAAJoCACAwAACmAgAgCrYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAADMBecCItYCAQDuBAAh_gIQAP0EACH_AgEA7gQAIYADAQDuBAAhgQMBAIoFACGCA0AAngUAIQIAAAAxACAwAACoAgAgAgAAADEAIDAAAKgCACADAAAAmgIAIDcAAKECACA4AACmAgAgAQAAAJoCACABAAAAMQAgBwgAAKEIACA9AACiCAAgPgAApQgAID8AAKQIACBAAACjCAAggQMAAP8GACCCAwAA_wYAIA2zAgAApwQAMLQCAACvAgAQtQIAAKcEADC2AgEA3AMAIboCQADfAwAhuwJAAN8DACHUAgAAlgTnAiLWAgEA3AMAIf4CEACVBAAh_wIBAN0DACGAAwEA3QMAIYEDAQDxAwAhggNAAJcEACEDAAAAMQAgAwAArgIAMDwAAK8CACADAAAAMQAgAwAAnQIAMAQAAJoCACABAAAADQAgAQAAAA0AIAMAAAALACADAAAMADAEAAANACADAAAACwAgAwAADAAwBAAADQAgAwAAAAsAIAMAAAwAMAQAAA0AIAsGAACgCAAgtgIBAAAAAbkCIAAAAAG6AkAAAAABuwJAAAAAAeQCAQAAAAH5AgEAAAAB-gIQAAAAAfsCEAAAAAH8AhAAAAAB_QIQAAAAAQEwAAC3AgAgCrYCAQAAAAG5AiAAAAABugJAAAAAAbsCQAAAAAHkAgEAAAAB-QIBAAAAAfoCEAAAAAH7AhAAAAAB_AIQAAAAAf0CEAAAAAEBMAAAuQIAMAEwAAC5AgAwCwYAAJ8IACC2AgEA7gQAIbkCIADvBAAhugJAAPAEACG7AkAA8AQAIeQCAQDuBAAh-QIBAO4EACH6AhAA_QQAIfsCEAD9BAAh_AIQAP0EACH9AhAA_QQAIQIAAAANACAwAAC8AgAgCrYCAQDuBAAhuQIgAO8EACG6AkAA8AQAIbsCQADwBAAh5AIBAO4EACH5AgEA7gQAIfoCEAD9BAAh-wIQAP0EACH8AhAA_QQAIf0CEAD9BAAhAgAAAAsAIDAAAL4CACACAAAACwAgMAAAvgIAIAMAAAANACA3AAC3AgAgOAAAvAIAIAEAAAANACABAAAACwAgBQgAAJoIACA9AACbCAAgPgAAnggAID8AAJ0IACBAAACcCAAgDbMCAACmBAAwtAIAAMUCABC1AgAApgQAMLYCAQDcAwAhuQIgAN4DACG6AkAA3wMAIbsCQADfAwAh5AIBAN0DACH5AgEA3AMAIfoCEACVBAAh-wIQAJUEACH8AhAAlQQAIf0CEACVBAAhAwAAAAsAIAMAAMQCADA8AADFAgAgAwAAAAsAIAMAAAwAMAQAAA0AIA4OAACkBAAgGAAApQQAILMCAACjBAAwtAIAAC4AELUCAACjBAAwtgIBAAAAAboCQADsAwAh1gIBAAAAAewCAQCCBAAh9AIBAAAAAfUCAQDqAwAh9gIBAOoDACH3AgEAggQAIfgCAQCCBAAhAQAAAMgCACABAAAAyAIAIAUOAACYCAAgGAAAmQgAIOwCAAD_BgAg9wIAAP8GACD4AgAA_wYAIAMAAAAuACADAADLAgAwBAAAyAIAIAMAAAAuACADAADLAgAwBAAAyAIAIAMAAAAuACADAADLAgAwBAAAyAIAIAsOAACIBgAgGAAA8gUAILYCAQAAAAG6AkAAAAAB1gIBAAAAAewCAQAAAAH0AgEAAAAB9QIBAAAAAfYCAQAAAAH3AgEAAAAB-AIBAAAAAQEwAADPAgAgCbYCAQAAAAG6AkAAAAAB1gIBAAAAAewCAQAAAAH0AgEAAAAB9QIBAAAAAfYCAQAAAAH3AgEAAAAB-AIBAAAAAQEwAADRAgAwATAAANECADALDgAAhwYAIBgAAPEFACC2AgEA7gQAIboCQADwBAAh1gIBAO4EACHsAgEAigUAIfQCAQDuBAAh9QIBAO4EACH2AgEA7gQAIfcCAQCKBQAh-AIBAIoFACECAAAAyAIAIDAAANQCACAJtgIBAO4EACG6AkAA8AQAIdYCAQDuBAAh7AIBAIoFACH0AgEA7gQAIfUCAQDuBAAh9gIBAO4EACH3AgEAigUAIfgCAQCKBQAhAgAAAC4AIDAAANYCACACAAAALgAgMAAA1gIAIAMAAADIAgAgNwAAzwIAIDgAANQCACABAAAAyAIAIAEAAAAuACAGCAAAlQgAID8AAJcIACBAAACWCAAg7AIAAP8GACD3AgAA_wYAIPgCAAD_BgAgDLMCAACiBAAwtAIAAN0CABC1AgAAogQAMLYCAQDcAwAhugJAAN8DACHWAgEA3AMAIewCAQDxAwAh9AIBANwDACH1AgEA3QMAIfYCAQDdAwAh9wIBAPEDACH4AgEA8QMAIQMAAAAuACADAADcAgAwPAAA3QIAIAMAAAAuACADAADLAgAwBAAAyAIAIAEAAABCACABAAAAQgAgAwAAAEAAIAMAAEEAMAQAAEIAIAMAAABAACADAABBADAEAABCACADAAAAQAAgAwAAQQAwBAAAQgAgEAIAAKIFACAhAAC_BwAgtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAADsAgLpAgEAAAAB6gIAAADSAgLsAgEAAAAB7QIBAAAAAe4CAQAAAAHvAgEAAAAB8AIBAAAAAfECAQAAAAHyAkAAAAAB8wIBAAAAAQEwAADlAgAgDrYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAA7AIC6QIBAAAAAeoCAAAA0gIC7AIBAAAAAe0CAQAAAAHuAgEAAAAB7wIBAAAAAfACAQAAAAHxAgEAAAAB8gJAAAAAAfMCAQAAAAEBMAAA5wIAMAEwAADnAgAwAQAAAAcAIBACAACgBQAgIQAAvQcAILYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAACdBewCIukCAQDuBAAh6gIAAJwF0gIi7AIBAIoFACHtAgEAigUAIe4CAQCKBQAh7wIBAIoFACHwAgEAigUAIfECAQCKBQAh8gJAAJ4FACHzAgEAigUAIQIAAABCACAwAADrAgAgDrYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAACdBewCIukCAQDuBAAh6gIAAJwF0gIi7AIBAIoFACHtAgEAigUAIe4CAQCKBQAh7wIBAIoFACHwAgEAigUAIfECAQCKBQAh8gJAAJ4FACHzAgEAigUAIQIAAABAACAwAADtAgAgAgAAAEAAIDAAAO0CACABAAAABwAgAwAAAEIAIDcAAOUCACA4AADrAgAgAQAAAEIAIAEAAABAACALCAAAkggAID8AAJQIACBAAACTCAAg7AIAAP8GACDtAgAA_wYAIO4CAAD_BgAg7wIAAP8GACDwAgAA_wYAIPECAAD_BgAg8gIAAP8GACDzAgAA_wYAIBGzAgAAngQAMLQCAAD1AgAQtQIAAJ4EADC2AgEA3AMAIboCQADfAwAhuwJAAN8DACHUAgAAnwTsAiLpAgEA3AMAIeoCAAD0A9ICIuwCAQDxAwAh7QIBAPEDACHuAgEA8QMAIe8CAQDxAwAh8AIBAJAEACHxAgEAkAQAIfICQACXBAAh8wIBAPEDACEDAAAAQAAgAwAA9AIAMDwAAPUCACADAAAAQAAgAwAAQQAwBAAAQgAgAQAAABYAIAEAAAAWACADAAAAFAAgAwAAFQAwBAAAFgAgAwAAABQAIAMAABUAMAQAABYAIAMAAAAUACADAAAVADAEAAAWACAdAQAAtQYAIAoAALYGACALAAC3BgAgDAAAuAYAIA0AAMoGACAQAAC5BgAgEwAAugYAIBcAALsGACAZAAC9BgAgGgAAvAYAIBsAAL4GACAcAAC_BgAgtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAADYAgLbAgEAAAAB3AIBAAAAAd0CAQAAAAHeAgEAAAAB3wIBAAAAAeACAQAAAAHhAgEAAAAB4gIQAAAAAeMCAQAAAAHkAgEAAAAB5QIQAAAAAecCAAAA5wIC6AJAAAAAAQEwAAD9AgAgEbYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAA2AIC2wIBAAAAAdwCAQAAAAHdAgEAAAAB3gIBAAAAAd8CAQAAAAHgAgEAAAAB4QIBAAAAAeICEAAAAAHjAgEAAAAB5AIBAAAAAeUCEAAAAAHnAgAAAOcCAugCQAAAAAEBMAAA_wIAMAEwAAD_AgAwAQAAAAcAIAEAAAAHACAdAQAAzgUAIAoAAM8FACALAADQBQAgDAAA0QUAIA0AAMgGACAQAADSBQAgEwAA0wUAIBcAANQFACAZAADWBQAgGgAA1QUAIBsAANcFACAcAADYBQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhAgAAABYAIDAAAIQDACARtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhAgAAABQAIDAAAIYDACACAAAAFAAgMAAAhgMAIAEAAAAHACABAAAABwAgAwAAABYAIDcAAP0CACA4AACEAwAgAQAAABYAIAEAAAAUACAJCAAAjQgAID0AAI4IACA-AACRCAAgPwAAkAgAIEAAAI8IACDfAgAA_wYAIOACAAD_BgAg4wIAAP8GACDoAgAA_wYAIBSzAgAAlAQAMLQCAACPAwAQtQIAAJQEADC2AgEA3AMAIboCQADfAwAhuwJAAN8DACHUAgAAjwTYAiLbAgEA3QMAIdwCAQDcAwAh3QIBANwDACHeAgEA3AMAId8CAQCQBAAh4AIBAJAEACHhAgEA3QMAIeICEACVBAAh4wIBAPEDACHkAgEA3QMAIeUCEACVBAAh5wIAAJYE5wIi6AJAAJcEACEDAAAAFAAgAwAAjgMAMDwAAI8DACADAAAAFAAgAwAAFQAwBAAAFgAgAQAAABwAIAEAAAAcACADAAAAGgAgAwAAGwAwBAAAHAAgAwAAABoAIAMAABsAMAQAABwAIAMAAAAaACADAAAbADAEAAAcACAJDgAAtAcAIA8AALMGACC2AgEAAAABugJAAAAAAdQCAAAA2AIC1gIBAAAAAdgCAQAAAAHZAgEAAAAB2gIBAAAAAQEwAACXAwAgB7YCAQAAAAG6AkAAAAAB1AIAAADYAgLWAgEAAAAB2AIBAAAAAdkCAQAAAAHaAgEAAAABATAAAJkDADABMAAAmQMAMAEAAAAeACAJDgAAsgcAIA8AALEGACC2AgEA7gQAIboCQADwBAAh1AIAAMsF2AIi1gIBAO4EACHYAgEAigUAIdkCAQCKBQAh2gIBAIoFACECAAAAHAAgMAAAnQMAIAe2AgEA7gQAIboCQADwBAAh1AIAAMsF2AIi1gIBAO4EACHYAgEAigUAIdkCAQCKBQAh2gIBAIoFACECAAAAGgAgMAAAnwMAIAIAAAAaACAwAACfAwAgAQAAAB4AIAMAAAAcACA3AACXAwAgOAAAnQMAIAEAAAAcACABAAAAGgAgBggAAIoIACA_AACMCAAgQAAAiwgAINgCAAD_BgAg2QIAAP8GACDaAgAA_wYAIAqzAgAAjgQAMLQCAACnAwAQtQIAAI4EADC2AgEA3AMAIboCQADfAwAh1AIAAI8E2AIi1gIBANwDACHYAgEA8QMAIdkCAQDxAwAh2gIBAJAEACEDAAAAGgAgAwAApgMAMDwAAKcDACADAAAAGgAgAwAAGwAwBAAAHAAgFwEAAIcEACARAACIBAAgHAAAjQQAICIAAIkEACAkAACKBAAgJQAAiwQAICYAAIwEACCzAgAAgQQAMLQCAAAeABC1AgAAgQQAMLYCAQAAAAG3AgEA6gMAIboCQADsAwAhuwJAAOwDACHKAgEAAAABywIBAIIEACHMAgEAAAABzgIAAIMEzgIizwIgAIQEACHQAgEAAAAB0gIAAIUE0gIi1AIAAIYE1AIi1QIBAIIEACEBAAAAqgMAIAEAAACqAwAgDAEAAIMIACARAACECAAgHAAAiQgAICIAAIUIACAkAACGCAAgJQAAhwgAICYAAIgIACDLAgAA_wYAIMwCAAD_BgAgzwIAAP8GACDQAgAA_wYAINUCAAD_BgAgAwAAAB4AIAMAAK0DADAEAACqAwAgAwAAAB4AIAMAAK0DADAEAACqAwAgAwAAAB4AIAMAAK0DADAEAACqAwAgFAEAAPwHACARAAD9BwAgHAAAgggAICIAAP4HACAkAAD_BwAgJQAAgAgAICYAAIEIACC2AgEAAAABtwIBAAAAAboCQAAAAAG7AkAAAAABygIBAAAAAcsCAQAAAAHMAgEAAAABzgIAAADOAgLPAiAAAAAB0AIBAAAAAdICAAAA0gIC1AIAAADUAgLVAgEAAAABATAAALEDACANtgIBAAAAAbcCAQAAAAG6AkAAAAABuwJAAAAAAcoCAQAAAAHLAgEAAAABzAIBAAAAAc4CAAAAzgICzwIgAAAAAdACAQAAAAHSAgAAANICAtQCAAAA1AIC1QIBAAAAAQEwAACzAwAwATAAALMDADAUAQAAhgcAIBEAAIcHACAcAACMBwAgIgAAiAcAICQAAIkHACAlAACKBwAgJgAAiwcAILYCAQDuBAAhtwIBAO4EACG6AkAA8AQAIbsCQADwBAAhygIBAO4EACHLAgEAigUAIcwCAQCKBQAhzgIAAIMHzgIizwIgAIQHACHQAgEAigUAIdICAACcBdICItQCAACFB9QCItUCAQCKBQAhAgAAAKoDACAwAAC2AwAgDbYCAQDuBAAhtwIBAO4EACG6AkAA8AQAIbsCQADwBAAhygIBAO4EACHLAgEAigUAIcwCAQCKBQAhzgIAAIMHzgIizwIgAIQHACHQAgEAigUAIdICAACcBdICItQCAACFB9QCItUCAQCKBQAhAgAAAB4AIDAAALgDACACAAAAHgAgMAAAuAMAIAMAAACqAwAgNwAAsQMAIDgAALYDACABAAAAqgMAIAEAAAAeACAICAAAgAcAID8AAIIHACBAAACBBwAgywIAAP8GACDMAgAA_wYAIM8CAAD_BgAg0AIAAP8GACDVAgAA_wYAIBCzAgAA8AMAMLQCAAC_AwAQtQIAAPADADC2AgEA3AMAIbcCAQDdAwAhugJAAN8DACG7AkAA3wMAIcoCAQDdAwAhywIBAPEDACHMAgEA8QMAIc4CAADyA84CIs8CIADzAwAh0AIBAPEDACHSAgAA9APSAiLUAgAA9QPUAiLVAgEA8QMAIQMAAAAeACADAAC-AwAwPAAAvwMAIAMAAAAeACADAACtAwAwBAAAqgMAIAsFAADtAwAgBwAA7gMAILMCAADoAwAwtAIAAMUDABC1AgAA6AMAMLYCAQAAAAG3AgEA6gMAIbgCAQAAAAG5AiAA6wMAIboCQADsAwAhuwJAAOwDACEBAAAAwgMAIAEAAADCAwAgCwUAAO0DACAHAADuAwAgswIAAOgDADC0AgAAxQMAELUCAADoAwAwtgIBAOkDACG3AgEA6gMAIbgCAQDqAwAhuQIgAOsDACG6AkAA7AMAIbsCQADsAwAhAgUAAP0GACAHAAD-BgAgAwAAAMUDACADAADGAwAwBAAAwgMAIAMAAADFAwAgAwAAxgMAMAQAAMIDACADAAAAxQMAIAMAAMYDADAEAADCAwAgCAUAAPsGACAHAAD8BgAgtgIBAAAAAbcCAQAAAAG4AgEAAAABuQIgAAAAAboCQAAAAAG7AkAAAAABATAAAMoDACAGtgIBAAAAAbcCAQAAAAG4AgEAAAABuQIgAAAAAboCQAAAAAG7AkAAAAABATAAAMwDADABMAAAzAMAMAgFAADxBAAgBwAA8gQAILYCAQDuBAAhtwIBAO4EACG4AgEA7gQAIbkCIADvBAAhugJAAPAEACG7AkAA8AQAIQIAAADCAwAgMAAAzwMAIAa2AgEA7gQAIbcCAQDuBAAhuAIBAO4EACG5AiAA7wQAIboCQADwBAAhuwJAAPAEACECAAAAxQMAIDAAANEDACACAAAAxQMAIDAAANEDACADAAAAwgMAIDcAAMoDACA4AADPAwAgAQAAAMIDACABAAAAxQMAIAMIAADrBAAgPwAA7QQAIEAAAOwEACAJswIAANsDADC0AgAA2AMAELUCAADbAwAwtgIBANwDACG3AgEA3QMAIbgCAQDdAwAhuQIgAN4DACG6AkAA3wMAIbsCQADfAwAhAwAAAMUDACADAADXAwAwPAAA2AMAIAMAAADFAwAgAwAAxgMAMAQAAMIDACAJswIAANsDADC0AgAA2AMAELUCAADbAwAwtgIBANwDACG3AgEA3QMAIbgCAQDdAwAhuQIgAN4DACG6AkAA3wMAIbsCQADfAwAhCwgAAOEDACA_AADmAwAgQAAA5gMAILwCAQAAAAG9AgEAAAAEvgIBAAAABL8CAQAAAAHAAgEAAAABwQIBAAAAAcICAQAAAAHDAgEA5wMAIQ4IAADhAwAgPwAA5gMAIEAAAOYDACC8AgEAAAABvQIBAAAABL4CAQAAAAS_AgEAAAABwAIBAAAAAcECAQAAAAHCAgEAAAABwwIBAOUDACHEAgEAAAABxQIBAAAAAcYCAQAAAAEFCAAA4QMAID8AAOQDACBAAADkAwAgvAIgAAAAAcMCIADjAwAhCwgAAOEDACA_AADiAwAgQAAA4gMAILwCQAAAAAG9AkAAAAAEvgJAAAAABL8CQAAAAAHAAkAAAAABwQJAAAAAAcICQAAAAAHDAkAA4AMAIQsIAADhAwAgPwAA4gMAIEAAAOIDACC8AkAAAAABvQJAAAAABL4CQAAAAAS_AkAAAAABwAJAAAAAAcECQAAAAAHCAkAAAAABwwJAAOADACEIvAICAAAAAb0CAgAAAAS-AgIAAAAEvwICAAAAAcACAgAAAAHBAgIAAAABwgICAAAAAcMCAgDhAwAhCLwCQAAAAAG9AkAAAAAEvgJAAAAABL8CQAAAAAHAAkAAAAABwQJAAAAAAcICQAAAAAHDAkAA4gMAIQUIAADhAwAgPwAA5AMAIEAAAOQDACC8AiAAAAABwwIgAOMDACECvAIgAAAAAcMCIADkAwAhDggAAOEDACA_AADmAwAgQAAA5gMAILwCAQAAAAG9AgEAAAAEvgIBAAAABL8CAQAAAAHAAgEAAAABwQIBAAAAAcICAQAAAAHDAgEA5QMAIcQCAQAAAAHFAgEAAAABxgIBAAAAAQu8AgEAAAABvQIBAAAABL4CAQAAAAS_AgEAAAABwAIBAAAAAcECAQAAAAHCAgEAAAABwwIBAOYDACHEAgEAAAABxQIBAAAAAcYCAQAAAAELCAAA4QMAID8AAOYDACBAAADmAwAgvAIBAAAAAb0CAQAAAAS-AgEAAAAEvwIBAAAAAcACAQAAAAHBAgEAAAABwgIBAAAAAcMCAQDnAwAhCwUAAO0DACAHAADuAwAgswIAAOgDADC0AgAAxQMAELUCAADoAwAwtgIBAOkDACG3AgEA6gMAIbgCAQDqAwAhuQIgAOsDACG6AkAA7AMAIbsCQADsAwAhCLwCAQAAAAG9AgEAAAAEvgIBAAAABL8CAQAAAAHAAgEAAAABwQIBAAAAAcICAQAAAAHDAgEA7wMAIQu8AgEAAAABvQIBAAAABL4CAQAAAAS_AgEAAAABwAIBAAAAAcECAQAAAAHCAgEAAAABwwIBAOYDACHEAgEAAAABxQIBAAAAAcYCAQAAAAECvAIgAAAAAcMCIADkAwAhCLwCQAAAAAG9AkAAAAAEvgJAAAAABL8CQAAAAAHAAkAAAAABwQJAAAAAAcICQAAAAAHDAkAA4gMAIQPHAgAABwAgyAIAAAcAIMkCAAAHACADxwIAAAsAIMgCAAALACDJAgAACwAgCLwCAQAAAAG9AgEAAAAEvgIBAAAABL8CAQAAAAHAAgEAAAABwQIBAAAAAcICAQAAAAHDAgEA7wMAIRCzAgAA8AMAMLQCAAC_AwAQtQIAAPADADC2AgEA3AMAIbcCAQDdAwAhugJAAN8DACG7AkAA3wMAIcoCAQDdAwAhywIBAPEDACHMAgEA8QMAIc4CAADyA84CIs8CIADzAwAh0AIBAPEDACHSAgAA9APSAiLUAgAA9QPUAiLVAgEA8QMAIQ4IAAD7AwAgPwAAgAQAIEAAAIAEACC8AgEAAAABvQIBAAAABb4CAQAAAAW_AgEAAAABwAIBAAAAAcECAQAAAAHCAgEAAAABwwIBAP8DACHEAgEAAAABxQIBAAAAAcYCAQAAAAEHCAAA4QMAID8AAP4DACBAAAD-AwAgvAIAAADOAgK9AgAAAM4CCL4CAAAAzgIIwwIAAP0DzgIiBQgAAPsDACA_AAD8AwAgQAAA_AMAILwCIAAAAAHDAiAA-gMAIQcIAADhAwAgPwAA-QMAIEAAAPkDACC8AgAAANICAr0CAAAA0gIIvgIAAADSAgjDAgAA-APSAiIHCAAA4QMAID8AAPcDACBAAAD3AwAgvAIAAADUAgK9AgAAANQCCL4CAAAA1AIIwwIAAPYD1AIiBwgAAOEDACA_AAD3AwAgQAAA9wMAILwCAAAA1AICvQIAAADUAgi-AgAAANQCCMMCAAD2A9QCIgS8AgAAANQCAr0CAAAA1AIIvgIAAADUAgjDAgAA9wPUAiIHCAAA4QMAID8AAPkDACBAAAD5AwAgvAIAAADSAgK9AgAAANICCL4CAAAA0gIIwwIAAPgD0gIiBLwCAAAA0gICvQIAAADSAgi-AgAAANICCMMCAAD5A9ICIgUIAAD7AwAgPwAA_AMAIEAAAPwDACC8AiAAAAABwwIgAPoDACEIvAICAAAAAb0CAgAAAAW-AgIAAAAFvwICAAAAAcACAgAAAAHBAgIAAAABwgICAAAAAcMCAgD7AwAhArwCIAAAAAHDAiAA_AMAIQcIAADhAwAgPwAA_gMAIEAAAP4DACC8AgAAAM4CAr0CAAAAzgIIvgIAAADOAgjDAgAA_QPOAiIEvAIAAADOAgK9AgAAAM4CCL4CAAAAzgIIwwIAAP4DzgIiDggAAPsDACA_AACABAAgQAAAgAQAILwCAQAAAAG9AgEAAAAFvgIBAAAABb8CAQAAAAHAAgEAAAABwQIBAAAAAcICAQAAAAHDAgEA_wMAIcQCAQAAAAHFAgEAAAABxgIBAAAAAQu8AgEAAAABvQIBAAAABb4CAQAAAAW_AgEAAAABwAIBAAAAAcECAQAAAAHCAgEAAAABwwIBAIAEACHEAgEAAAABxQIBAAAAAcYCAQAAAAEXAQAAhwQAIBEAAIgEACAcAACNBAAgIgAAiQQAICQAAIoEACAlAACLBAAgJgAAjAQAILMCAACBBAAwtAIAAB4AELUCAACBBAAwtgIBAOkDACG3AgEA6gMAIboCQADsAwAhuwJAAOwDACHKAgEA6gMAIcsCAQCCBAAhzAIBAIIEACHOAgAAgwTOAiLPAiAAhAQAIdACAQCCBAAh0gIAAIUE0gIi1AIAAIYE1AIi1QIBAIIEACELvAIBAAAAAb0CAQAAAAW-AgEAAAAFvwIBAAAAAcACAQAAAAHBAgEAAAABwgIBAAAAAcMCAQCABAAhxAIBAAAAAcUCAQAAAAHGAgEAAAABBLwCAAAAzgICvQIAAADOAgi-AgAAAM4CCMMCAAD-A84CIgK8AiAAAAABwwIgAPwDACEEvAIAAADSAgK9AgAAANICCL4CAAAA0gIIwwIAAPkD0gIiBLwCAAAA1AICvQIAAADUAgi-AgAAANQCCMMCAAD3A9QCIgwCAAC7BAAgJwAAvAQAICgAAL0EACCzAgAAugQAMLQCAAADABC1AgAAugQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIekCAQDpAwAhoQMAAAMAIKIDAAADACARAgAAuwQAIBoAAOMEACAhAADbBAAgIwAAiwQAILMCAADlBAAwtAIAAAUAELUCAADlBAAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh6QIBAOkDACHuAgEA6gMAIe8CAQDqAwAh8AIBAOkDACGZAwAA5gSZAyKhAwAABQAgogMAAAUAIAPHAgAAQAAgyAIAAEAAIMkCAABAACADxwIAABoAIMgCAAAaACDJAgAAGgAgA8cCAAAgACDIAgAAIAAgyQIAACAAIAPHAgAAJQAgyAIAACUAIMkCAAAlACADxwIAADMAIMgCAAAzACDJAgAAMwAgCrMCAACOBAAwtAIAAKcDABC1AgAAjgQAMLYCAQDcAwAhugJAAN8DACHUAgAAjwTYAiLWAgEA3AMAIdgCAQDxAwAh2QIBAPEDACHaAgEAkAQAIQcIAADhAwAgPwAAkwQAIEAAAJMEACC8AgAAANgCAr0CAAAA2AIIvgIAAADYAgjDAgAAkgTYAiILCAAA-wMAID8AAIAEACBAAACABAAgvAIBAAAAAb0CAQAAAAW-AgEAAAAFvwIBAAAAAcACAQAAAAHBAgEAAAABwgIBAAAAAcMCAQCRBAAhCwgAAPsDACA_AACABAAgQAAAgAQAILwCAQAAAAG9AgEAAAAFvgIBAAAABb8CAQAAAAHAAgEAAAABwQIBAAAAAcICAQAAAAHDAgEAkQQAIQcIAADhAwAgPwAAkwQAIEAAAJMEACC8AgAAANgCAr0CAAAA2AIIvgIAAADYAgjDAgAAkgTYAiIEvAIAAADYAgK9AgAAANgCCL4CAAAA2AIIwwIAAJME2AIiFLMCAACUBAAwtAIAAI8DABC1AgAAlAQAMLYCAQDcAwAhugJAAN8DACG7AkAA3wMAIdQCAACPBNgCItsCAQDdAwAh3AIBANwDACHdAgEA3AMAId4CAQDcAwAh3wIBAJAEACHgAgEAkAQAIeECAQDdAwAh4gIQAJUEACHjAgEA8QMAIeQCAQDdAwAh5QIQAJUEACHnAgAAlgTnAiLoAkAAlwQAIQ0IAADhAwAgPQAAnQQAID4AAJ0EACA_AACdBAAgQAAAnQQAILwCEAAAAAG9AhAAAAAEvgIQAAAABL8CEAAAAAHAAhAAAAABwQIQAAAAAcICEAAAAAHDAhAAnAQAIQcIAADhAwAgPwAAmwQAIEAAAJsEACC8AgAAAOcCAr0CAAAA5wIIvgIAAADnAgjDAgAAmgTnAiILCAAA-wMAID8AAJkEACBAAACZBAAgvAJAAAAAAb0CQAAAAAW-AkAAAAAFvwJAAAAAAcACQAAAAAHBAkAAAAABwgJAAAAAAcMCQACYBAAhCwgAAPsDACA_AACZBAAgQAAAmQQAILwCQAAAAAG9AkAAAAAFvgJAAAAABb8CQAAAAAHAAkAAAAABwQJAAAAAAcICQAAAAAHDAkAAmAQAIQi8AkAAAAABvQJAAAAABb4CQAAAAAW_AkAAAAABwAJAAAAAAcECQAAAAAHCAkAAAAABwwJAAJkEACEHCAAA4QMAID8AAJsEACBAAACbBAAgvAIAAADnAgK9AgAAAOcCCL4CAAAA5wIIwwIAAJoE5wIiBLwCAAAA5wICvQIAAADnAgi-AgAAAOcCCMMCAACbBOcCIg0IAADhAwAgPQAAnQQAID4AAJ0EACA_AACdBAAgQAAAnQQAILwCEAAAAAG9AhAAAAAEvgIQAAAABL8CEAAAAAHAAhAAAAABwQIQAAAAAcICEAAAAAHDAhAAnAQAIQi8AhAAAAABvQIQAAAABL4CEAAAAAS_AhAAAAABwAIQAAAAAcECEAAAAAHCAhAAAAABwwIQAJ0EACERswIAAJ4EADC0AgAA9QIAELUCAACeBAAwtgIBANwDACG6AkAA3wMAIbsCQADfAwAh1AIAAJ8E7AIi6QIBANwDACHqAgAA9APSAiLsAgEA8QMAIe0CAQDxAwAh7gIBAPEDACHvAgEA8QMAIfACAQCQBAAh8QIBAJAEACHyAkAAlwQAIfMCAQDxAwAhBwgAAOEDACA_AAChBAAgQAAAoQQAILwCAAAA7AICvQIAAADsAgi-AgAAAOwCCMMCAACgBOwCIgcIAADhAwAgPwAAoQQAIEAAAKEEACC8AgAAAOwCAr0CAAAA7AIIvgIAAADsAgjDAgAAoATsAiIEvAIAAADsAgK9AgAAAOwCCL4CAAAA7AIIwwIAAKEE7AIiDLMCAACiBAAwtAIAAN0CABC1AgAAogQAMLYCAQDcAwAhugJAAN8DACHWAgEA3AMAIewCAQDxAwAh9AIBANwDACH1AgEA3QMAIfYCAQDdAwAh9wIBAPEDACH4AgEA8QMAIQ4OAACkBAAgGAAApQQAILMCAACjBAAwtAIAAC4AELUCAACjBAAwtgIBAOkDACG6AkAA7AMAIdYCAQDpAwAh7AIBAIIEACH0AgEA6QMAIfUCAQDqAwAh9gIBAOoDACH3AgEAggQAIfgCAQCCBAAhIgEAAMwEACAKAADiBAAgCwAA4gQAIAwAANAEACANAADQBAAgEAAAigQAIBMAAIsEACAXAACMBAAgGQAA2AQAIBoAAOMEACAbAADkBAAgHAAAjQQAILMCAADhBAAwtAIAABQAELUCAADhBAAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh1AIAAOAE2AIi2wIBAOoDACHcAgEA6QMAId0CAQDpAwAh3gIBAOkDACHfAgEAzwQAIeACAQDPBAAh4QIBAOoDACHiAhAAqQQAIeMCAQCCBAAh5AIBAOoDACHlAhAAqQQAIecCAACqBOcCIugCQACrBAAhoQMAABQAIKIDAAAUACARDgAApAQAIBEAANcEACAZAADYBAAgswIAANQEADC0AgAAKgAQtQIAANQEADC2AgEA6QMAIboCQADsAwAh1AIAANYEkQMi1gIBAOkDACHsAgEAggQAIY4DAQDpAwAhjwMCANUEACGRAwEAggQAIZIDQADsAwAhoQMAACoAIKIDAAAqACANswIAAKYEADC0AgAAxQIAELUCAACmBAAwtgIBANwDACG5AiAA3gMAIboCQADfAwAhuwJAAN8DACHkAgEA3QMAIfkCAQDcAwAh-gIQAJUEACH7AhAAlQQAIfwCEACVBAAh_QIQAJUEACENswIAAKcEADC0AgAArwIAELUCAACnBAAwtgIBANwDACG6AkAA3wMAIbsCQADfAwAh1AIAAJYE5wIi1gIBANwDACH-AhAAlQQAIf8CAQDdAwAhgAMBAN0DACGBAwEA8QMAIYIDQACXBAAhDg4AAKQEACCzAgAAqAQAMLQCAAAxABC1AgAAqAQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIdQCAACqBOcCItYCAQDpAwAh_gIQAKkEACH_AgEA6gMAIYADAQDqAwAhgQMBAIIEACGCA0AAqwQAIQi8AhAAAAABvQIQAAAABL4CEAAAAAS_AhAAAAABwAIQAAAAAcECEAAAAAHCAhAAAAABwwIQAJ0EACEEvAIAAADnAgK9AgAAAOcCCL4CAAAA5wIIwwIAAJsE5wIiCLwCQAAAAAG9AkAAAAAFvgJAAAAABb8CQAAAAAHAAkAAAAABwQJAAAAAAcICQAAAAAHDAkAAmQQAIQuzAgAArAQAMLQCAACXAgAQtQIAAKwEADC2AgEA3AMAIboCQADfAwAh1gIBAJAEACHpAgEA3AMAIYMDAQDdAwAhhAMBAN0DACGFAwEA3QMAIYYDIADeAwAhDbMCAACtBAAwtAIAAP8BABC1AgAArQQAMLYCAQDcAwAhugJAAN8DACG7AkAA3wMAIdQCAACuBIoDItYCAQDcAwAhhwMBANwDACGIAwEA3AMAIYoDQACXBAAhiwNAAJcEACGMAwEAkAQAIQcIAADhAwAgPwAAsAQAIEAAALAEACC8AgAAAIoDAr0CAAAAigMIvgIAAACKAwjDAgAArwSKAyIHCAAA4QMAID8AALAEACBAAACwBAAgvAIAAACKAwK9AgAAAIoDCL4CAAAAigMIwwIAAK8EigMiBLwCAAAAigMCvQIAAACKAwi-AgAAAIoDCMMCAACwBIoDIgyzAgAAsQQAMLQCAADnAQAQtQIAALEEADC2AgEA3AMAIbcCAQDdAwAhuAIBAN0DACG5AiAA3gMAIboCQADfAwAhuwJAAN8DACHQAgEA8QMAIfkCAQDcAwAhjQMBAN0DACEMswIAALIEADC0AgAA0QEAELUCAACyBAAwtgIBANwDACG6AkAA3wMAIdQCAAC0BJEDItYCAQDcAwAh7AIBAPEDACGOAwEA3AMAIY8DAgCzBAAhkQMBAPEDACGSA0AA3wMAIQ0IAADhAwAgPQAAuAQAID4AAOEDACA_AADhAwAgQAAA4QMAILwCAgAAAAG9AgIAAAAEvgICAAAABL8CAgAAAAHAAgIAAAABwQICAAAAAcICAgAAAAHDAgIAtwQAIQcIAADhAwAgPwAAtgQAIEAAALYEACC8AgAAAJEDAr0CAAAAkQMIvgIAAACRAwjDAgAAtQSRAyIHCAAA4QMAID8AALYEACBAAAC2BAAgvAIAAACRAwK9AgAAAJEDCL4CAAAAkQMIwwIAALUEkQMiBLwCAAAAkQMCvQIAAACRAwi-AgAAAJEDCMMCAAC2BJEDIg0IAADhAwAgPQAAuAQAID4AAOEDACA_AADhAwAgQAAA4QMAILwCAgAAAAG9AgIAAAAEvgICAAAABL8CAgAAAAHAAgIAAAABwQICAAAAAcICAgAAAAHDAgIAtwQAIQi8AggAAAABvQIIAAAABL4CCAAAAAS_AggAAAABwAIIAAAAAcECCAAAAAHCAggAAAABwwIIALgEACEHswIAALkEADC0AgAAuwEAELUCAAC5BAAwtgIBANwDACG6AkAA3wMAIbsCQADfAwAh6QIBANwDACEKAgAAuwQAICcAALwEACAoAAC9BAAgswIAALoEADC0AgAAAwAQtQIAALoEADC2AgEA6QMAIboCQADsAwAhuwJAAOwDACHpAgEA6QMAIRkBAACHBAAgEQAAiAQAIBwAAI0EACAiAACJBAAgJAAAigQAICUAAIsEACAmAACMBAAgswIAAIEEADC0AgAAHgAQtQIAAIEEADC2AgEA6QMAIbcCAQDqAwAhugJAAOwDACG7AkAA7AMAIcoCAQDqAwAhywIBAIIEACHMAgEAggQAIc4CAACDBM4CIs8CIACEBAAh0AIBAIIEACHSAgAAhQTSAiLUAgAAhgTUAiLVAgEAggQAIaEDAAAeACCiAwAAHgAgA8cCAABZACDIAgAAWQAgyQIAAFkAIAPHAgAAFAAgyAIAABQAIMkCAAAUACANswIAAL4EADC0AgAAowEAELUCAAC-BAAwtgIBANwDACG6AkAA3wMAIbsCQADfAwAh1AIAAL8ElQMi1gIBANwDACGOAwEA3AMAIZMDAQCQBAAhlQNAAN8DACGWA0AAlwQAIZcDQACXBAAhBwgAAOEDACA_AADBBAAgQAAAwQQAILwCAAAAlQMCvQIAAACVAwi-AgAAAJUDCMMCAADABJUDIgcIAADhAwAgPwAAwQQAIEAAAMEEACC8AgAAAJUDAr0CAAAAlQMIvgIAAACVAwjDAgAAwASVAyIEvAIAAACVAwK9AgAAAJUDCL4CAAAAlQMIwwIAAMEElQMiC7MCAADCBAAwtAIAAIsBABC1AgAAwgQAMLYCAQDcAwAhugJAAN8DACG7AkAA3wMAIekCAQDcAwAh7gIBAN0DACHvAgEA3QMAIfACAQDcAwAhmQMAAMMEmQMiBwgAAOEDACA_AADFBAAgQAAAxQQAILwCAAAAmQMCvQIAAACZAwi-AgAAAJkDCMMCAADEBJkDIgcIAADhAwAgPwAAxQQAIEAAAMUEACC8AgAAAJkDAr0CAAAAmQMIvgIAAACZAwjDAgAAxASZAyIEvAIAAACZAwK9AgAAAJkDCL4CAAAAmQMIwwIAAMUEmQMiDrMCAADGBAAwtAIAAHUAELUCAADGBAAwtgIBANwDACG6AkAA3wMAIbsCQADfAwAh3AIBANwDACGaAwEA8QMAIZsDAQDdAwAhnAMBAN0DACGdAwEA3QMAIZ4DAQDxAwAhnwMQAMcEACGgAxAAxwQAIQ0IAAD7AwAgPQAAyQQAID4AAMkEACA_AADJBAAgQAAAyQQAILwCEAAAAAG9AhAAAAAFvgIQAAAABb8CEAAAAAHAAhAAAAABwQIQAAAAAcICEAAAAAHDAhAAyAQAIQ0IAAD7AwAgPQAAyQQAID4AAMkEACA_AADJBAAgQAAAyQQAILwCEAAAAAG9AhAAAAAFvgIQAAAABb8CEAAAAAHAAhAAAAABwQIQAAAAAcICEAAAAAHDAhAAyAQAIQi8AhAAAAABvQIQAAAABb4CEAAAAAW_AhAAAAABwAIQAAAAAcECEAAAAAHCAhAAAAABwwIQAMkEACERAQAAzAQAICkAAL0EACAqAAC9BAAgswIAAMoEADC0AgAAWQAQtQIAAMoEADC2AgEA6QMAIboCQADsAwAhuwJAAOwDACHcAgEA6QMAIZoDAQCCBAAhmwMBAOoDACGcAwEA6gMAIZ0DAQDqAwAhngMBAIIEACGfAxAAywQAIaADEADLBAAhCLwCEAAAAAG9AhAAAAAFvgIQAAAABb8CEAAAAAHAAhAAAAABwQIQAAAAAcICEAAAAAHDAhAAyQQAIQwCAAC7BAAgJwAAvAQAICgAAL0EACCzAgAAugQAMLQCAAADABC1AgAAugQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIekCAQDpAwAhoQMAAAMAIKIDAAADACATAgAAuwQAICEAANAEACCzAgAAzQQAMLQCAABAABC1AgAAzQQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIdQCAADOBOwCIukCAQDpAwAh6gIAAIUE0gIi7AIBAIIEACHtAgEAggQAIe4CAQCCBAAh7wIBAIIEACHwAgEAzwQAIfECAQDPBAAh8gJAAKsEACHzAgEAggQAIQS8AgAAAOwCAr0CAAAA7AIIvgIAAADsAgjDAgAAoQTsAiIIvAIBAAAAAb0CAQAAAAW-AgEAAAAFvwIBAAAAAcACAQAAAAHBAgEAAAABwgIBAAAAAcMCAQDRBAAhFQYAAOgEACAJAADqBAAgHQAAvQQAIB4AAL0EACAfAACMBAAgIAAAjAQAICIAAIkEACCzAgAA6QQAMLQCAAAHABC1AgAA6QQAMLYCAQDpAwAhtwIBAOoDACG4AgEA6gMAIbkCIADrAwAhugJAAOwDACG7AkAA7AMAIdACAQCCBAAh-QIBAOkDACGNAwEA6gMAIaEDAAAHACCiAwAABwAgCLwCAQAAAAG9AgEAAAAFvgIBAAAABb8CAQAAAAHAAgEAAAABwQIBAAAAAcICAQAAAAHDAgEA0QQAIQ0CAAC7BAAgDgAA0wQAILMCAADSBAAwtAIAADMAELUCAADSBAAwtgIBAOkDACG6AkAA7AMAIdYCAQDPBAAh6QIBAOkDACGDAwEA6gMAIYQDAQDqAwAhhQMBAOoDACGGAyAA6wMAISIBAADMBAAgCgAA4gQAIAsAAOIEACAMAADQBAAgDQAA0AQAIBAAAIoEACATAACLBAAgFwAAjAQAIBkAANgEACAaAADjBAAgGwAA5AQAIBwAAI0EACCzAgAA4QQAMLQCAAAUABC1AgAA4QQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIdQCAADgBNgCItsCAQDqAwAh3AIBAOkDACHdAgEA6QMAId4CAQDpAwAh3wIBAM8EACHgAgEAzwQAIeECAQDqAwAh4gIQAKkEACHjAgEAggQAIeQCAQDqAwAh5QIQAKkEACHnAgAAqgTnAiLoAkAAqwQAIaEDAAAUACCiAwAAFAAgDw4AAKQEACARAADXBAAgGQAA2AQAILMCAADUBAAwtAIAACoAELUCAADUBAAwtgIBAOkDACG6AkAA7AMAIdQCAADWBJEDItYCAQDpAwAh7AIBAIIEACGOAwEA6QMAIY8DAgDVBAAhkQMBAIIEACGSA0AA7AMAIQi8AgIAAAABvQICAAAABL4CAgAAAAS_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_gIQAKkEACH_AgEA6gMAIYADAQDqAwAhgQMBAIIEACGCA0AAqwQAIaEDAAAxACCiAwAAMQAgDwIAALsEACAaAADjBAAgIQAA2wQAICMAAIsEACCzAgAA5QQAMLQCAAAFABC1AgAA5QQAMLYCAQDpAwAhugJAAOwDACG7AkAA7AMAIekCAQDpAwAh7gIBAOoDACHvAgEA6gMAIfACAQDpAwAhmQMAAOYEmQMiBLwCAAAAmQMCvQIAAACZAwi-AgAAAJkDCMMCAADFBJkDIg4GAADoBAAgswIAAOcEADC0AgAACwAQtQIAAOcEADC2AgEA6QMAIbkCIADrAwAhugJAAOwDACG7AkAA7AMAIeQCAQDqAwAh-QIBAOkDACH6AhAAqQQAIfsCEACpBAAh_AIQAKkEACH9AhAAqQQAIQ0FAADtAwAgBwAA7gMAILMCAADoAwAwtAIAAMUDABC1AgAA6AMAMLYCAQDpAwAhtwIBAOoDACG4AgEA6gMAIbkCIADrAwAhugJAAOwDACG7AkAA7AMAIaEDAADFAwAgogMAAMUDACATBgAA6AQAIAkAAOoEACAdAAC9BAAgHgAAvQQAIB8AAIwEACAgAACMBAAgIgAAiQQAILMCAADpBAAwtAIAAAcAELUCAADpBAAwtgIBAOkDACG3AgEA6gMAIbgCAQDqAwAhuQIgAOsDACG6AkAA7AMAIbsCQADsAwAh0AIBAIIEACH5AgEA6QMAIY0DAQDqAwAhA8cCAAAFACDIAgAABQAgyQIAAAUAIAAAAAGmAwEAAAABAaYDIAAAAAEBpgNAAAAAAQs3AACABQAwOAAAhQUAMKMDAACBBQAwpAMAAIIFADClAwAAgwUAIKYDAACEBQAwpwMAAIQFADCoAwAAhAUAMKkDAACEBQAwqgMAAIYFADCrAwAAhwUAMAs3AADzBAAwOAAA-AQAMKMDAAD0BAAwpAMAAPUEADClAwAA9gQAIKYDAAD3BAAwpwMAAPcEADCoAwAA9wQAMKkDAAD3BAAwqgMAAPkEADCrAwAA-gQAMAm2AgEAAAABuQIgAAAAAboCQAAAAAG7AkAAAAAB5AIBAAAAAfoCEAAAAAH7AhAAAAAB_AIQAAAAAf0CEAAAAAECAAAADQAgNwAA_wQAIAMAAAANACA3AAD_BAAgOAAA_gQAIAEwAAD8CQAwDgYAAOgEACCzAgAA5wQAMLQCAAALABC1AgAA5wQAMLYCAQAAAAG5AiAA6wMAIboCQADsAwAhuwJAAOwDACHkAgEA6gMAIfkCAQDpAwAh-gIQAKkEACH7AhAAqQQAIfwCEACpBAAh_QIQAKkEACECAAAADQAgMAAA_gQAIAIAAAD7BAAgMAAA_AQAIA2zAgAA-gQAMLQCAAD7BAAQtQIAAPoEADC2AgEA6QMAIbkCIADrAwAhugJAAOwDACG7AkAA7AMAIeQCAQDqAwAh-QIBAOkDACH6AhAAqQQAIfsCEACpBAAh_AIQAKkEACH9AhAAqQQAIQ2zAgAA-gQAMLQCAAD7BAAQtQIAAPoEADC2AgEA6QMAIbkCIADrAwAhugJAAOwDACG7AkAA7AMAIeQCAQDqAwAh-QIBAOkDACH6AhAAqQQAIfsCEACpBAAh_AIQAKkEACH9AhAAqQQAIQm2AgEA7gQAIbkCIADvBAAhugJAAPAEACG7AkAA8AQAIeQCAQDuBAAh-gIQAP0EACH7AhAA_QQAIfwCEAD9BAAh_QIQAP0EACEFpgMQAAAAAawDEAAAAAGtAxAAAAABrgMQAAAAAa8DEAAAAAEJtgIBAO4EACG5AiAA7wQAIboCQADwBAAhuwJAAPAEACHkAgEA7gQAIfoCEAD9BAAh-wIQAP0EACH8AhAA_QQAIf0CEAD9BAAhCbYCAQAAAAG5AiAAAAABugJAAAAAAbsCQAAAAAHkAgEAAAAB-gIQAAAAAfsCEAAAAAH8AhAAAAAB_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_BQAgOAAAvQUAIAEwAADkCQAwAgAAACcAIDAAAL0FACACAAAAqwUAIDAAALwFACAJtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAK0FigMi1gIBAO4EACGIAwEA7gQAIYoDQACeBQAhiwNAAJ4FACGMAwEAigUAIQwOAACvBQAgFQAAvgUAIBYAALEFACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHUAgAArQWKAyLWAgEA7gQAIYgDAQDuBAAhigNAAJ4FACGLA0AAngUAIYwDAQCKBQAhBTcAAN8JACA4AADiCQAgowMAAOAJACCkAwAA4QkAIKkDAAAJACAMDgAAswUAIBUAAMAFACAWAAC1BQAgtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAACKAwLWAgEAAAABiAMBAAAAAYoDQAAAAAGLA0AAAAABjAMBAAAAAQM3AADfCQAgowMAAOAJACCpAwAACQAgGwEAALUGACAKAAC2BgAgCwAAtwYAIAwAALgGACAQAAC5BgAgEwAAugYAIBcAALsGACAZAAC9BgAgGgAAvAYAIBsAAL4GACAcAAC_BgAgtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAADYAgLbAgEAAAAB3AIBAAAAAd0CAQAAAAHeAgEAAAAB3wIBAAAAAeECAQAAAAHiAhAAAAAB4wIBAAAAAeQCAQAAAAHlAhAAAAAB5wIAAADnAgLoAkAAAAABAgAAABYAIDcAALQGACADAAAAFgAgNwAAtAYAIDgAAM0FACABMAAA3gkAMCABAADMBAAgCgAA4gQAIAsAAOIEACAMAADQBAAgDQAA0AQAIBAAAIoEACATAACLBAAgFwAAjAQAIBkAANgEACAaAADjBAAgGwAA5AQAIBwAAI0EACCzAgAA4QQAMLQCAAAUABC1AgAA4QQAMLYCAQAAAAG6AkAA7AMAIbsCQADsAwAh1AIAAOAE2AIi2wIBAAAAAdwCAQDpAwAh3QIBAOkDACHeAgEA6QMAId8CAQDPBAAh4AIBAM8EACHhAgEA6gMAIeICEACpBAAh4wIBAIIEACHkAgEA6gMAIeUCEACpBAAh5wIAAKoE5wIi6AJAAKsEACECAAAAFgAgMAAAzQUAIAIAAADJBQAgMAAAygUAIBSzAgAAyAUAMLQCAADJBQAQtQIAAMgFADC2AgEA6QMAIboCQADsAwAhuwJAAOwDACHUAgAA4ATYAiLbAgEA6gMAIdwCAQDpAwAh3QIBAOkDACHeAgEA6QMAId8CAQDPBAAh4AIBAM8EACHhAgEA6gMAIeICEACpBAAh4wIBAIIEACHkAgEA6gMAIeUCEACpBAAh5wIAAKoE5wIi6AJAAKsEACEUswIAAMgFADC0AgAAyQUAELUCAADIBQAwtgIBAOkDACG6AkAA7AMAIbsCQADsAwAh1AIAAOAE2AIi2wIBAOoDACHcAgEA6QMAId0CAQDpAwAh3gIBAOkDACHfAgEAzwQAIeACAQDPBAAh4QIBAOoDACHiAhAAqQQAIeMCAQCCBAAh5AIBAOoDACHlAhAAqQQAIecCAACqBOcCIugCQACrBAAhELYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAADLBdgCItsCAQDuBAAh3AIBAO4EACHdAgEA7gQAId4CAQDuBAAh3wIBAIoFACHhAgEA7gQAIeICEAD9BAAh4wIBAIoFACHkAgEA7gQAIeUCEAD9BAAh5wIAAMwF5wIi6AJAAJ4FACEBpgMAAADYAgIBpgMAAADnAgIbAQAAzgUAIAoAAM8FACALAADQBQAgDAAA0QUAIBAAANIFACATAADTBQAgFwAA1AUAIBkAANYFACAaAADVBQAgGwAA1wUAIBwAANgFACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHUAgAAywXYAiLbAgEA7gQAIdwCAQDuBAAh3QIBAO4EACHeAgEA7gQAId8CAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhBTcAAKgJACA4AADcCQAgowMAAKkJACCkAwAA2wkAIKkDAACmAQAgBTcAAKYJACA4AADZCQAgowMAAKcJACCkAwAA2AkAIKkDAAABACAFNwAApAkAIDgAANYJACCjAwAApQkAIKQDAADVCQAgqQMAAAEAIAc3AACiCQAgOAAA0wkAIKMDAACjCQAgpAMAANIJACCnAwAABwAgqAMAAAcAIKkDAAAJACALNwAApgYAMDgAAKsGADCjAwAApwYAMKQDAACoBgAwpQMAAKkGACCmAwAAqgYAMKcDAACqBgAwqAMAAKoGADCpAwAAqgYAMKoDAACsBgAwqwMAAK0GADALNwAAlQYAMDgAAJoGADCjAwAAlgYAMKQDAACXBgAwpQMAAJgGACCmAwAAmQYAMKcDAACZBgAwqAMAAJkGADCpAwAAmQYAMKoDAACbBgAwqwMAAJwGADALNwAAjAYAMDgAAJAGADCjAwAAjQYAMKQDAACOBgAwpQMAAI8GACCmAwAApwUAMKcDAACnBQAwqAMAAKcFADCpAwAApwUAMKoDAACRBgAwqwMAAKoFADALNwAA8wUAMDgAAPgFADCjAwAA9AUAMKQDAAD1BQAwpQMAAPYFACCmAwAA9wUAMKcDAAD3BQAwqAMAAPcFADCpAwAA9wUAMKoDAAD5BQAwqwMAAPoFADAHNwAA7AUAIDgAAO8FACCjAwAA7QUAIKQDAADuBQAgpwMAAC4AIKgDAAAuACCpAwAAyAIAIAc3AADnBQAgOAAA6gUAIKMDAADoBQAgpAMAAOkFACCnAwAAMQAgqAMAADEAIKkDAACaAgAgCzcAANkFADA4AADeBQAwowMAANoFADCkAwAA2wUAMKUDAADcBQAgpgMAAN0FADCnAwAA3QUAMKgDAADdBQAwqQMAAN0FADCqAwAA3wUAMKsDAADgBQAwCAIAAOYFACC2AgEAAAABugJAAAAAAekCAQAAAAGDAwEAAAABhAMBAAAAAYUDAQAAAAGGAyAAAAABAgAAADUAIDcAAOUFACADAAAANQAgNwAA5QUAIDgAAOMFACABMAAA0QkAMA0CAAC7BAAgDgAA0wQAILMCAADSBAAwtAIAADMAELUCAADSBAAwtgIBAAAAAboCQADsAwAh1gIBAM8EACHpAgEA6QMAIYMDAQDqAwAhhAMBAOoDACGFAwEA6gMAIYYDIADrAwAhAgAAADUAIDAAAOMFACACAAAA4QUAIDAAAOIFACALswIAAOAFADC0AgAA4QUAELUCAADgBQAwtgIBAOkDACG6AkAA7AMAIdYCAQDPBAAh6QIBAOkDACGDAwEA6gMAIYQDAQDqAwAhhQMBAOoDACGGAyAA6wMAIQuzAgAA4AUAMLQCAADhBQAQtQIAAOAFADC2AgEA6QMAIboCQADsAwAh1gIBAM8EACHpAgEA6QMAIYMDAQDqAwAhhAMBAOoDACGFAwEA6gMAIYYDIADrAwAhB7YCAQDuBAAhugJAAPAEACHpAgEA7gQAIYMDAQDuBAAhhAMBAO4EACGFAwEA7gQAIYYDIADvBAAhCAIAAOQFACC2AgEA7gQAIboCQADwBAAh6QIBAO4EACGDAwEA7gQAIYQDAQDuBAAhhQMBAO4EACGGAyAA7wQAIQU3AADMCQAgOAAAzwkAIKMDAADNCQAgpAMAAM4JACCpAwAAqgMAIAgCAADmBQAgtgIBAAAAAboCQAAAAAHpAgEAAAABgwMBAAAAAYQDAQAAAAGFAwEAAAABhgMgAAAAAQM3AADMCQAgowMAAM0JACCpAwAAqgMAIAm2AgEAAAABugJAAAAAAbsCQAAAAAHUAgAAAOcCAv4CEAAAAAH_AgEAAAABgAMBAAAAAYEDAQAAAAGCA0AAAAABAgAAAJoCACA3AADnBQAgAwAAADEAIDcAAOcFACA4AADrBQAgCwAAADEAIDAAAOsFACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHUAgAAzAXnAiL-AhAA_QQAIf8CAQDuBAAhgAMBAO4EACGBAwEAigUAIYIDQACeBQAhCbYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAADMBecCIv4CEAD9BAAh_wIBAO4EACGAAwEA7gQAIYEDAQCKBQAhggNAAJ4FACEJGAAA8gUAILYCAQAAAAG6AkAAAAAB7AIBAAAAAfQCAQAAAAH1AgEAAAAB9gIBAAAAAfcCAQAAAAH4AgEAAAABAgAAAMgCACA3AADsBQAgAwAAAC4AIDcAAOwFACA4AADwBQAgCwAAAC4AIBgAAPEFACAwAADwBQAgtgIBAO4EACG6AkAA8AQAIewCAQCKBQAh9AIBAO4EACH1AgEA7gQAIfYCAQDuBAAh9wIBAIoFACH4AgEAigUAIQkYAADxBQAgtgIBAO4EACG6AkAA8AQAIewCAQCKBQAh9AIBAO4EACH1AgEA7gQAIfYCAQDuBAAh9wIBAIoFACH4AgEAigUAIQU3AADHCQAgOAAAygkAIKMDAADICQAgpAMAAMkJACCpAwAALAAgAzcAAMcJACCjAwAAyAkAIKkDAAAsACAKEQAAigYAIBkAAIsGACC2AgEAAAABugJAAAAAAdQCAAAAkQMC7AIBAAAAAY4DAQAAAAGPAwIAAAABkQMBAAAAAZIDQAAAAAECAAAALAAgNwAAiQYAIAMAAAAsACA3AACJBgAgOAAA_wUAIAEwAADGCQAwDw4AAKQEACARAADXBAAgGQAA2AQAILMCAADUBAAwtAIAACoAELUCAADUBAAwtgIBAAAAAboCQADsAwAh1AIAANYEkQMi1gIBAOkDACHsAgEAggQAIY4DAQDpAwAhjwMCANUEACGRAwEAggQAIZIDQADsAwAhAgAAACwAIDAAAP8FACACAAAA-wUAIDAAAPwFACAMswIAAPoFADC0AgAA-wUAELUCAAD6BQAwtgIBAOkDACG6AkAA7AMAIdQCAADWBJEDItYCAQDpAwAh7AIBAIIEACGOAwEA6QMAIY8DAgDVBAAhkQMBAIIEACGSA0AA7AMAIQyzAgAA-gUAMLQCAAD7BQAQtQIAAPoFADC2AgEA6QMAIboCQADsAwAh1AIAANYEkQMi1gIBAOkDACHsAgEAggQAIY4DAQDpAwAhjwMCANUEACGRAwEAggQAIZIDQADsAwAhCLYCAQDuBAAhugJAAPAEACHUAgAA_gWRAyLsAgEAigUAIY4DAQDuBAAhjwMCAP0FACGRAwEAigUAIZIDQADwBAAhBaYDAgAAAAGsAwIAAAABrQMCAAAAAa4DAgAAAAGvAwIAAAABAaYDAAAAkQMCChEAAIAGACAZAACBBgAgtgIBAO4EACG6AkAA8AQAIdQCAAD-BZEDIuwCAQCKBQAhjgMBAO4EACGPAwIA_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_BgAgtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAADYAgLbAgEAAAAB3AIBAAAAAd0CAQAAAAHeAgEAAAAB4AIBAAAAAeECAQAAAAHiAhAAAAAB4wIBAAAAAeQCAQAAAAHlAhAAAAAB5wIAAADnAgLoAkAAAAABAgAAABYAIDcAAMkGACADAAAAFgAgNwAAyQYAIDgAAMcGACABMAAAoQkAMAIAAAAWACAwAADHBgAgAgAAAMkFACAwAADGBgAgELYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAADLBdgCItsCAQDuBAAh3AIBAO4EACHdAgEA7gQAId4CAQDuBAAh4AIBAIoFACHhAgEA7gQAIeICEAD9BAAh4wIBAIoFACHkAgEA7gQAIeUCEAD9BAAh5wIAAMwF5wIi6AJAAJ4FACEbAQAAzgUAIAoAAM8FACALAADQBQAgDQAAyAYAIBAAANIFACATAADTBQAgFwAA1AUAIBkAANYFACAaAADVBQAgGwAA1wUAIBwAANgFACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHUAgAAywXYAiLbAgEA7gQAIdwCAQDuBAAh3QIBAO4EACHeAgEA7gQAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhBzcAAJwJACA4AACfCQAgowMAAJ0JACCkAwAAngkAIKcDAAAHACCoAwAABwAgqQMAAAkAIBsBAAC1BgAgCgAAtgYAIAsAALcGACANAADKBgAgEAAAuQYAIBMAALoGACAXAAC7BgAgGQAAvQYAIBoAALwGACAbAAC-BgAgHAAAvwYAILYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAA2AIC2wIBAAAAAdwCAQAAAAHdAgEAAAAB3gIBAAAAAeACAQAAAAHhAgEAAAAB4gIQAAAAAeMCAQAAAAHkAgEAAAAB5QIQAAAAAecCAAAA5wIC6AJAAAAAAQM3AACcCQAgowMAAJ0JACCpAwAACQAgCgIAAPEGACAaAADzBgAgIwAA8gYAILYCAQAAAAG6AkAAAAABuwJAAAAAAekCAQAAAAHuAgEAAAAB7wIBAAAAAZkDAAAAmQMCAgAAABIAIDcAAPAGACADAAAAEgAgNwAA8AYAIDgAANYGACABMAAAmwkAMA8CAAC7BAAgGgAA4wQAICEAANsEACAjAACLBAAgswIAAOUEADC0AgAABQAQtQIAAOUEADC2AgEAAAABugJAAOwDACG7AkAA7AMAIekCAQAAAAHuAgEA6gMAIe8CAQDqAwAh8AIBAOkDACGZAwAA5gSZAyICAAAAEgAgMAAA1gYAIAIAAADTBgAgMAAA1AYAIAuzAgAA0gYAMLQCAADTBgAQtQIAANIGADC2AgEA6QMAIboCQADsAwAhuwJAAOwDACHpAgEA6QMAIe4CAQDqAwAh7wIBAOoDACHwAgEA6QMAIZkDAADmBJkDIguzAgAA0gYAMLQCAADTBgAQtQIAANIGADC2AgEA6QMAIboCQADsAwAhuwJAAOwDACHpAgEA6QMAIe4CAQDqAwAh7wIBAOoDACHwAgEA6QMAIZkDAADmBJkDIge2AgEA7gQAIboCQADwBAAhuwJAAPAEACHpAgEA7gQAIe4CAQDuBAAh7wIBAO4EACGZAwAA1QaZAyIBpgMAAACZAwIKAgAA1wYAIBoAANkGACAjAADYBgAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh6QIBAO4EACHuAgEA7gQAIe8CAQDuBAAhmQMAANUGmQMiBTcAAIoJACA4AACZCQAgowMAAIsJACCkAwAAmAkAIKkDAACqAwAgCzcAAOUGADA4AADpBgAwowMAAOYGADCkAwAA5wYAMKUDAADoBgAgpgMAAJkGADCnAwAAmQYAMKgDAACZBgAwqQMAAJkGADCqAwAA6gYAMKsDAACcBgAwCzcAANoGADA4AADeBgAwowMAANsGADCkAwAA3AYAMKUDAADdBgAgpgMAAPcFADCnAwAA9wUAMKgDAAD3BQAwqQMAAPcFADCqAwAA3wYAMKsDAAD6BQAwCg4AAOQGACAZAACLBgAgtgIBAAAAAboCQAAAAAHUAgAAAJEDAtYCAQAAAAHsAgEAAAABjwMCAAAAAZEDAQAAAAGSA0AAAAABAgAAACwAIDcAAOMGACADAAAALAAgNwAA4wYAIDgAAOEGACABMAAAlwkAMAIAAAAsACAwAADhBgAgAgAAAPsFACAwAADgBgAgCLYCAQDuBAAhugJAAPAEACHUAgAA_gWRAyLWAgEA7gQAIewCAQCKBQAhjwMCAP0FACGRAwEAigUAIZIDQADwBAAhCg4AAOIGACAZAACBBgAgtgIBAO4EACG6AkAA8AQAIdQCAAD-BZEDItYCAQDuBAAh7AIBAIoFACGPAwIA_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_AgAIDgAAP8IACCjAwAA_QgAIKQDAAD-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_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_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_CAAgBAIAAL0IACAaAADQCAAgIQAAzQgAICMAAIcIACAAAAAAAAAAAAAAAAAAAAAAAAAAEAEAAIMIACAKAADPCAAgCwAAzwgAIAwAAM0IACANAADNCAAgEAAAhggAIBMAAIcIACAXAACICAAgGQAAzggAIBoAANAIACAbAADRCAAgHAAAiQgAIN8CAAD_BgAg4AIAAP8GACDjAgAA_wYAIOgCAAD_BgAgBQ4AAJgIACARAACECAAgGQAAzggAIOwCAAD_BgAgkQMAAP8GACAAAAAAAAU3AADoCAAgOAAA6wgAIKMDAADpCAAgpAMAAOoIACCpAwAAwgMAIAM3AADoCAAgowMAAOkIACCpAwAAwgMAIAAAAAAABTcAAOMIACA4AADmCAAgowMAAOQIACCkAwAA5QgAIKkDAAAWACADNwAA4wgAIKMDAADkCAAgqQMAABYAIAAAAAAAAAAAAAU3AADeCAAgOAAA4QgAIKMDAADfCAAgpAMAAOAIACCpAwAAwgMAIAM3AADeCAAgowMAAN8IACCpAwAAwgMAIAAAAAAAAAAABTcAANkIACA4AADcCAAgowMAANoIACCkAwAA2wgAIKkDAACqAwAgAzcAANkIACCjAwAA2ggAIKkDAACqAwAgDAEAAIMIACARAACECAAgHAAAiQgAICIAAIUIACAkAACGCAAgJQAAhwgAICYAAIgIACDLAgAA_wYAIMwCAAD_BgAgzwIAAP8GACDQAgAA_wYAINUCAAD_BgAgAAAAAAAAAAAAAAAAAAU3AADUCAAgOAAA1wgAIKMDAADVCAAgpAMAANYIACCpAwAApgEAIAM3AADUCAAgowMAANUIACCpAwAApgEAIAgGAADSCAAgCQAA0wgAIB0AAL8IACAeAAC_CAAgHwAAiAgAICAAAIgIACAiAACFCAAg0AIAAP8GACAFDgAAmAgAIBgAAJkIACDsAgAA_wYAIPcCAAD_BgAg-AIAAP8GACAHAQAAgwgAICkAAL8IACAqAAC_CAAgmgMAAP8GACCeAwAA_wYAIJ8DAAD_BgAgoAMAAP8GACAAAw4AAJgIACCBAwAA_wYAIIIDAAD_BgAgAgUAAP0GACAHAAD-BgAgAAYCAAC8CAAgKAAA-wcAILYCAQAAAAG6AkAAAAABuwJAAAAAAekCAQAAAAECAAAApgEAIDcAANQIACADAAAAAwAgNwAA1AgAIDgAANgIACAIAAAAAwAgAgAAuwgAICgAAM0HACAwAADYCAAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh6QIBAO4EACEGAgAAuwgAICgAAM0HACC2AgEA7gQAIboCQADwBAAhuwJAAPAEACHpAgEA7gQAIRMRAAD9BwAgHAAAgggAICIAAP4HACAkAAD_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_AgAIDgAAIAJACAeAAAAFAAgAQAAzgUAIAoAAM8FACALAADQBQAgDAAA0QUAIA0AAMgGACATAADTBQAgFwAA1AUAIBkAANYFACAaAADVBQAgGwAA1wUAIBwAANgFACAwAACACQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhHAEAAM4FACAKAADPBQAgCwAA0AUAIAwAANEFACANAADIBgAgEwAA0wUAIBcAANQFACAZAADWBQAgGgAA1QUAIBsAANcFACAcAADYBQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhBrYCAQAAAAG6AkAAAAAB1AIAAADYAgLWAgEAAAAB2AIBAAAAAdkCAQAAAAEJtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAACVAwLWAgEAAAABjgMBAAAAAZUDQAAAAAGWA0AAAAABlwNAAAAAAQm2AgEAAAABugJAAAAAAbsCQAAAAAHUAgAAAIoDAtYCAQAAAAGHAwEAAAABiAMBAAAAAYoDQAAAAAGLA0AAAAABHAEAALUGACAKAAC2BgAgCwAAtwYAIAwAALgGACANAADKBgAgEAAAuQYAIBMAALoGACAXAAC7BgAgGQAAvQYAIBoAALwGACAbAAC-BgAgtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAADYAgLbAgEAAAAB3AIBAAAAAd0CAQAAAAHeAgEAAAAB3wIBAAAAAeACAQAAAAHhAgEAAAAB4gIQAAAAAeMCAQAAAAHkAgEAAAAB5QIQAAAAAecCAAAA5wIC6AJAAAAAAQIAAAAWACA3AACECQAgAwAAABQAIDcAAIQJACA4AACICQAgHgAAABQAIAEAAM4FACAKAADPBQAgCwAA0AUAIAwAANEFACANAADIBgAgEAAA0gUAIBMAANMFACAXAADUBQAgGQAA1gUAIBoAANUFACAbAADXBQAgMAAAiAkAILYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAADLBdgCItsCAQDuBAAh3AIBAO4EACHdAgEA7gQAId4CAQDuBAAh3wIBAIoFACHgAgEAigUAIeECAQDuBAAh4gIQAP0EACHjAgEAigUAIeQCAQDuBAAh5QIQAP0EACHnAgAAzAXnAiLoAkAAngUAIRwBAADOBQAgCgAAzwUAIAsAANAFACAMAADRBQAgDQAAyAYAIBAAANIFACATAADTBQAgFwAA1AUAIBkAANYFACAaAADVBQAgGwAA1wUAILYCAQDuBAAhugJAAPAEACG7AkAA8AQAIdQCAADLBdgCItsCAQDuBAAh3AIBAO4EACHdAgEA7gQAId4CAQDuBAAh3wIBAIoFACHgAgEAigUAIeECAQDuBAAh4gIQAP0EACHjAgEAigUAIeQCAQDuBAAh5QIQAP0EACHnAgAAzAXnAiLoAkAAngUAIQe2AgEAAAABugJAAAAAAdYCAQAAAAGDAwEAAAABhAMBAAAAAYUDAQAAAAGGAyAAAAABEwEAAPwHACAcAACCCAAgIgAA_gcAICQAAP8HACAlAACACAAgJgAAgQgAILYCAQAAAAG3AgEAAAABugJAAAAAAbsCQAAAAAHKAgEAAAABywIBAAAAAcwCAQAAAAHOAgAAAM4CAs8CIAAAAAHQAgEAAAAB0gIAAADSAgLUAgAAANQCAtUCAQAAAAECAAAAqgMAIDcAAIoJACAcAQAAtQYAIAoAALYGACALAAC3BgAgDAAAuAYAIA0AAMoGACAQAAC5BgAgFwAAuwYAIBkAAL0GACAaAAC8BgAgGwAAvgYAIBwAAL8GACC2AgEAAAABugJAAAAAAbsCQAAAAAHUAgAAANgCAtsCAQAAAAHcAgEAAAAB3QIBAAAAAd4CAQAAAAHfAgEAAAAB4AIBAAAAAeECAQAAAAHiAhAAAAAB4wIBAAAAAeQCAQAAAAHlAhAAAAAB5wIAAADnAgLoAkAAAAABAgAAABYAIDcAAIwJACADAAAAFAAgNwAAjAkAIDgAAJAJACAeAAAAFAAgAQAAzgUAIAoAAM8FACALAADQBQAgDAAA0QUAIA0AAMgGACAQAADSBQAgFwAA1AUAIBkAANYFACAaAADVBQAgGwAA1wUAIBwAANgFACAwAACQCQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhHAEAAM4FACAKAADPBQAgCwAA0AUAIAwAANEFACANAADIBgAgEAAA0gUAIBcAANQFACAZAADWBQAgGgAA1QUAIBsAANcFACAcAADYBQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhCbYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAAlQMC1gIBAAAAAZMDAQAAAAGVA0AAAAABlgNAAAAAAZcDQAAAAAEcAQAAtQYAIAoAALYGACALAAC3BgAgDAAAuAYAIA0AAMoGACAQAAC5BgAgEwAAugYAIBcAALsGACAZAAC9BgAgGwAAvgYAIBwAAL8GACC2AgEAAAABugJAAAAAAbsCQAAAAAHUAgAAANgCAtsCAQAAAAHcAgEAAAAB3QIBAAAAAd4CAQAAAAHfAgEAAAAB4AIBAAAAAeECAQAAAAHiAhAAAAAB4wIBAAAAAeQCAQAAAAHlAhAAAAAB5wIAAADnAgLoAkAAAAABAgAAABYAIDcAAJIJACADAAAAFAAgNwAAkgkAIDgAAJYJACAeAAAAFAAgAQAAzgUAIAoAAM8FACALAADQBQAgDAAA0QUAIA0AAMgGACAQAADSBQAgEwAA0wUAIBcAANQFACAZAADWBQAgGwAA1wUAIBwAANgFACAwAACWCQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhHAEAAM4FACAKAADPBQAgCwAA0AUAIAwAANEFACANAADIBgAgEAAA0gUAIBMAANMFACAXAADUBQAgGQAA1gUAIBsAANcFACAcAADYBQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_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_AcAIBEAAP0HACAcAACCCAAgIgAA_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_QcAICIAAP4HACAkAAD_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_AcAIBEAAP0HACAcAACCCAAgIgAA_gcAICQAAP8HACAlAACACAAgtgIBAAAAAbcCAQAAAAG6AkAAAAABuwJAAAAAAcoCAQAAAAHLAgEAAAABzAIBAAAAAc4CAAAAzgICzwIgAAAAAdACAQAAAAHSAgAAANICAtQCAAAA1AIC1QIBAAAAAQIAAACqAwAgNwAA5QkAIA8GAACyCAAgCQAA9QYAIB0AAPYGACAeAAD3BgAgIAAA-QYAICIAAPoGACC2AgEAAAABtwIBAAAAAbgCAQAAAAG5AiAAAAABugJAAAAAAbsCQAAAAAHQAgEAAAAB-QIBAAAAAY0DAQAAAAECAAAACQAgNwAA5wkAIBwBAAC1BgAgCgAAtgYAIAsAALcGACAMAAC4BgAgDQAAygYAIBAAALkGACATAAC6BgAgGQAAvQYAIBoAALwGACAbAAC-BgAgHAAAvwYAILYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAA2AIC2wIBAAAAAdwCAQAAAAHdAgEAAAAB3gIBAAAAAd8CAQAAAAHgAgEAAAAB4QIBAAAAAeICEAAAAAHjAgEAAAAB5AIBAAAAAeUCEAAAAAHnAgAAAOcCAugCQAAAAAECAAAAFgAgNwAA6QkAIAMAAAAeACA3AADlCQAgOAAA7QkAIBUAAAAeACABAACGBwAgEQAAhwcAIBwAAIwHACAiAACIBwAgJAAAiQcAICUAAIoHACAwAADtCQAgtgIBAO4EACG3AgEA7gQAIboCQADwBAAhuwJAAPAEACHKAgEA7gQAIcsCAQCKBQAhzAIBAIoFACHOAgAAgwfOAiLPAiAAhAcAIdACAQCKBQAh0gIAAJwF0gIi1AIAAIUH1AIi1QIBAIoFACETAQAAhgcAIBEAAIcHACAcAACMBwAgIgAAiAcAICQAAIkHACAlAACKBwAgtgIBAO4EACG3AgEA7gQAIboCQADwBAAhuwJAAPAEACHKAgEA7gQAIcsCAQCKBQAhzAIBAIoFACHOAgAAgwfOAiLPAiAAhAcAIdACAQCKBQAh0gIAAJwF0gIi1AIAAIUH1AIi1QIBAIoFACEDAAAABwAgNwAA5wkAIDgAAPAJACARAAAABwAgBgAAsQgAIAkAAIwFACAdAACNBQAgHgAAjgUAICAAAJAFACAiAACRBQAgMAAA8AkAILYCAQDuBAAhtwIBAO4EACG4AgEA7gQAIbkCIADvBAAhugJAAPAEACG7AkAA8AQAIdACAQCKBQAh-QIBAO4EACGNAwEA7gQAIQ8GAACxCAAgCQAAjAUAIB0AAI0FACAeAACOBQAgIAAAkAUAICIAAJEFACC2AgEA7gQAIbcCAQDuBAAhuAIBAO4EACG5AiAA7wQAIboCQADwBAAhuwJAAPAEACHQAgEAigUAIfkCAQDuBAAhjQMBAO4EACEDAAAAFAAgNwAA6QkAIDgAAPMJACAeAAAAFAAgAQAAzgUAIAoAAM8FACALAADQBQAgDAAA0QUAIA0AAMgGACAQAADSBQAgEwAA0wUAIBkAANYFACAaAADVBQAgGwAA1wUAIBwAANgFACAwAADzCQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhHAEAAM4FACAKAADPBQAgCwAA0AUAIAwAANEFACANAADIBgAgEAAA0gUAIBMAANMFACAZAADWBQAgGgAA1QUAIBsAANcFACAcAADYBQAgtgIBAO4EACG6AkAA8AQAIbsCQADwBAAh1AIAAMsF2AIi2wIBAO4EACHcAgEA7gQAId0CAQDuBAAh3gIBAO4EACHfAgEAigUAIeACAQCKBQAh4QIBAO4EACHiAhAA_QQAIeMCAQCKBQAh5AIBAO4EACHlAhAA_QQAIecCAADMBecCIugCQACeBQAhCbYCAQAAAAG6AkAAAAABuwJAAAAAAdQCAAAAigMC1gIBAAAAAYcDAQAAAAGKA0AAAAABiwNAAAAAAYwDAQAAAAETAQAA_AcAIBEAAP0HACAcAACCCAAgJAAA_wcAICUAAIAIACAmAACBCAAgtgIBAAAAAbcCAQAAAAG6AkAAAAABuwJAAAAAAcoCAQAAAAHLAgEAAAABzAIBAAAAAc4CAAAAzgICzwIgAAAAAdACAQAAAAHSAgAAANICAtQCAAAA1AIC1QIBAAAAAQIAAACqAwAgNwAA9QkAIAMAAAAeACA3AAD1CQAgOAAA-QkAIBUAAAAeACABAACGBwAgEQAAhwcAIBwAAIwHACAkAACJBwAgJQAAigcAICYAAIsHACAwAAD5CQAgtgIBAO4EACG3AgEA7gQAIboCQADwBAAhuwJAAPAEACHKAgEA7gQAIcsCAQCKBQAhzAIBAIoFACHOAgAAgwfOAiLPAiAAhAcAIdACAQCKBQAh0gIAAJwF0gIi1AIAAIUH1AIi1QIBAIoFACETAQAAhgcAIBEAAIcHACAcAACMBwAgJAAAiQcAICUAAIoHACAmAACLBwAgtgIBAO4EACG3AgEA7gQAIboCQADwBAAhuwJAAPAEACHKAgEA7gQAIcsCAQCKBQAhzAIBAIoFACHOAgAAgwfOAiLPAiAAhAcAIdACAQCKBQAh0gIAAJwF0gIi1AIAAIUH1AIi1QIBAIoFACENtgIBAAAAAboCQAAAAAG7AkAAAAAB1AIAAADsAgLpAgEAAAAB6gIAAADSAgLsAgEAAAAB7QIBAAAAAe4CAQAAAAHvAgEAAAAB8QIBAAAAAfICQAAAAAHzAgEAAAABCLYCAQAAAAG3AgEAAAABuAIBAAAAAbkCIAAAAAG6AkAAAAABuwJAAAAAAdACAQAAAAGNAwEAAAABCbYCAQAAAAG5AiAAAAABugJAAAAAAbsCQAAAAAHkAgEAAAAB-gIQAAAAAfsCEAAAAAH8AhAAAAAB_QIQAAAAAQQBAAIIABcpXwkqYAkEAgADCAAWJ1sBKFwJCAEEAggAFREGBBxTECJPEiRQCiVRCyZSDAUCAAMIABQaTA0hAAUjSwsIBgAGCAATCRMEHRcJHj0JHz4MID8MIkMSAwUKBQcOBwgACAEGAAYCBQ8ABxAADQEAAggAEQoAAQsAAQwYBQ0ZBRAdChMjCxcoDBkwDhotDRsyDxw2EAIOAAkPHwMDDgAJEQAEEiQDBA4ACRQABRUABRYpAwMOAAkRAAQZLw4CDgAJGAANAQ4ACQICAAMONwkFEDgAEzkAFzoAGjsAHDwAAgIAAyFEBQYJRQAdRgAeRwAfSAAgSQAiSgACGk4AI00ABRxYACJUACRVACVWACZXAAInXQAoXgACKWEAKmIAAAEBAAIBAQACBQgAHD0AHT4AHj8AH0AAIAAAAAAABQgAHD0AHT4AHj8AH0AAIAICAAMhAAUCAgADIQAFAwgAJT8AJkAAJwAAAAMIACU_ACZAACcDDgAJEQAEEpgBAwMOAAkRAAQSngEDAwgALD8ALUAALgAAAAMIACw_AC1AAC4BAgADAQIAAwMIADM_ADRAADUAAAADCAAzPwA0QAA1Ag4ACREABAIOAAkRAAQFCAA6PQA7PgA8PwA9QAA-AAAAAAAFCAA6PQA7PgA8PwA9QAA-AQYABgEGAAYDCABDPwBEQABFAAAAAwgAQz8AREAARQQOAAkUAAUVAAUW9AEDBA4ACRQABRUABRb6AQMDCABKPwBLQABMAAAAAwgASj8AS0AATAICAAMOjAIJAgIAAw6SAgkDCABRPwBSQABTAAAAAwgAUT8AUkAAUwEOAAkBDgAJBQgAWD0AWT4AWj8AW0AAXAAAAAAABQgAWD0AWT4AWj8AW0AAXAEGAAYBBgAGBQgAYT0AYj4AYz8AZEAAZQAAAAAABQgAYT0AYj4AYz8AZEAAZQIOAAkYAA0CDgAJGAANAwgAaj8Aa0AAbAAAAAMIAGo_AGtAAGwCAgADIeoCBQICAAMh8AIFAwgAcT8AckAAcwAAAAMIAHE_AHJAAHMFAQACCgABCwABDIIDBQ2DAwUFAQACCgABCwABDIkDBQ2KAwUFCAB4PQB5PgB6PwB7QAB8AAAAAAAFCAB4PQB5PgB6PwB7QAB8Ag4ACQ-cAwMCDgAJD6IDAwMIAIEBPwCCAUAAgwEAAAADCACBAT8AggFAAIMBAAADCACIAT8AiQFAAIoBAAAAAwgAiAE_AIkBQACKAQAAAwgAjwE_AJABQACRAQAAAAMIAI8BPwCQAUAAkQErAgEsYwEtZAEuZQEvZgExaAEyahgzaxk0bQE1bxg2cBo5cQE6cgE7cxhBdhtCdyFDeAREeQRFegRGewRHfARIfgRJgAEYSoEBIkuDAQRMhQEYTYYBI06HAQRPiAEEUIkBGFGMASRSjQEoU44BC1SPAQtVkAELVpEBC1eSAQtYlAELWZYBGFqXASlbmgELXJwBGF2dASpenwELX6ABC2ChARhhpAErYqUBL2OnAQJkqAECZaoBAmarAQJnrAECaK4BAmmwARhqsQEwa7MBAmy1ARhttgExbrcBAm-4AQJwuQEYcbwBMnK9ATZzvgENdL8BDXXAAQ12wQENd8IBDXjEAQ15xgEYescBN3vJAQ18ywEYfcwBOH7NAQ1_zgENgAHPARiBAdIBOYIB0wE_gwHUAQWEAdUBBYUB1gEFhgHXAQWHAdgBBYgB2gEFiQHcARiKAd0BQIsB3wEFjAHhARiNAeIBQY4B4wEFjwHkAQWQAeUBGJEB6AFCkgHpAUaTAeoBDJQB6wEMlQHsAQyWAe0BDJcB7gEMmAHwAQyZAfIBGJoB8wFHmwH2AQycAfgBGJ0B-QFIngH7AQyfAfwBDKAB_QEYoQGAAkmiAYECTaMBggIQpAGDAhClAYQCEKYBhQIQpwGGAhCoAYgCEKkBigIYqgGLAk6rAY4CEKwBkAIYrQGRAk-uAZMCEK8BlAIQsAGVAhixAZgCULIBmQJUswGbAg-0AZwCD7UBngIPtgGfAg-3AaACD7gBogIPuQGkAhi6AaUCVbsBpwIPvAGpAhi9AaoCVr4BqwIPvwGsAg_AAa0CGMEBsAJXwgGxAl3DAbICB8QBswIHxQG0AgfGAbUCB8cBtgIHyAG4AgfJAboCGMoBuwJeywG9AgfMAb8CGM0BwAJfzgHBAgfPAcICB9ABwwIY0QHGAmDSAccCZtMByQIO1AHKAg7VAcwCDtYBzQIO1wHOAg7YAdACDtkB0gIY2gHTAmfbAdUCDtwB1wIY3QHYAmjeAdkCDt8B2gIO4AHbAhjhAd4CaeIB3wJt4wHgAhLkAeECEuUB4gIS5gHjAhLnAeQCEugB5gIS6QHoAhjqAekCbusB7AIS7AHuAhjtAe8Cb-4B8QIS7wHyAhLwAfMCGPEB9gJw8gH3AnTzAfgCCfQB-QIJ9QH6Agn2AfsCCfcB_AIJ-AH-Agn5AYADGPoBgQN1-wGFAwn8AYcDGP0BiAN2_gGLAwn_AYwDCYACjQMYgQKQA3eCApEDfYMCkgMKhAKTAwqFApQDCoYClQMKhwKWAwqIApgDCokCmgMYigKbA36LAp4DCowCoAMYjQKhA3-OAqMDCo8CpAMKkAKlAxiRAqgDgAGSAqkDhAGTAqsDA5QCrAMDlQKuAwOWAq8DA5cCsAMDmAKyAwOZArQDGJoCtQOFAZsCtwMDnAK5AxidAroDhgGeArsDA58CvAMDoAK9AxihAsADhwGiAsEDiwGjAsMDBqQCxAMGpQLHAwamAsgDBqcCyQMGqALLAwapAs0DGKoCzgOMAasC0AMGrALSAxitAtMDjQGuAtQDBq8C1QMGsALWAxixAtkDjgGyAtoDkgE"
 };
 async function decodeBase64AsWasm(wasmBase64) {
   const { Buffer: Buffer2 } = await import("node:buffer");
@@ -84,6 +147,7 @@ __export(prismaNamespace_exports, {
   PrismaClientValidationError: () => PrismaClientValidationError2,
   ProofOfDeliveryScalarFieldEnum: () => ProofOfDeliveryScalarFieldEnum,
   QueryMode: () => QueryMode,
+  RoleApplicationScalarFieldEnum: () => RoleApplicationScalarFieldEnum,
   ShipmentScalarFieldEnum: () => ShipmentScalarFieldEnum,
   ShipmentStatusHistoryScalarFieldEnum: () => ShipmentStatusHistoryScalarFieldEnum,
   SortOrder: () => SortOrder,
@@ -136,6 +200,7 @@ var ModelName = {
   Payment: "Payment",
   PricingRule: "PricingRule",
   ProofOfDelivery: "ProofOfDelivery",
+  RoleApplication: "RoleApplication",
   Shipment: "Shipment",
   ShipmentStatusHistory: "ShipmentStatusHistory",
   User: "User",
@@ -267,6 +332,22 @@ var ProofOfDeliveryScalarFieldEnum = {
   notes: "notes",
   createdAt: "createdAt"
 };
+var RoleApplicationScalarFieldEnum = {
+  id: "id",
+  userId: "userId",
+  desiredRole: "desiredRole",
+  status: "status",
+  notes: "notes",
+  experience: "experience",
+  vehicleType: "vehicleType",
+  vehicleNumber: "vehicleNumber",
+  hubId: "hubId",
+  reviewedBy: "reviewedBy",
+  reviewedAt: "reviewedAt",
+  rejectionReason: "rejectionReason",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt"
+};
 var ShipmentScalarFieldEnum = {
   id: "id",
   trackingNumber: "trackingNumber",
@@ -306,6 +387,7 @@ var UserScalarFieldEnum = {
   phone: "phone",
   role: "role",
   status: "status",
+  profilePicture: "profilePicture",
   createdAt: "createdAt",
   updatedAt: "updatedAt"
 };
@@ -395,73 +477,15 @@ var AuthProvider = {
   GOOGLE: "GOOGLE",
   CREDENTIALS: "CREDENTIALS"
 };
+var ApplicationStatus = {
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED"
+};
 
 // src/generated/prisma/client.ts
-globalThis["__dirname"] = path.dirname(fileURLToPath(import.meta.url));
+globalThis["__dirname"] = path2.dirname(fileURLToPath(import.meta.url));
 var PrismaClient = getPrismaClientClass();
-
-// src/app/config/index.ts
-import dotenv from "dotenv";
-import path2 from "path";
-dotenv.config({ path: path2.join(process.cwd(), ".env") });
-var config_default = {
-  node_env: process.env.NODE_ENV,
-  port: process.env.PORT,
-  database_url: process.env.DATABASE_URL,
-  bak_url: process.env.APP_URL,
-  frontend_url: process.env.FRONTEND_URL,
-  bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
-  jwt_access_secret: process.env.JWT_ACCESS_SECRET,
-  jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
-  jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN,
-  jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
-  google_client_id: process.env.GOOGLE_CLIENT_ID,
-  super_admin_name: process.env.SUPER_ADMIN_NAME,
-  super_admin_email: process.env.SUPER_ADMIN_EMAIL,
-  super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
-  admin_name: process.env.SUPER_ADMIN_NAME,
-  admin_email: process.env.SUPER_ADMIN_EMAIL,
-  admin_password: process.env.SUPER_ADMIN_PASSWORD,
-  admin_phone: process.env.ADMIN_PHONE,
-  operations_manager_name: process.env.OPERATIONS_MANAGER_NAME,
-  operations_manager_email: process.env.OPERATIONS_MANAGER_EMAIL,
-  operations_manager_password: process.env.OPERATIONS_MANAGER_PASSWORD,
-  operations_manager_phone: process.env.OPERATIONS_MANAGER_PHONE,
-  hub_manager_name: process.env.HUB_MANAGER_NAME,
-  hub_manager_email: process.env.HUB_MANAGER_EMAIL,
-  hub_manager_password: process.env.HUB_MANAGER_PASSWORD,
-  hub_manager_phone: process.env.HUB_MANAGER_PHONE,
-  courier_name: process.env.COURIER_NAME,
-  courier_email: process.env.COURIER_EMAIL,
-  courier_password: process.env.COURIER_PASSWORD,
-  courier_phone: process.env.COURIER_PHONE,
-  tester_admin_name: process.env.TESTER_ADMIN_NAME,
-  tester_admin_email: process.env.TESTER_ADMIN_EMAIL,
-  tester_admin_password: process.env.TESTER_ADMIN_PASSWORD,
-  tester_doctor_name: process.env.TESTER_DOCTOR_NAME,
-  tester_doctor_email: process.env.TESTER_DOCTOR_EMAIL,
-  tester_doctor_password: process.env.TESTER_DOCTOR_PASSWORD,
-  redis_user: process.env.REDIS_USER,
-  redis_password: process.env.REDIS_PASSWORD,
-  redis_host: process.env.REDIS_HOST,
-  redis_port: process.env.REDIS_PORT,
-  smtp_user: process.env.SMTP_USER,
-  smtp_password: process.env.SMTP_PASSWORD,
-  email_sender: process.env.EMAIL_SENDER,
-  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
-  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
-  bkash_base_url: process.env.BKASH_BASE_URL,
-  bkash_username: process.env.BKASH_USERNAME,
-  bkash_password: process.env.BKASH_PASSWORD,
-  bkash_app_key: process.env.BKASH_APP_KEY,
-  bkash_app_secret: process.env.BKASH_APP_SECRET,
-  bkash_callback_url: process.env.BKASH_CALLBACK_URL,
-  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
-  stripe_publishable_key: process.env.STRIPE_PUBLISHABLE_KEY,
-  stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
-  stripe_currency: process.env.STRIPE_CURRENCY || "bdt"
-};
 
 // src/app/utils/AppError.ts
 var AppError = class extends Error {
@@ -579,6 +603,7 @@ var jwtUtils = {
 var auth = (...requiredRoles) => {
   return catchAsync(async (req, res, next) => {
     const token = req.cookies.accessToken ? req.cookies.accessToken : req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization?.split(" ")[1] : req.headers.authorization;
+    console.log(token, "token in auth middleware");
     if (!token) {
       throw new AppError(
         httpStatus2.UNAUTHORIZED,
@@ -586,10 +611,12 @@ var auth = (...requiredRoles) => {
       );
     }
     const verifiedToken = jwtUtils.verifyToken(token, config_default.jwt_access_secret);
+    console.log(verifiedToken, "verifiedToken in auth middleware");
     if (!verifiedToken.success) {
       throw new AppError(httpStatus2.UNAUTHORIZED, verifiedToken.error);
     }
     const { email, name, userId, role } = verifiedToken.data;
+    console.log(email, name, userId, role, "user details in auth middleware");
     if (requiredRoles.length && !requiredRoles.includes(role)) {
       throw new AppError(
         httpStatus2.FORBIDDEN,
@@ -1012,6 +1039,117 @@ var createHub = async (payload) => {
   });
   return hub;
 };
+var bulkCreateHubs = async (items) => {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new AppError(
+      httpStatus4.BAD_REQUEST,
+      "Expected a non-empty array of hub items."
+    );
+  }
+  const results = [];
+  let createdCount = 0;
+  let updatedCount = 0;
+  for (const item of items) {
+    if (Array.isArray(item.hubs) && item.zoneCode) {
+      const zoneCode = item.zoneCode.toUpperCase().trim();
+      const zoneName = item.zoneName || zoneCode;
+      const zone = await prisma.zone.upsert({
+        where: { code: zoneCode },
+        update: { name: zoneName, isActive: true },
+        create: { code: zoneCode, name: zoneName, isActive: true }
+      });
+      for (const hub of item.hubs) {
+        const hubCode = hub.code.toUpperCase().trim();
+        const existing = await prisma.hub.findUnique({
+          where: { code: hubCode }
+        });
+        const savedHub = await prisma.hub.upsert({
+          where: { code: hubCode },
+          update: {
+            name: hub.name,
+            zoneId: zone.id,
+            address: hub.address,
+            phone: hub.phone || null,
+            isActive: hub.isActive !== false
+          },
+          create: {
+            name: hub.name,
+            code: hubCode,
+            zoneId: zone.id,
+            address: hub.address,
+            phone: hub.phone || null,
+            isActive: hub.isActive !== false
+          },
+          include: { zone: true }
+        });
+        if (existing) updatedCount++;
+        else createdCount++;
+        results.push(savedHub);
+      }
+      continue;
+    }
+    if (item.name && item.code && item.address) {
+      let zoneId = item.zoneId;
+      if (!zoneId && item.zoneCode) {
+        const zoneCode = item.zoneCode.toUpperCase().trim();
+        const zoneName = item.zoneName || zoneCode;
+        const zone = await prisma.zone.upsert({
+          where: { code: zoneCode },
+          update: { name: zoneName, isActive: true },
+          create: { code: zoneCode, name: zoneName, isActive: true }
+        });
+        zoneId = zone.id;
+      }
+      if (!zoneId) {
+        const firstZone = await prisma.zone.findFirst();
+        if (firstZone) {
+          zoneId = firstZone.id;
+        } else {
+          const defaultZone = await prisma.zone.create({
+            data: {
+              code: "ZONE-DEFAULT",
+              name: "General Logistics Zone",
+              isActive: true
+            }
+          });
+          zoneId = defaultZone.id;
+        }
+      }
+      const hubCode = item.code.toUpperCase().trim();
+      const existing = await prisma.hub.findUnique({
+        where: { code: hubCode }
+      });
+      const savedHub = await prisma.hub.upsert({
+        where: { code: hubCode },
+        update: {
+          name: item.name,
+          zoneId,
+          address: item.address,
+          phone: item.phone || null,
+          isActive: item.isActive !== false
+        },
+        create: {
+          name: item.name,
+          code: hubCode,
+          zoneId,
+          address: item.address,
+          phone: item.phone || null,
+          isActive: item.isActive !== false
+        },
+        include: { zone: true }
+      });
+      if (existing) updatedCount++;
+      else createdCount++;
+      results.push(savedHub);
+    }
+  }
+  return {
+    totalProcessed: results.length,
+    createdCount,
+    updatedCount,
+    hubs: results
+  };
+};
 var updateHub = async (id, payload) => {
   const hub = await prisma.hub.findUnique({ where: { id } });
   if (!hub) {
@@ -1308,6 +1446,7 @@ var AdminService = {
   deleteZone,
   getAllHubs,
   createHub,
+  bulkCreateHubs,
   updateHub,
   deleteHub,
   getAllPricingRules,
@@ -1481,6 +1620,16 @@ var createHub2 = catchAsync(async (req, res) => {
     data: result
   });
 });
+var bulkCreateHubs2 = catchAsync(async (req, res) => {
+  const items = Array.isArray(req.body) ? req.body : req.body.hubs || req.body.data || [];
+  const result = await AdminService.bulkCreateHubs(items);
+  sendResponse(res, {
+    statusCode: httpStatus5.CREATED,
+    success: true,
+    message: `Successfully processed ${result.totalProcessed} hubs (${result.createdCount} created, ${result.updatedCount} updated).`,
+    data: result
+  });
+});
 var updateHub2 = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await AdminService.updateHub(id, req.body);
@@ -1614,6 +1763,7 @@ var AdminController = {
   deleteZone: deleteZone2,
   getAllHubs: getAllHubs2,
   createHub: createHub2,
+  bulkCreateHubs: bulkCreateHubs2,
   updateHub: updateHub2,
   deleteHub: deleteHub2,
   getAllPricingRules: getAllPricingRules2,
@@ -1737,6 +1887,7 @@ router.post(
   validateRequest(AdminValidation.CreateHubZodSchema),
   AdminController.createHub
 );
+router.post("/hubs/bulk", AdminController.bulkCreateHubs);
 router.patch(
   "/hubs/:id",
   validateRequest(AdminValidation.UpdateHubZodSchema),
@@ -1820,7 +1971,7 @@ var redisClient = createClient({
 
 // src/app/module/auth/auth.service.ts
 var registerCustomer = async (payload) => {
-  const { name, password } = payload;
+  const { name, password, profilePicture } = payload;
   const email = payload.email.trim().toLowerCase();
   const isUserExists = await prisma.user.findUnique({
     where: { email }
@@ -1845,7 +1996,8 @@ var registerCustomer = async (payload) => {
   const redisUserDataPayload = {
     name,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    profilePicture
   };
   await redisClient.set(
     customerRegistrationKey,
@@ -1878,6 +2030,7 @@ var registerCustomer = async (payload) => {
 var verifyCustomerEmail = async (payload) => {
   const otp = payload.otp;
   const email = payload.email.trim().toLowerCase();
+  console.log(email, otp, "email and otp in verifyCustomerEmail");
   const isUserExist = await prisma.user.findUnique({
     where: { email }
   });
@@ -1892,6 +2045,7 @@ var verifyCustomerEmail = async (payload) => {
   }
   const otpKey = `customer-registration-otp:${email}`;
   const redisOtp = await redisClient.get(otpKey);
+  console.log(redisOtp, "redisOtp in verifyCustomerEmail");
   if (!redisOtp) {
     throw new AppError(httpStatus6.BAD_REQUEST, "Invalid OTP");
   }
@@ -1911,6 +2065,7 @@ var verifyCustomerEmail = async (payload) => {
       name: customerPayload.name,
       email: customerPayload.email,
       password: customerPayload.password,
+      profilePicture: customerPayload.profilePicture,
       role: UserRole.CUSTOMER,
       status: UserStatus.ACTIVE,
       emailVerified: true,
@@ -2315,19 +2470,21 @@ var registerCustomerController = catchAsync(
 var verifyCustomerEmailController = catchAsync(
   async (req, res) => {
     const payload = req.body;
+    console.log(payload, "payload in verifyCustomerEmailController");
     const result = await AuthService.verifyCustomerEmail(payload);
+    console.log(result, "result in verifyCustomerEmailController");
     const { accessToken, refreshToken: refreshToken3, user, customer } = result;
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "none",
+      secure: config_default.node_env === "development" ? false : true,
+      sameSite: config_default.node_env === "development" ? "lax" : "none",
       maxAge: 1e3 * 60 * 60 * 24
       // 24 hour or 1 day
     });
     res.cookie("refreshToken", refreshToken3, {
       httpOnly: true,
-      secure: false,
-      sameSite: "none",
+      secure: config_default.node_env === "development" ? false : true,
+      sameSite: config_default.node_env === "development" ? "lax" : "none",
       maxAge: 1e3 * 60 * 60 * 24 * 7
       // 7 days
     });
@@ -2350,15 +2507,15 @@ var loginUser2 = catchAsync(async (req, res) => {
   const { accessToken, refreshToken: refreshToken3 } = result;
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: false,
-    sameSite: "none",
+    secure: config_default.node_env === "development" ? false : true,
+    sameSite: config_default.node_env === "development" ? "lax" : "none",
     maxAge: 1e3 * 60 * 60 * 24
     // 24 hour or 1 day
   });
   res.cookie("refreshToken", refreshToken3, {
     httpOnly: true,
-    secure: false,
-    sameSite: "none",
+    secure: config_default.node_env === "development" ? false : true,
+    sameSite: config_default.node_env === "development" ? "lax" : "none",
     maxAge: 1e3 * 60 * 60 * 24 * 7
     // 7 days
   });
@@ -2424,15 +2581,15 @@ var googleLogin2 = catchAsync(async (req, res) => {
   const { accessToken, refreshToken: refreshToken3 } = result;
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: false,
-    sameSite: "none",
+    secure: config_default.node_env === "development" ? false : true,
+    sameSite: config_default.node_env === "development" ? "lax" : "none",
     maxAge: 1e3 * 60 * 60 * 24
     // 24 hour or 1 day
   });
   res.cookie("refreshToken", refreshToken3, {
     httpOnly: true,
-    secure: false,
-    sameSite: "none",
+    secure: config_default.node_env === "development" ? false : true,
+    sameSite: config_default.node_env === "development" ? "lax" : "none",
     maxAge: 1e3 * 60 * 60 * 24 * 7
     // 7 days
   });
@@ -2466,6 +2623,16 @@ var resetPassword2 = catchAsync(async (req, res) => {
     data: null
   });
 });
+var logout = catchAsync(async (req, res) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  sendResponse(res, {
+    statusCode: httpStatus7.OK,
+    success: true,
+    message: "User Logged Out Successfully",
+    data: null
+  });
+});
 var AuthController = {
   googleLogin: googleLogin2,
   registerCustomerController,
@@ -2474,7 +2641,8 @@ var AuthController = {
   forgotPassword: forgotPassword2,
   resetPassword: resetPassword2,
   refreshToken: refreshToken2,
-  getMe: getMe2
+  getMe: getMe2,
+  logout
 };
 
 // src/app/module/auth/auth.validation.ts
@@ -2482,11 +2650,16 @@ import z2 from "zod";
 var CustomerRegistrationZodSchema = z2.object({
   name: z2.string("Not A String!!!!!").min(3, "Name must atleast 3 characters long!!!").max(100, "Name must be less than 100 characters long!!!"),
   email: z2.email("Not email!!"),
-  password: z2.string().min(8, "Password Must Minimum 8 Characters Long.").regex(/[a-z]/, "Password must contain atleast 1 Lowercase Letter").regex(/[A-Z]/, "Password must contain atleast 1 Uppercase Letter").regex(/[0-9]/, "Password must contain atleast 1 Number").regex(/[^A-Za-z0-9]/, "Password must contain atleast 1 Special Character")
+  password: z2.string().min(8, "Password Must Minimum 8 Characters Long.").regex(/[a-z]/, "Password must contain atleast 1 Lowercase Letter").regex(/[A-Z]/, "Password must contain atleast 1 Uppercase Letter").regex(/[0-9]/, "Password must contain atleast 1 Number").regex(/[^A-Za-z0-9]/, "Password must contain atleast 1 Special Character"),
+  profilePicture: z2.string().optional()
 });
 var CustomerEmailVerifyZodSchema = z2.object({
   email: z2.email("Not email!!"),
-  otp: z2.string().length(6)
+  otp: z2.string().length(6).refine((val) => console.log(val))
+}).refine((data) => {
+  console.log(data.email, data.otp, typeof data.email, typeof data.otp);
+}, {
+  message: "Email and OTP are required"
 });
 var LoginZodSchema = z2.object({
   email: z2.email(),
@@ -2517,7 +2690,6 @@ router2.post(
 );
 router2.post(
   "/verify-email",
-  validateRequest(UserValidation.CustomerEmailVerifyZodSchema),
   AuthController.verifyCustomerEmailController
 );
 router2.post(
@@ -2549,6 +2721,7 @@ router2.post(
   validateRequest(UserValidation.ResetPasswordZodSchema),
   AuthController.resetPassword
 );
+router2.post("/logout", AuthController.logout);
 var AuthRoutes = router2;
 
 // src/app/module/courier/courier.router.ts
@@ -3214,7 +3387,31 @@ var returnShipment = async (userId, shipmentId, payload) => {
   });
   return updatedShipment;
 };
+var getMyProfile = async (userId) => {
+  return getCourierByUserId(userId);
+};
+var updateAvailability = async (userId, availabilityStatus) => {
+  const courier = await getCourierByUserId(userId);
+  const updated = await prisma.courier.update({
+    where: { id: courier.id },
+    data: { availabilityStatus },
+    include: {
+      hub: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true
+        }
+      }
+    }
+  });
+  return updated;
+};
 var CourierService = {
+  getMyProfile,
+  updateAvailability,
   getMyTasks,
   getTaskById,
   acceptAssignment,
@@ -3451,7 +3648,44 @@ var returnShipment2 = catchAsync(async (req, res) => {
     data: result
   });
 });
+var getMyProfile2 = catchAsync(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new AppError(
+      httpStatus9.UNAUTHORIZED,
+      "User context missing from request."
+    );
+  }
+  const result = await CourierService.getMyProfile(user.userId);
+  sendResponse(res, {
+    statusCode: httpStatus9.OK,
+    success: true,
+    message: "Courier profile retrieved successfully.",
+    data: result
+  });
+});
+var updateAvailability2 = catchAsync(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new AppError(
+      httpStatus9.UNAUTHORIZED,
+      "User context missing from request."
+    );
+  }
+  const result = await CourierService.updateAvailability(
+    user.userId,
+    req.body.availabilityStatus
+  );
+  sendResponse(res, {
+    statusCode: httpStatus9.OK,
+    success: true,
+    message: "Courier availability updated successfully.",
+    data: result
+  });
+});
 var CourierController = {
+  getMyProfile: getMyProfile2,
+  updateAvailability: updateAvailability2,
   getMyTasks: getMyTasks2,
   getTaskById: getTaskById2,
   acceptAssignment: acceptAssignment2,
@@ -3501,6 +3735,9 @@ var ReturnedZodSchema = z3.object({
 var RejectAssignmentZodSchema = z3.object({
   reason: z3.string().max(255).optional()
 });
+var UpdateAvailabilityZodSchema = z3.object({
+  availabilityStatus: z3.enum(["AVAILABLE", "BUSY", "OFFLINE"])
+});
 var CourierValidation = {
   PickupShipmentZodSchema,
   DeliverToHubZodSchema,
@@ -3509,11 +3746,23 @@ var CourierValidation = {
   DeliveryFailedZodSchema,
   RescheduleZodSchema,
   ReturnedZodSchema,
-  RejectAssignmentZodSchema
+  RejectAssignmentZodSchema,
+  UpdateAvailabilityZodSchema
 };
 
 // src/app/module/courier/courier.router.ts
 var router3 = Router3();
+router3.get(
+  "/me",
+  auth(UserRole.COURIER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER),
+  CourierController.getMyProfile
+);
+router3.patch(
+  "/availability",
+  auth(UserRole.COURIER),
+  validateRequest(CourierValidation.UpdateAvailabilityZodSchema),
+  CourierController.updateAvailability
+);
 router3.get(
   "/tasks",
   auth(UserRole.COURIER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER),
@@ -4159,6 +4408,69 @@ var receiveHubTransfer = async (managerUserId, transferId, payload) => {
   });
   return result;
 };
+var getAllHubTransfers = async (query) => {
+  const page = Number(query.page) > 0 ? Number(query.page) : 1;
+  const limit = Number(query.limit) > 0 ? Number(query.limit) : 20;
+  const skip = (page - 1) * limit;
+  const whereConditions = {};
+  if (query.status) {
+    whereConditions.status = query.status;
+  }
+  if (query.fromHubId) {
+    whereConditions.fromHubId = query.fromHubId;
+  }
+  if (query.toHubId) {
+    whereConditions.toHubId = query.toHubId;
+  }
+  if (query.hubId) {
+    whereConditions.OR = [
+      { fromHubId: query.hubId },
+      { toHubId: query.hubId }
+    ];
+  }
+  const [transfers, total] = await Promise.all([
+    prisma.hubTransfer.findMany({
+      where: whereConditions,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc"
+      },
+      include: {
+        shipment: {
+          select: {
+            id: true,
+            trackingNumber: true,
+            parcelType: true,
+            weight: true,
+            status: true
+          }
+        },
+        fromHub: true,
+        toHub: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
+    }),
+    prisma.hubTransfer.count({
+      where: whereConditions
+    })
+  ]);
+  return {
+    data: transfers,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+};
 var initiateReturn = async (managerUserId, shipmentId, payload) => {
   const shipment = await prisma.shipment.findUnique({
     where: { id: shipmentId }
@@ -4482,6 +4794,7 @@ var OperationsManagerService = {
   assignDeliveryCourier,
   createHubTransfer,
   receiveHubTransfer,
+  getAllHubTransfers,
   initiateReturn,
   returnInTransit,
   cancelShipment,
@@ -4638,6 +4951,16 @@ var receiveHubTransfer2 = catchAsync(async (req, res) => {
     data: result
   });
 });
+var getAllHubTransfers2 = catchAsync(async (req, res) => {
+  const result = await OperationsManagerService.getAllHubTransfers(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus11.OK,
+    success: true,
+    message: "Hub transfers retrieved successfully.",
+    data: result.data,
+    meta: result.meta
+  });
+});
 var initiateReturn2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
@@ -4753,6 +5076,7 @@ var OperationsManagerController = {
   assignDeliveryCourier: assignDeliveryCourier2,
   createHubTransfer: createHubTransfer2,
   receiveHubTransfer: receiveHubTransfer2,
+  getAllHubTransfers: getAllHubTransfers2,
   initiateReturn: initiateReturn2,
   returnInTransit: returnInTransit2,
   cancelShipment: cancelShipment2,
@@ -4854,6 +5178,7 @@ router4.patch(
   validateRequest(OperationsManagerValidation.UpdateDeliveredZodSchema),
   OperationsManagerController.updateDelivered
 );
+router4.get("/transfers", OperationsManagerController.getAllHubTransfers);
 router4.post(
   "/shipments/:id/transfer",
   validateRequest(OperationsManagerValidation.CreateHubTransferZodSchema),
@@ -4893,7 +5218,25 @@ import httpStatus13 from "http-status";
 import httpStatus12 from "http-status";
 import Stripe from "stripe";
 var stripe = new Stripe(config_default.stripe_secret_key || "");
-var createPaymentIntent = async (shipmentId, userId, payload) => {
+var getPaymentStatus = async (shipmentId) => {
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    include: {
+      payment: true
+    }
+  });
+  if (!shipment) {
+    throw new AppError(httpStatus12.NOT_FOUND, "Shipment not found.");
+  }
+  return {
+    shipmentId: shipment.id,
+    trackingNumber: shipment.trackingNumber,
+    deliveryCharge: shipment.deliveryCharge,
+    paymentStatus: shipment.paymentStatus,
+    payment: shipment.payment
+  };
+};
+var createCheckoutSession = async (shipmentId, userId, payload) => {
   const shipment = await prisma.shipment.findUnique({
     where: { id: shipmentId },
     include: {
@@ -4921,30 +5264,45 @@ var createPaymentIntent = async (shipmentId, userId, payload) => {
       "This shipment has already been paid for."
     );
   }
-  const deliveryCharge = Number(shipment.deliveryCharge) || 60;
+  const deliveryCharge = Number(shipment.deliveryCharge) || 100;
   const currency = (payload?.currency || config_default.stripe_currency || "bdt").toLowerCase();
-  const amountInSubunits = Math.round(deliveryCharge * 100);
-  let paymentIntent;
+  const rawSubunits = Math.round(deliveryCharge * 100);
+  const amountInSubunits = currency === "bdt" ? Math.max(rawSubunits, 1e4) : Math.max(rawSubunits, 50);
+  const frontendUrl = config_default.frontend_url || "http://localhost:3000";
+  const successUrl = `${frontendUrl}/customer/shipments/${shipmentId}?payment=success&session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${frontendUrl}/customer/shipments/${shipmentId}?payment=cancelled`;
+  let session;
   try {
-    paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInSubunits,
-      currency,
-      description: `Delivery charge for ParcelPilot shipment ${shipment.trackingNumber}`,
+    session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency,
+            product_data: {
+              name: `Shipment Waybill: ${shipment.trackingNumber}`,
+              description: `Door-to-door delivery tariff for ${shipment.parcelType} (${Number(shipment.weight).toFixed(1)} kg)`
+            },
+            unit_amount: amountInSubunits
+          },
+          quantity: 1
+        }
+      ],
+      mode: "payment",
+      customer_email: shipment.customer.user.email,
+      client_reference_id: shipmentId,
       metadata: {
         shipmentId,
         trackingNumber: shipment.trackingNumber,
-        customerName: shipment.customer.user.name,
-        customerEmail: shipment.customer.user.email,
-        initiatedBy: userId
+        userId
       },
-      automatic_payment_methods: {
-        enabled: true
-      }
+      success_url: successUrl,
+      cancel_url: cancelUrl
     });
   } catch (error) {
     throw new AppError(
       httpStatus12.BAD_GATEWAY,
-      `Stripe PaymentIntent creation failed: ${error.message}`
+      `Stripe Checkout Session creation failed: ${error.message}`
     );
   }
   await prisma.payment.upsert({
@@ -4953,7 +5311,7 @@ var createPaymentIntent = async (shipmentId, userId, payload) => {
       amount: deliveryCharge,
       currency: currency.toUpperCase(),
       provider: "STRIPE",
-      transactionId: paymentIntent.id,
+      transactionId: session.id,
       status: PaymentStatus.PENDING
     },
     create: {
@@ -4961,20 +5319,19 @@ var createPaymentIntent = async (shipmentId, userId, payload) => {
       amount: deliveryCharge,
       currency: currency.toUpperCase(),
       provider: "STRIPE",
-      transactionId: paymentIntent.id,
+      transactionId: session.id,
       status: PaymentStatus.PENDING
     }
   });
   return {
-    clientSecret: paymentIntent.client_secret,
-    paymentIntentId: paymentIntent.id,
+    sessionId: session.id,
+    url: session.url,
     amount: deliveryCharge,
     currency: currency.toUpperCase(),
-    trackingNumber: shipment.trackingNumber,
-    publishableKey: config_default.stripe_publishable_key
+    trackingNumber: shipment.trackingNumber
   };
 };
-var confirmPayment = async (shipmentId, userId, payload) => {
+var verifyCheckoutSession = async (shipmentId, sessionId, userId) => {
   const shipment = await prisma.shipment.findUnique({
     where: { id: shipmentId },
     include: { payment: true }
@@ -4982,100 +5339,71 @@ var confirmPayment = async (shipmentId, userId, payload) => {
   if (!shipment) {
     throw new AppError(httpStatus12.NOT_FOUND, "Shipment not found.");
   }
-  let paymentIntent;
+  let session;
   try {
-    paymentIntent = await stripe.paymentIntents.retrieve(
-      payload.paymentIntentId
-    );
+    session = await stripe.checkout.sessions.retrieve(sessionId);
   } catch (error) {
     throw new AppError(
       httpStatus12.BAD_GATEWAY,
-      `Failed to retrieve PaymentIntent from Stripe: ${error.message}`
+      `Failed to retrieve Checkout Session from Stripe: ${error.message}`
     );
   }
-  if (paymentIntent.status === "requires_payment_method") {
-    try {
-      paymentIntent = await stripe.paymentIntents.confirm(
-        payload.paymentIntentId,
-        {
-          payment_method: payload.paymentMethodId || "pm_card_visa",
-          return_url: config_default.frontend_url || "http://localhost:5000"
+  if (session.payment_status === "paid") {
+    const transactionId = typeof session.payment_intent === "string" ? session.payment_intent : session.id;
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedPayment = await tx.payment.upsert({
+        where: { shipmentId },
+        update: {
+          status: PaymentStatus.PAID,
+          paidAt: /* @__PURE__ */ new Date(),
+          transactionId,
+          provider: "STRIPE"
+        },
+        create: {
+          shipmentId,
+          amount: Number(shipment.deliveryCharge),
+          currency: (session.currency || "bdt").toUpperCase(),
+          status: PaymentStatus.PAID,
+          paidAt: /* @__PURE__ */ new Date(),
+          transactionId,
+          provider: "STRIPE"
         }
-      );
-    } catch (error) {
-      throw new AppError(
-        httpStatus12.BAD_REQUEST,
-        `Failed to process payment on Stripe: ${error.message}`
-      );
-    }
-  }
-  if (paymentIntent.status !== "succeeded") {
-    throw new AppError(
-      httpStatus12.BAD_REQUEST,
-      `Payment has not succeeded yet on Stripe (Current status: ${paymentIntent.status}).`
-    );
-  }
-  const result = await prisma.$transaction(async (tx) => {
-    const updatedPayment = await tx.payment.upsert({
-      where: { shipmentId },
-      update: {
-        status: PaymentStatus.PAID,
-        paidAt: /* @__PURE__ */ new Date(),
-        transactionId: paymentIntent.id,
-        provider: "STRIPE"
-      },
-      create: {
-        shipmentId,
-        amount: shipment.deliveryCharge,
-        currency: paymentIntent.currency.toUpperCase(),
-        status: PaymentStatus.PAID,
-        paidAt: /* @__PURE__ */ new Date(),
-        transactionId: paymentIntent.id,
-        provider: "STRIPE"
-      }
-    });
-    const updatedShipment = await tx.shipment.update({
-      where: { id: shipmentId },
-      data: {
-        paymentStatus: PaymentStatus.PAID
-      },
-      include: {
-        payment: true,
-        pickupAddress: true,
-        deliveryAddress: true
-      }
-    });
-    await tx.shipmentStatusHistory.create({
-      data: {
-        shipmentId,
-        status: shipment.status,
-        note: `Payment of ${shipment.deliveryCharge} ${paymentIntent.currency.toUpperCase()} completed successfully via Stripe (ID: ${paymentIntent.id}).`,
-        updatedBy: userId
-      }
+      });
+      const updatedShipment = await tx.shipment.update({
+        where: { id: shipmentId },
+        data: {
+          paymentStatus: PaymentStatus.PAID
+        },
+        include: {
+          payment: true,
+          pickupAddress: true,
+          deliveryAddress: true
+        }
+      });
+      await tx.shipmentStatusHistory.create({
+        data: {
+          shipmentId,
+          status: shipment.status,
+          note: `Payment of \u09F3${shipment.deliveryCharge} completed successfully via Stripe Hosted Checkout (Session: ${session.id}).`,
+          updatedBy: userId
+        }
+      });
+      return {
+        shipment: updatedShipment,
+        payment: updatedPayment
+      };
     });
     return {
-      shipment: updatedShipment,
-      payment: updatedPayment
+      paid: true,
+      status: "PAID",
+      transactionId,
+      shipment: result.shipment
     };
-  });
-  return result;
-};
-var getPaymentStatus = async (shipmentId) => {
-  const shipment = await prisma.shipment.findUnique({
-    where: { id: shipmentId },
-    include: {
-      payment: true
-    }
-  });
-  if (!shipment) {
-    throw new AppError(httpStatus12.NOT_FOUND, "Shipment not found.");
   }
   return {
-    shipmentId: shipment.id,
-    trackingNumber: shipment.trackingNumber,
-    deliveryCharge: shipment.deliveryCharge,
-    paymentStatus: shipment.paymentStatus,
-    payment: shipment.payment
+    paid: false,
+    status: session.payment_status,
+    sessionId: session.id
   };
 };
 var handleWebhook = async (signature, payload) => {
@@ -5129,18 +5457,50 @@ var handleWebhook = async (signature, payload) => {
         });
       });
     }
+  } else if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const shipmentId = session.metadata?.shipmentId || session.client_reference_id;
+    if (shipmentId && session.payment_status === "paid") {
+      const transactionId = typeof session.payment_intent === "string" ? session.payment_intent : session.id;
+      await prisma.$transaction(async (tx) => {
+        await tx.payment.upsert({
+          where: { shipmentId },
+          update: {
+            status: PaymentStatus.PAID,
+            paidAt: /* @__PURE__ */ new Date(),
+            transactionId,
+            provider: "STRIPE"
+          },
+          create: {
+            shipmentId,
+            amount: (session.amount_total || 0) / 100,
+            currency: (session.currency || "BDT").toUpperCase(),
+            status: PaymentStatus.PAID,
+            paidAt: /* @__PURE__ */ new Date(),
+            transactionId,
+            provider: "STRIPE"
+          }
+        });
+        await tx.shipment.update({
+          where: { id: shipmentId },
+          data: {
+            paymentStatus: PaymentStatus.PAID
+          }
+        });
+      });
+    }
   }
   return { received: true };
 };
 var PaymentService = {
-  createPaymentIntent,
-  confirmPayment,
+  createCheckoutSession,
+  verifyCheckoutSession,
   getPaymentStatus,
   handleWebhook
 };
 
 // src/app/module/payment/payment.controller.ts
-var createPaymentIntent2 = catchAsync(async (req, res) => {
+var createCheckoutSession2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
@@ -5149,7 +5509,7 @@ var createPaymentIntent2 = catchAsync(async (req, res) => {
     );
   }
   const { shipmentId } = req.params;
-  const result = await PaymentService.createPaymentIntent(
+  const result = await PaymentService.createCheckoutSession(
     shipmentId,
     user.userId,
     req.body
@@ -5157,11 +5517,11 @@ var createPaymentIntent2 = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus13.OK,
     success: true,
-    message: "Stripe PaymentIntent generated successfully.",
+    message: "Stripe Checkout Session initialized successfully.",
     data: result
   });
 });
-var confirmPayment2 = catchAsync(async (req, res) => {
+var verifyCheckoutSession2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
@@ -5170,15 +5530,22 @@ var confirmPayment2 = catchAsync(async (req, res) => {
     );
   }
   const { shipmentId } = req.params;
-  const result = await PaymentService.confirmPayment(
+  const { sessionId } = req.body;
+  if (!sessionId) {
+    throw new AppError(
+      httpStatus13.BAD_REQUEST,
+      "Stripe sessionId is required to verify checkout session."
+    );
+  }
+  const result = await PaymentService.verifyCheckoutSession(
     shipmentId,
-    user.userId,
-    req.body
+    sessionId,
+    user.userId
   );
   sendResponse(res, {
     statusCode: httpStatus13.OK,
     success: true,
-    message: "Stripe payment confirmed successfully. Shipment marked as PAID.",
+    message: "Stripe Checkout Session verified successfully.",
     data: result
   });
 });
@@ -5199,49 +5566,31 @@ var handleWebhook2 = catchAsync(async (req, res) => {
   res.status(httpStatus13.OK).json(result);
 });
 var PaymentController = {
-  createPaymentIntent: createPaymentIntent2,
-  confirmPayment: confirmPayment2,
+  createCheckoutSession: createCheckoutSession2,
+  verifyCheckoutSession: verifyCheckoutSession2,
   getPaymentStatus: getPaymentStatus2,
   handleWebhook: handleWebhook2
-};
-
-// src/app/module/payment/payment.validation.ts
-import { z as z5 } from "zod";
-var CreatePaymentIntentZodSchema = z5.object({
-  currency: z5.string().max(10).optional()
-});
-var ConfirmPaymentZodSchema = z5.object({
-  paymentIntentId: z5.string().min(5, "Valid PaymentIntent ID is required"),
-  paymentMethodId: z5.string().optional()
-});
-var PaymentValidation = {
-  CreatePaymentIntentZodSchema,
-  ConfirmPaymentZodSchema
 };
 
 // src/app/module/payment/payment.router.ts
 var router5 = Router5();
 router5.post(
-  "/create-payment-intent/:shipmentId",
+  "/create-checkout-session/:shipmentId",
   auth(
     UserRole.CUSTOMER,
-    UserRole.COURIER,
     UserRole.ADMIN,
     UserRole.OPERATIONS_MANAGER
   ),
-  validateRequest(PaymentValidation.CreatePaymentIntentZodSchema),
-  PaymentController.createPaymentIntent
+  PaymentController.createCheckoutSession
 );
 router5.post(
-  "/confirm/:shipmentId",
+  "/verify-checkout-session/:shipmentId",
   auth(
     UserRole.CUSTOMER,
-    UserRole.COURIER,
     UserRole.ADMIN,
     UserRole.OPERATIONS_MANAGER
   ),
-  validateRequest(PaymentValidation.ConfirmPaymentZodSchema),
-  PaymentController.confirmPayment
+  PaymentController.verifyCheckoutSession
 );
 router5.get("/status/:shipmentId", auth(), PaymentController.getPaymentStatus);
 router5.post(
@@ -5251,15 +5600,546 @@ router5.post(
 );
 var PaymentRoutes = router5;
 
-// src/app/module/user/user.router.ts
+// src/app/module/roleApplication/roleApplication.router.ts
 import { Router as Router6 } from "express";
 
-// src/app/module/user/user.controller.ts
+// src/app/module/roleApplication/roleApplication.controller.ts
 import httpStatus15 from "http-status";
+
+// src/app/module/roleApplication/roleApplication.service.ts
+import httpStatus14 from "http-status";
+var hubSelectFields = {
+  id: true,
+  name: true,
+  code: true,
+  address: true,
+  zone: {
+    select: {
+      id: true,
+      name: true
+    }
+  }
+};
+var userSelectFields = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  profilePicture: true,
+  role: true
+};
+var applyForRole = async (userId, payload) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId }
+  });
+  if (!user) {
+    throw new AppError(httpStatus14.NOT_FOUND, "User not found.");
+  }
+  if (user.status === "SUSPENDED") {
+    throw new AppError(
+      httpStatus14.FORBIDDEN,
+      "Your account is suspended. You cannot apply for roles."
+    );
+  }
+  if (user.role === payload.desiredRole) {
+    throw new AppError(
+      httpStatus14.BAD_REQUEST,
+      `You are already assigned as ${payload.desiredRole}.`
+    );
+  }
+  const existingPending = await prisma.roleApplication.findFirst({
+    where: {
+      userId,
+      status: ApplicationStatus.PENDING
+    }
+  });
+  if (existingPending) {
+    throw new AppError(
+      httpStatus14.CONFLICT,
+      "You already have a pending application awaiting review."
+    );
+  }
+  if (payload.hubId) {
+    const hubExists = await prisma.hub.findUnique({
+      where: { id: payload.hubId }
+    });
+    if (!hubExists) {
+      throw new AppError(httpStatus14.NOT_FOUND, "Selected hub was not found.");
+    }
+  }
+  if (payload.profilePicture) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        profilePicture: payload.profilePicture
+      }
+    });
+  }
+  const application = await prisma.roleApplication.create({
+    data: {
+      userId,
+      desiredRole: payload.desiredRole,
+      notes: payload.notes || null,
+      experience: payload.experience || null,
+      vehicleType: payload.vehicleType || null,
+      vehicleNumber: payload.vehicleNumber || null,
+      hubId: payload.hubId || null,
+      status: ApplicationStatus.PENDING
+    },
+    include: {
+      user: {
+        select: userSelectFields
+      },
+      hub: {
+        select: hubSelectFields
+      }
+    }
+  });
+  return application;
+};
+var getMyApplications = async (userId) => {
+  const applications = await prisma.roleApplication.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      hub: {
+        select: hubSelectFields
+      }
+    }
+  });
+  return applications;
+};
+var getAllApplications = async (query) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const skip = (page - 1) * limit;
+  const whereConditions = {};
+  if (query.status) {
+    whereConditions.status = query.status;
+  }
+  if (query.desiredRole) {
+    whereConditions.desiredRole = query.desiredRole;
+  }
+  if (query.searchTerm) {
+    whereConditions.OR = [
+      {
+        user: {
+          name: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        }
+      },
+      {
+        user: {
+          email: {
+            contains: query.searchTerm,
+            mode: "insensitive"
+          }
+        }
+      },
+      {
+        vehicleNumber: {
+          contains: query.searchTerm,
+          mode: "insensitive"
+        }
+      }
+    ];
+  }
+  const sortBy = query.sortBy || "createdAt";
+  const sortOrder = query.sortOrder || "desc";
+  const [applications, total] = await Promise.all([
+    prisma.roleApplication.findMany({
+      where: whereConditions,
+      skip,
+      take: limit,
+      orderBy: {
+        [sortBy]: sortOrder
+      },
+      include: {
+        user: {
+          select: userSelectFields
+        },
+        hub: {
+          select: hubSelectFields
+        }
+      }
+    }),
+    prisma.roleApplication.count({
+      where: whereConditions
+    })
+  ]);
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    },
+    data: applications
+  };
+};
+var getApplicationById = async (id) => {
+  const application = await prisma.roleApplication.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: userSelectFields
+      },
+      hub: {
+        select: hubSelectFields
+      }
+    }
+  });
+  if (!application) {
+    throw new AppError(httpStatus14.NOT_FOUND, "Role application not found.");
+  }
+  return application;
+};
+var reviewApplication = async (applicationId, adminUserId, payload) => {
+  const application = await prisma.roleApplication.findUnique({
+    where: { id: applicationId },
+    include: { user: true }
+  });
+  if (!application) {
+    throw new AppError(httpStatus14.NOT_FOUND, "Role application not found.");
+  }
+  if (application.status !== ApplicationStatus.PENDING) {
+    throw new AppError(
+      httpStatus14.BAD_REQUEST,
+      `This application has already been ${application.status.toLowerCase()}.`
+    );
+  }
+  return await prisma.$transaction(async (tx) => {
+    if (payload.status === ApplicationStatus.APPROVED) {
+      const updatedApp = await tx.roleApplication.update({
+        where: { id: applicationId },
+        data: {
+          status: ApplicationStatus.APPROVED,
+          reviewedBy: adminUserId,
+          reviewedAt: /* @__PURE__ */ new Date()
+        }
+      });
+      await tx.user.update({
+        where: { id: application.userId },
+        data: {
+          role: application.desiredRole
+        }
+      });
+      if (application.desiredRole === UserRole.COURIER) {
+        let targetHubId = application.hubId;
+        if (!targetHubId) {
+          const firstHub = await tx.hub.findFirst({
+            where: { isActive: true },
+            select: { id: true }
+          });
+          targetHubId = firstHub?.id || null;
+        }
+        if (targetHubId) {
+          await tx.courier.upsert({
+            where: { userId: application.userId },
+            update: {
+              hubId: targetHubId,
+              vehicleType: application.vehicleType || "Motorcycle",
+              vehicleNumber: application.vehicleNumber || "N/A",
+              availabilityStatus: "AVAILABLE"
+            },
+            create: {
+              userId: application.userId,
+              hubId: targetHubId,
+              vehicleType: application.vehicleType || "Motorcycle",
+              vehicleNumber: application.vehicleNumber || "N/A",
+              availabilityStatus: "AVAILABLE"
+            }
+          });
+        }
+      }
+      return updatedApp;
+    } else {
+      const updatedApp = await tx.roleApplication.update({
+        where: { id: applicationId },
+        data: {
+          status: ApplicationStatus.REJECTED,
+          reviewedBy: adminUserId,
+          reviewedAt: /* @__PURE__ */ new Date(),
+          rejectionReason: payload.rejectionReason || "Your application was not approved at this time."
+        }
+      });
+      return updatedApp;
+    }
+  });
+};
+var getActiveHubs = async () => {
+  const hubs = await prisma.hub.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      address: true,
+      zone: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
+    },
+    orderBy: { name: "asc" }
+  });
+  return hubs;
+};
+var RoleApplicationService = {
+  applyForRole,
+  getMyApplications,
+  getAllApplications,
+  getApplicationById,
+  reviewApplication,
+  getActiveHubs
+};
+
+// src/app/module/roleApplication/roleApplication.controller.ts
+var applyForRole2 = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const result = await RoleApplicationService.applyForRole(userId, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus15.CREATED,
+    success: true,
+    message: "Role application submitted successfully.",
+    data: result
+  });
+});
+var getMyApplications2 = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const result = await RoleApplicationService.getMyApplications(userId);
+  sendResponse(res, {
+    statusCode: httpStatus15.OK,
+    success: true,
+    message: "My role applications fetched successfully.",
+    data: result
+  });
+});
+var getAllApplications2 = catchAsync(async (req, res) => {
+  const result = await RoleApplicationService.getAllApplications(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus15.OK,
+    success: true,
+    message: "All role applications retrieved successfully.",
+    meta: result.meta,
+    data: result.data
+  });
+});
+var getApplicationById2 = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await RoleApplicationService.getApplicationById(id);
+  sendResponse(res, {
+    statusCode: httpStatus15.OK,
+    success: true,
+    message: "Role application retrieved successfully.",
+    data: result
+  });
+});
+var reviewApplication2 = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const adminUserId = req.user.userId;
+  const result = await RoleApplicationService.reviewApplication(
+    id,
+    adminUserId,
+    req.body
+  );
+  sendResponse(res, {
+    statusCode: httpStatus15.OK,
+    success: true,
+    message: `Role application has been ${req.body.status.toLowerCase()} successfully.`,
+    data: result
+  });
+});
+var getActiveHubs2 = catchAsync(async (_req, res) => {
+  const result = await RoleApplicationService.getActiveHubs();
+  sendResponse(res, {
+    statusCode: httpStatus15.OK,
+    success: true,
+    message: "Active hubs fetched successfully.",
+    data: result
+  });
+});
+var RoleApplicationController = {
+  applyForRole: applyForRole2,
+  getMyApplications: getMyApplications2,
+  getAllApplications: getAllApplications2,
+  getApplicationById: getApplicationById2,
+  reviewApplication: reviewApplication2,
+  getActiveHubs: getActiveHubs2
+};
+
+// src/app/module/roleApplication/roleApplication.validation.ts
+import { z as z5 } from "zod";
+var allowedRoles = [
+  UserRole.COURIER,
+  UserRole.HUB_MANAGER,
+  UserRole.OPERATIONS_MANAGER,
+  UserRole.ADMIN
+];
+var CreateRoleApplicationZodSchema = z5.object({
+  desiredRole: z5.nativeEnum(UserRole).refine((role) => allowedRoles.includes(role), {
+    message: "Role must be COURIER, HUB_MANAGER, OPERATIONS_MANAGER, or ADMIN"
+  }),
+  notes: z5.string().trim().max(1e3).optional(),
+  experience: z5.string().trim().max(1e3).optional(),
+  vehicleType: z5.string().trim().max(50).optional(),
+  vehicleNumber: z5.string().trim().max(50).optional(),
+  hubId: z5.string().uuid("Invalid Hub ID format").optional(),
+  profilePicture: z5.string().url("Invalid profile picture URL").optional().or(z5.literal(""))
+});
+var ReviewRoleApplicationZodSchema = z5.object({
+  status: z5.nativeEnum(ApplicationStatus),
+  rejectionReason: z5.string().trim().max(1e3).optional()
+});
+var RoleApplicationValidation = {
+  CreateRoleApplicationZodSchema,
+  ReviewRoleApplicationZodSchema
+};
+
+// src/app/module/roleApplication/roleApplication.router.ts
+var router6 = Router6();
+router6.get("/hubs", auth(), RoleApplicationController.getActiveHubs);
+router6.get("/my", auth(), RoleApplicationController.getMyApplications);
+router6.post(
+  "/",
+  auth(),
+  validateRequest(RoleApplicationValidation.CreateRoleApplicationZodSchema),
+  RoleApplicationController.applyForRole
+);
+router6.get("/", auth(UserRole.ADMIN), RoleApplicationController.getAllApplications);
+router6.get("/:id", auth(UserRole.ADMIN), RoleApplicationController.getApplicationById);
+router6.patch(
+  "/:id/review",
+  auth(UserRole.ADMIN),
+  validateRequest(RoleApplicationValidation.ReviewRoleApplicationZodSchema),
+  RoleApplicationController.reviewApplication
+);
+var RoleApplicationRoutes = router6;
+
+// src/app/module/upload/upload.router.ts
+import { Router as Router7 } from "express";
+
+// src/app/middleware/multer.ts
+import httpStatus16 from "http-status";
+import multer from "multer";
+var storage = multer.memoryStorage();
+var fileFilter = (_req, file, cb) => {
+  const allowedMimes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/jpg"
+  ];
+  if (allowedMimes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(
+      new AppError(
+        httpStatus16.BAD_REQUEST,
+        "Invalid file type. Only JPEG, PNG, and WebP images are permitted."
+      )
+    );
+  }
+};
+var uploadSingleImage = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024
+    // 5MB maximum file size
+  }
+}).single("image");
+
+// src/app/module/upload/upload.controller.ts
+import httpStatus18 from "http-status";
+
+// src/app/lib/cloudinary.ts
+import { v2 as cloudinary } from "cloudinary";
+cloudinary.config({
+  cloud_name: config_default.cloudinary_cloud_name,
+  api_key: config_default.cloudinary_api_key,
+  api_secret: config_default.cloudinary_api_secret,
+  secure: true
+});
+var cloudinary_default = cloudinary;
+
+// src/app/utils/cloudinaryUploader.ts
+import httpStatus17 from "http-status";
+var uploadBufferToCloudinary = (buffer, folder = "parcelpilot/avatars") => {
+  return new Promise((resolve, reject) => {
+    if (!config_default.cloudinary_cloud_name || !config_default.cloudinary_api_key || !config_default.cloudinary_api_secret || config_default.cloudinary_cloud_name === "sdcv743ljv") {
+      return reject(
+        new AppError(
+          httpStatus17.BAD_REQUEST,
+          "Cloudinary API credentials are missing or invalid in server .env. Please configure your CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET."
+        )
+      );
+    }
+    const uploadStream = cloudinary_default.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "image"
+      },
+      (error, result) => {
+        if (error || !result) {
+          return reject(
+            error || new AppError(
+              httpStatus17.BAD_REQUEST,
+              "Cloudinary upload failed. Please verify your Cloudinary API credentials."
+            )
+          );
+        }
+        resolve(result);
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
+
+// src/app/module/upload/upload.controller.ts
+var uploadImage = catchAsync(async (req, res) => {
+  const file = req.file;
+  if (!file) {
+    throw new AppError(
+      httpStatus18.BAD_REQUEST,
+      "No image file was provided in the request."
+    );
+  }
+  const folder = req.body?.folder || "parcelpilot/avatars";
+  const uploadResult = await uploadBufferToCloudinary(file.buffer, folder);
+  sendResponse(res, {
+    statusCode: httpStatus18.OK,
+    success: true,
+    message: "Image uploaded successfully to Cloudinary.",
+    data: {
+      url: uploadResult.secure_url,
+      publicId: uploadResult.public_id,
+      format: uploadResult.format,
+      bytes: uploadResult.bytes
+    }
+  });
+});
+var UploadController = {
+  uploadImage
+};
+
+// src/app/module/upload/upload.router.ts
+var router7 = Router7();
+router7.post("/image", uploadSingleImage, UploadController.uploadImage);
+var UploadRoutes = router7;
+
+// src/app/module/user/user.router.ts
+import { Router as Router8 } from "express";
+
+// src/app/module/user/user.controller.ts
+import httpStatus20 from "http-status";
 
 // src/app/module/user/user.service.ts
 import crypto2 from "node:crypto";
-import httpStatus14 from "http-status";
+import httpStatus19 from "http-status";
 var getCustomerByUserId = async (userId) => {
   const customer = await prisma.customer.findUnique({
     where: {
@@ -5268,7 +6148,7 @@ var getCustomerByUserId = async (userId) => {
   });
   if (!customer) {
     throw new AppError(
-      httpStatus14.NOT_FOUND,
+      httpStatus19.NOT_FOUND,
       "Customer profile not found for this user account."
     );
   }
@@ -5300,19 +6180,19 @@ var getProfile = async (userId) => {
     }
   });
   if (!user) {
-    throw new AppError(httpStatus14.NOT_FOUND, "User not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "User not found.");
   }
   return user;
 };
 var updateProfile = async (userId, payload) => {
-  const { name, phone } = payload;
+  const { name, phone, profilePicture } = payload;
   const existingUser = await prisma.user.findUnique({
     where: {
       id: userId
     }
   });
   if (!existingUser) {
-    throw new AppError(httpStatus14.NOT_FOUND, "User not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "User not found.");
   }
   if (phone && phone !== existingUser.phone) {
     const phoneConflict = await prisma.user.findFirst({
@@ -5325,7 +6205,7 @@ var updateProfile = async (userId, payload) => {
     });
     if (phoneConflict) {
       throw new AppError(
-        httpStatus14.CONFLICT,
+        httpStatus19.CONFLICT,
         "Phone number is already associated with another account."
       );
     }
@@ -5336,7 +6216,8 @@ var updateProfile = async (userId, payload) => {
     },
     data: {
       ...name ? { name } : {},
-      ...phone ? { phone } : {}
+      ...phone ? { phone } : {},
+      ...profilePicture !== void 0 ? { profilePicture } : {}
     },
     omit: {
       password: true
@@ -5416,7 +6297,7 @@ var getUserById3 = async (id) => {
     }
   });
   if (!user) {
-    throw new AppError(httpStatus14.NOT_FOUND, "User not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "User not found.");
   }
   return user;
 };
@@ -5427,7 +6308,7 @@ var updateUserStatus = async (id, payload) => {
     }
   });
   if (!existingUser) {
-    throw new AppError(httpStatus14.NOT_FOUND, "User not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "User not found.");
   }
   const updatedUser = await prisma.user.update({
     where: {
@@ -5478,13 +6359,13 @@ var getAddressById = async (userId, addressId, role) => {
     }
   });
   if (!address) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Address not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Address not found.");
   }
   if (role !== UserRole.ADMIN && role !== UserRole.OPERATIONS_MANAGER) {
     const customer = await getCustomerByUserId(userId);
     if (address.customerId !== customer.id) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus19.FORBIDDEN,
         "You do not have access to this address."
       );
     }
@@ -5498,13 +6379,13 @@ var updateAddress = async (userId, addressId, payload, role) => {
     }
   });
   if (!address) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Address not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Address not found.");
   }
   if (role !== UserRole.ADMIN && role !== UserRole.OPERATIONS_MANAGER) {
     const customer = await getCustomerByUserId(userId);
     if (address.customerId !== customer.id) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus19.FORBIDDEN,
         "You cannot update an address that does not belong to you."
       );
     }
@@ -5532,13 +6413,13 @@ var deleteAddress = async (userId, addressId, role) => {
     }
   });
   if (!address) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Address not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Address not found.");
   }
   if (role !== UserRole.ADMIN && role !== UserRole.OPERATIONS_MANAGER) {
     const customer = await getCustomerByUserId(userId);
     if (address.customerId !== customer.id) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus19.FORBIDDEN,
         "You cannot delete an address that does not belong to you."
       );
     }
@@ -5554,25 +6435,25 @@ var createShipmentRequest = async (userId, payload) => {
   const customer = await getCustomerByUserId(userId);
   if (typeof payload.weight !== "number" || Number.isNaN(payload.weight) || !Number.isFinite(payload.weight)) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Invalid parcel weight. Weight must be a valid positive number."
     );
   }
   if (payload.weight <= 0) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Invalid parcel weight. Zero or negative weight is not allowed. Weight must be greater than zero."
     );
   }
   if (payload.weight < 0.05) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Minimum parcel weight is 0.05 kg (50 grams)."
     );
   }
   if (payload.weight > 500) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Maximum parcel weight allowed is 500 kg. For heavier cargo, please contact freight support."
     );
   }
@@ -5580,27 +6461,27 @@ var createShipmentRequest = async (userId, payload) => {
     const phoneRegex = /^(?:\+?8801[3-9]\d{8}|01[3-9]\d{8}|\+?[1-9]\d{7,14})$/;
     if (!phoneRegex.test(payload.recipientPhone.trim())) {
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus19.BAD_REQUEST,
         "Invalid recipient phone number format. Please provide a valid phone number (e.g., +8801XXXXXXXXX or 01XXXXXXXXX)."
       );
     }
   }
   if (!payload.pickupAddress && !payload.pickupAddressId) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Missing pickup address. Please provide either 'pickupAddress' details or a saved 'pickupAddressId'."
     );
   }
   if (!payload.deliveryAddress && !payload.deliveryAddressId) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Missing delivery address. Please provide either 'deliveryAddress' details or a saved 'deliveryAddressId'."
     );
   }
   if (payload.pickupAddress) {
     if (!payload.pickupAddress.addressLine?.trim() || !payload.pickupAddress.city?.trim() || !payload.pickupAddress.area?.trim()) {
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus19.BAD_REQUEST,
         "Incomplete pickup address. 'addressLine', 'city', and 'area' are required fields."
       );
     }
@@ -5608,7 +6489,7 @@ var createShipmentRequest = async (userId, payload) => {
   if (payload.deliveryAddress) {
     if (!payload.deliveryAddress.addressLine?.trim() || !payload.deliveryAddress.city?.trim() || !payload.deliveryAddress.area?.trim()) {
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus19.BAD_REQUEST,
         "Incomplete delivery address. 'addressLine', 'city', and 'area' are required fields."
       );
     }
@@ -5621,11 +6502,11 @@ var createShipmentRequest = async (userId, payload) => {
       where: { id: payload.pickupAddressId }
     });
     if (!existingPickup) {
-      throw new AppError(httpStatus14.NOT_FOUND, "Specified pickup address ID not found.");
+      throw new AppError(httpStatus19.NOT_FOUND, "Specified pickup address ID not found.");
     }
     if (existingPickup.customerId !== customer.id) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus19.FORBIDDEN,
         "Specified pickup address does not belong to your account."
       );
     }
@@ -5645,7 +6526,7 @@ var createShipmentRequest = async (userId, payload) => {
       where: { id: payload.deliveryAddressId }
     });
     if (!existingDelivery) {
-      throw new AppError(httpStatus14.NOT_FOUND, "Specified delivery address ID not found.");
+      throw new AppError(httpStatus19.NOT_FOUND, "Specified delivery address ID not found.");
     }
     deliveryCity = existingDelivery.city.trim();
     deliveryArea = existingDelivery.area.trim();
@@ -5657,7 +6538,7 @@ var createShipmentRequest = async (userId, payload) => {
   }
   if (pickupCity.toLowerCase() === deliveryCity.toLowerCase() && pickupArea.toLowerCase() === deliveryArea.toLowerCase() && pickupLine.toLowerCase() === deliveryLine.toLowerCase()) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Pickup address and delivery address cannot be identical. Parcel cannot be delivered to the exact same location."
     );
   }
@@ -5684,7 +6565,7 @@ var createShipmentRequest = async (userId, payload) => {
     if (!isSupported) {
       const supportedZoneNames = activeZones.map((z7) => z7.name).join(", ");
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus19.BAD_REQUEST,
         `Unsupported delivery zone: '${deliveryCity}'. ParcelPilot currently only delivers to serviced regions: ${supportedZoneNames}.`
       );
     }
@@ -5709,7 +6590,7 @@ var createShipmentRequest = async (userId, payload) => {
   });
   if (duplicateShipment) {
     throw new AppError(
-      httpStatus14.CONFLICT,
+      httpStatus19.CONFLICT,
       `Duplicate shipment submission detected. An identical shipment request was just submitted within the last 2 minutes (Tracking Number: ${duplicateShipment.trackingNumber}). Please wait before submitting again.`
     );
   }
@@ -5717,7 +6598,7 @@ var createShipmentRequest = async (userId, payload) => {
   const randomPart = crypto2.randomBytes(3).toString("hex").toUpperCase();
   const trackingNumber = `PP-${datePart}-${randomPart}`;
   const deliveryType = payload.deliveryType || "STANDARD";
-  let deliveryCharge = 60;
+  let deliveryCharge = 100;
   const matchingRule = await prisma.pricingRule.findFirst({
     where: {
       isActive: true,
@@ -5731,6 +6612,18 @@ var createShipmentRequest = async (userId, payload) => {
     const perKg = Number(matchingRule.perKgCharge);
     const minW = Number(matchingRule.minWeight);
     const extra = Math.max(0, payload.weight - minW);
+    deliveryCharge = Number((base + extra * perKg).toFixed(2));
+  } else {
+    let base = 100;
+    let perKg = 20;
+    if (deliveryType === "EXPRESS") {
+      base = 150;
+      perKg = 35;
+    } else if (deliveryType === "SAME_DAY") {
+      base = 200;
+      perKg = 50;
+    }
+    const extra = Math.max(0, payload.weight - 1);
     deliveryCharge = Number((base + extra * perKg).toFixed(2));
   }
   let formattedDescription = payload.description?.trim() || "";
@@ -5757,7 +6650,7 @@ var createShipmentRequest = async (userId, payload) => {
     } else if (payload.pickupAddressId) {
       pickupAddressId = payload.pickupAddressId;
     } else {
-      throw new AppError(httpStatus14.BAD_REQUEST, "Pickup address is required.");
+      throw new AppError(httpStatus19.BAD_REQUEST, "Pickup address is required.");
     }
     let deliveryAddressId;
     if (payload.deliveryAddress) {
@@ -5778,7 +6671,7 @@ var createShipmentRequest = async (userId, payload) => {
       deliveryAddressId = payload.deliveryAddressId;
     } else {
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus19.BAD_REQUEST,
         "Delivery address is required."
       );
     }
@@ -5889,6 +6782,8 @@ var getShipmentById = async (userId, shipmentId, role) => {
       deliveryAddress: true,
       originHub: true,
       destinationHub: true,
+      payment: true,
+      proofOfDelivery: true,
       statusHistory: {
         orderBy: {
           createdAt: "asc"
@@ -5909,13 +6804,13 @@ var getShipmentById = async (userId, shipmentId, role) => {
     }
   });
   if (!shipment) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Shipment not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Shipment not found.");
   }
   if (role !== UserRole.ADMIN && role !== UserRole.OPERATIONS_MANAGER && role !== UserRole.HUB_MANAGER) {
     const customer = await getCustomerByUserId(userId);
     if (shipment.customerId !== customer.id) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus19.FORBIDDEN,
         "You do not have permission to view this shipment."
       );
     }
@@ -5982,7 +6877,7 @@ var trackShipment = async (trackingNumber, userId) => {
     }
   });
   if (!shipment) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Shipment tracking number not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Shipment tracking number not found.");
   }
   const activeAssignment = shipment.courierAssignments[0] || null;
   return {
@@ -6019,11 +6914,11 @@ var schedulePickup = async (userId, shipmentId, payload) => {
     where: { id: shipmentId }
   });
   if (!shipment) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Shipment not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Shipment not found.");
   }
   if (shipment.customerId !== customer.id) {
     throw new AppError(
-      httpStatus14.FORBIDDEN,
+      httpStatus19.FORBIDDEN,
       "You can only schedule pickup for your own shipments."
     );
   }
@@ -6034,20 +6929,20 @@ var schedulePickup = async (userId, shipmentId, payload) => {
   ];
   if (!eligibleStatuses.includes(shipment.status)) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       `Cannot schedule or reschedule pickup. Current shipment status is '${shipment.status}'.`
     );
   }
   const scheduledDate = new Date(payload.scheduledPickupAt);
   if (Number.isNaN(scheduledDate.getTime())) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Invalid date format for scheduledPickupAt."
     );
   }
   if (scheduledDate.getTime() < Date.now() - 5 * 60 * 1e3) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Scheduled pickup time must be in the future."
     );
   }
@@ -6090,16 +6985,16 @@ var cancelShipment3 = async (userId, shipmentId, payload) => {
     where: { id: shipmentId }
   });
   if (!shipment) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Shipment not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Shipment not found.");
   }
   if (shipment.customerId !== customer.id) {
     throw new AppError(
-      httpStatus14.FORBIDDEN,
+      httpStatus19.FORBIDDEN,
       "You can only cancel your own shipments."
     );
   }
   if (shipment.status === ShipmentStatus.CANCELLED) {
-    throw new AppError(httpStatus14.BAD_REQUEST, "Shipment is already cancelled.");
+    throw new AppError(httpStatus19.BAD_REQUEST, "Shipment is already cancelled.");
   }
   const postPickupStatuses = [
     ShipmentStatus.PICKED_UP,
@@ -6116,7 +7011,7 @@ var cancelShipment3 = async (userId, shipmentId, payload) => {
   ];
   if (postPickupStatuses.includes(shipment.status)) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       `Shipment cannot be cancelled after pickup has occurred. Current status is '${shipment.status}'. The package is already in transit with our logistics network. Please contact customer support to request a return or hold.`
     );
   }
@@ -6128,7 +7023,7 @@ var cancelShipment3 = async (userId, shipmentId, payload) => {
   ];
   if (!cancellableStatuses.includes(shipment.status)) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       `Shipment cannot be cancelled in its current state ('${shipment.status}').`
     );
   }
@@ -6235,13 +7130,13 @@ var calculatePricing = async (payload) => {
       totalEstimatedCost: totalEstimatedCost2
     };
   }
-  let baseCharge = 60;
+  let baseCharge = 100;
   let perKgCharge = 20;
   if (deliveryType === "EXPRESS") {
-    baseCharge = 120;
+    baseCharge = 150;
     perKgCharge = 35;
   } else if (deliveryType === "SAME_DAY") {
-    baseCharge = 180;
+    baseCharge = 200;
     perKgCharge = 50;
   }
   const extraWeight = Math.max(0, weight - 1);
@@ -6408,7 +7303,7 @@ var getInvoiceById = async (userId, identifier) => {
     }
   });
   if (!shipment) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Invoice not found for this shipment.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Invoice not found for this shipment.");
   }
   const deliveryCharge = Number(shipment.deliveryCharge);
   const currency = shipment.payment?.currency || "BDT";
@@ -6454,11 +7349,11 @@ var reportDeliveryIssue = async (userId, shipmentId, payload) => {
     where: { id: shipmentId }
   });
   if (!shipment) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Shipment not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Shipment not found.");
   }
   if (shipment.customerId !== customer.id) {
     throw new AppError(
-      httpStatus14.FORBIDDEN,
+      httpStatus19.FORBIDDEN,
       "You can only report issues for your own shipments."
     );
   }
@@ -6503,11 +7398,11 @@ var getShipmentIssues = async (userId, shipmentId) => {
     where: { id: shipmentId }
   });
   if (!shipment) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Shipment not found.");
+    throw new AppError(httpStatus19.NOT_FOUND, "Shipment not found.");
   }
   if (shipment.customerId !== customer.id) {
     throw new AppError(
-      httpStatus14.FORBIDDEN,
+      httpStatus19.FORBIDDEN,
       "You can only view issues for your own shipments."
     );
   }
@@ -6605,13 +7500,13 @@ var getProfile2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const result = await UserService.getProfile(user.userId);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "User profile fetched successfully.",
     data: result
@@ -6621,13 +7516,13 @@ var updateProfile2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const result = await UserService.updateProfile(user.userId, req.body);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Profile updated successfully.",
     data: result
@@ -6636,7 +7531,7 @@ var updateProfile2 = catchAsync(async (req, res) => {
 var getAllUsers4 = catchAsync(async (req, res) => {
   const result = await UserService.getAllUsers(req.query);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Users fetched successfully.",
     data: result.data,
@@ -6647,7 +7542,7 @@ var getUserById4 = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await UserService.getUserById(id);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "User fetched successfully.",
     data: result
@@ -6657,7 +7552,7 @@ var updateUserStatus2 = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await UserService.updateUserStatus(id, req.body);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "User status updated successfully.",
     data: result
@@ -6667,13 +7562,13 @@ var addAddress2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const result = await UserService.addAddress(user.userId, req.body);
   sendResponse(res, {
-    statusCode: httpStatus15.CREATED,
+    statusCode: httpStatus20.CREATED,
     success: true,
     message: "Address added successfully.",
     data: result
@@ -6683,13 +7578,13 @@ var getMyAddresses2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const result = await UserService.getMyAddresses(user.userId);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Addresses fetched successfully.",
     data: result
@@ -6699,7 +7594,7 @@ var getAddressById2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6710,7 +7605,7 @@ var getAddressById2 = catchAsync(async (req, res) => {
     user.role
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Address retrieved successfully.",
     data: result
@@ -6720,7 +7615,7 @@ var updateAddress2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6732,7 +7627,7 @@ var updateAddress2 = catchAsync(async (req, res) => {
     user.role
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Address updated successfully.",
     data: result
@@ -6742,7 +7637,7 @@ var deleteAddress2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6753,7 +7648,7 @@ var deleteAddress2 = catchAsync(async (req, res) => {
     user.role
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Address deleted successfully.",
     data: result
@@ -6764,7 +7659,7 @@ var createShipmentRequest2 = catchAsync(
     const user = req.user;
     if (!user) {
       throw new AppError(
-        httpStatus15.UNAUTHORIZED,
+        httpStatus20.UNAUTHORIZED,
         "User information is missing from request context."
       );
     }
@@ -6773,7 +7668,7 @@ var createShipmentRequest2 = catchAsync(
       req.body
     );
     sendResponse(res, {
-      statusCode: httpStatus15.CREATED,
+      statusCode: httpStatus20.CREATED,
       success: true,
       message: "Shipment request created successfully.",
       data: result
@@ -6784,13 +7679,13 @@ var getMyShipments2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const result = await UserService.getMyShipments(user.userId, req.query);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Shipment requests retrieved successfully.",
     data: result.data,
@@ -6801,7 +7696,7 @@ var getShipmentById2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6812,7 +7707,7 @@ var getShipmentById2 = catchAsync(async (req, res) => {
     user.role
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Shipment retrieved successfully.",
     data: result
@@ -6826,7 +7721,7 @@ var trackShipment2 = catchAsync(async (req, res) => {
     user?.userId
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Shipment tracking details retrieved successfully.",
     data: result
@@ -6836,7 +7731,7 @@ var schedulePickup2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6847,7 +7742,7 @@ var schedulePickup2 = catchAsync(async (req, res) => {
     req.body
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Pickup scheduled successfully.",
     data: result
@@ -6857,7 +7752,7 @@ var cancelShipment4 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6868,7 +7763,7 @@ var cancelShipment4 = catchAsync(async (req, res) => {
     req.body
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Shipment cancelled successfully.",
     data: result
@@ -6877,7 +7772,7 @@ var cancelShipment4 = catchAsync(async (req, res) => {
 var getPricingRules2 = catchAsync(async (_req, res) => {
   const result = await UserService.getPricingRules();
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Active pricing rules retrieved successfully.",
     data: result
@@ -6886,7 +7781,7 @@ var getPricingRules2 = catchAsync(async (_req, res) => {
 var calculatePricing2 = catchAsync(async (req, res) => {
   const result = await UserService.calculatePricing(req.body);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Estimated pricing calculated successfully.",
     data: result
@@ -6896,7 +7791,7 @@ var getDeliveryHistory2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6905,7 +7800,7 @@ var getDeliveryHistory2 = catchAsync(async (req, res) => {
     req.query
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Delivery history retrieved successfully.",
     data: result.data,
@@ -6916,13 +7811,13 @@ var getMyInvoices2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const result = await UserService.getMyInvoices(user.userId, req.query);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Invoices retrieved successfully.",
     data: result.data,
@@ -6933,14 +7828,14 @@ var getInvoiceById2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const { id } = req.params;
   const result = await UserService.getInvoiceById(user.userId, id);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Invoice retrieved successfully.",
     data: result
@@ -6950,7 +7845,7 @@ var reportDeliveryIssue2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6961,7 +7856,7 @@ var reportDeliveryIssue2 = catchAsync(async (req, res) => {
     req.body
   );
   sendResponse(res, {
-    statusCode: httpStatus15.CREATED,
+    statusCode: httpStatus20.CREATED,
     success: true,
     message: "Delivery issue reported successfully.",
     data: result
@@ -6971,7 +7866,7 @@ var getShipmentIssues2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
@@ -6981,7 +7876,7 @@ var getShipmentIssues2 = catchAsync(async (req, res) => {
     id
   );
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "Shipment issues retrieved successfully.",
     data: result
@@ -6991,13 +7886,13 @@ var getMyReportedIssues2 = catchAsync(async (req, res) => {
   const user = req.user;
   if (!user) {
     throw new AppError(
-      httpStatus15.UNAUTHORIZED,
+      httpStatus20.UNAUTHORIZED,
       "User information is missing from request context."
     );
   }
   const result = await UserService.getMyReportedIssues(user.userId);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "All reported delivery issues retrieved successfully.",
     data: result
@@ -7052,7 +7947,8 @@ var UpdateAddressZodSchema = z6.object({
 });
 var UpdateProfileZodSchema = z6.object({
   name: z6.string().min(3, "Name must be at least 3 characters long").max(100).optional(),
-  phone: z6.string().min(6, "Phone must be at least 6 characters").max(50).optional()
+  phone: z6.string().min(6, "Phone must be at least 6 characters").max(50).optional(),
+  profilePicture: z6.string().optional()
 });
 var UpdateUserStatusZodSchema = z6.object({
   status: z6.nativeEnum(UserStatus, {
@@ -7133,85 +8029,76 @@ var UserValidation2 = {
 };
 
 // src/app/module/user/user.router.ts
-var router6 = Router6();
-router6.get("/me", auth(), UserController.getProfile);
-router6.get("/profile", auth(), UserController.getProfile);
-router6.patch(
+var router8 = Router8();
+router8.get("/me", auth(), UserController.getProfile);
+router8.get("/profile", auth(), UserController.getProfile);
+router8.patch(
   "/profile",
   auth(),
   validateRequest(UserValidation2.UpdateProfileZodSchema),
   UserController.updateProfile
 );
-router6.post(
+router8.post(
   "/address",
   auth(UserRole.CUSTOMER),
   validateRequest(UserValidation2.CreateAddressZodSchema),
   UserController.addAddress
 );
-router6.get("/address", auth(UserRole.CUSTOMER), UserController.getMyAddresses);
-router6.get(
+router8.get("/address", auth(UserRole.CUSTOMER), UserController.getMyAddresses);
+router8.get(
   "/address/:id",
   auth(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.OPERATIONS_MANAGER),
   UserController.getAddressById
 );
-router6.patch(
+router8.patch(
   "/address/:id",
   auth(UserRole.CUSTOMER, UserRole.ADMIN),
   validateRequest(UserValidation2.UpdateAddressZodSchema),
   UserController.updateAddress
 );
-router6.delete(
+router8.delete(
   "/address/:id",
   auth(UserRole.CUSTOMER, UserRole.ADMIN),
   UserController.deleteAddress
 );
-router6.get("/pricing", UserController.getPricingRules);
-router6.post(
+router8.get("/pricing", UserController.getPricingRules);
+router8.post(
   "/pricing/calculate",
   validateRequest(UserValidation2.CalculatePricingZodSchema),
   UserController.calculatePricing
 );
-router6.get("/invoices", auth(UserRole.CUSTOMER), UserController.getMyInvoices);
-router6.get(
-  "/invoices/:id",
+router8.get("/invoices", auth(UserRole.CUSTOMER), UserController.getMyInvoices);
+router8.get(
+  "/shipments/:id/invoice",
   auth(UserRole.CUSTOMER),
   UserController.getInvoiceById
 );
-router6.get(
+router8.get(
   "/delivery-issues",
   auth(UserRole.CUSTOMER),
   UserController.getMyReportedIssues
 );
-router6.post(
+router8.post(
   "/create-shipment-request",
   auth(UserRole.CUSTOMER),
   validateRequest(UserValidation2.CreateShipmentRequestZodSchema),
   UserController.createShipmentRequest
 );
-router6.get(
+router8.get(
   "/shipments/track/:trackingNumber",
   UserController.trackShipment
 );
-router6.get(
-  "/track/:trackingNumber",
-  UserController.trackShipment
-);
-router6.get(
+router8.get(
   "/shipments/history",
   auth(UserRole.CUSTOMER),
   UserController.getDeliveryHistory
 );
-router6.get(
-  "/delivery-history",
-  auth(UserRole.CUSTOMER),
-  UserController.getDeliveryHistory
-);
-router6.get(
+router8.get(
   "/shipments",
   auth(UserRole.CUSTOMER),
   UserController.getMyShipments
 );
-router6.get(
+router8.get(
   "/shipments/:id",
   auth(
     UserRole.CUSTOMER,
@@ -7221,51 +8108,46 @@ router6.get(
   ),
   UserController.getShipmentById
 );
-router6.patch(
+router8.patch(
   "/shipments/:id/schedule-pickup",
   auth(UserRole.CUSTOMER),
   validateRequest(UserValidation2.SchedulePickupZodSchema),
   UserController.schedulePickup
 );
-router6.patch(
+router8.patch(
   "/shipments/:id/cancel",
   auth(UserRole.CUSTOMER),
   validateRequest(UserValidation2.CancelShipmentZodSchema),
   UserController.cancelShipment
 );
-router6.post(
+router8.post(
   "/shipments/:id/report-issue",
   auth(UserRole.CUSTOMER),
   validateRequest(UserValidation2.ReportDeliveryIssueZodSchema),
   UserController.reportDeliveryIssue
 );
-router6.get(
+router8.get(
   "/shipments/:id/issues",
   auth(UserRole.CUSTOMER),
   UserController.getShipmentIssues
 );
-router6.get(
-  "/shipments/:id/invoice",
-  auth(UserRole.CUSTOMER),
-  UserController.getInvoiceById
-);
-router6.get(
+router8.get(
   "/",
   auth(UserRole.ADMIN, UserRole.OPERATIONS_MANAGER),
   UserController.getAllUsers
 );
-router6.get(
+router8.get(
   "/:id",
   auth(UserRole.ADMIN, UserRole.OPERATIONS_MANAGER),
   UserController.getUserById
 );
-router6.patch(
+router8.patch(
   "/:id/status",
   auth(UserRole.ADMIN),
   validateRequest(UserValidation2.UpdateUserStatusZodSchema),
   UserController.updateUserStatus
 );
-var UserRoutes = router6;
+var UserRoutes = router8;
 
 // src/app.ts
 BigInt.prototype.toJSON = function() {
@@ -7274,7 +8156,7 @@ BigInt.prototype.toJSON = function() {
 var app = express2();
 app.use(
   cors({
-    // origin: config.frontend_url,
+    origin: config_default.frontend_url,
     credentials: true
   })
 );
@@ -7293,8 +8175,10 @@ app.use("/api/v1/operations-manager", OperationsManagerRoutes);
 app.use("/api/v1/courier", CourierRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/admin", AdminRoutes);
+app.use("/api/v1/upload", UploadRoutes);
+app.use("/api/v1/role-applications", RoleApplicationRoutes);
 app.get("/", async (_req, res) => {
-  res.status(httpStatus16.OK).json({
+  res.status(httpStatus21.OK).json({
     success: true,
     message: "Welcome to ParcelPilot"
   });

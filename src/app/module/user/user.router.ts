@@ -62,7 +62,7 @@ router.post(
 // ==========================================
 router.get("/invoices", auth(UserRole.CUSTOMER), UserController.getMyInvoices);
 router.get(
-	"/invoices/:id",
+	"/shipments/:id/invoice",
 	auth(UserRole.CUSTOMER),
 	UserController.getInvoiceById,
 );
@@ -92,19 +92,10 @@ router.get(
 	"/shipments/track/:trackingNumber",
 	UserController.trackShipment,
 );
-router.get(
-	"/track/:trackingNumber",
-	UserController.trackShipment,
-);
 
 // Delivery history (placed before /shipments/:id)
 router.get(
 	"/shipments/history",
-	auth(UserRole.CUSTOMER),
-	UserController.getDeliveryHistory,
-);
-router.get(
-	"/delivery-history",
 	auth(UserRole.CUSTOMER),
 	UserController.getDeliveryHistory,
 );
@@ -149,11 +140,7 @@ router.get(
 	auth(UserRole.CUSTOMER),
 	UserController.getShipmentIssues,
 );
-router.get(
-	"/shipments/:id/invoice",
-	auth(UserRole.CUSTOMER),
-	UserController.getInvoiceById,
-);
+
 
 
 // ==========================================

@@ -60,6 +60,7 @@ router.post(
 	validateRequest(AdminValidation.CreateHubZodSchema),
 	AdminController.createHub,
 );
+router.post("/hubs/bulk", AdminController.bulkCreateHubs);
 router.patch(
 	"/hubs/:id",
 	validateRequest(AdminValidation.UpdateHubZodSchema),

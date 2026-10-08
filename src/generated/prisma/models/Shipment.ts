@@ -52,6 +52,7 @@ export type ShipmentMinAggregateOutputType = {
   deliveryCharge: runtime.Decimal | null
   paymentStatus: $Enums.PaymentStatus | null
   scheduledPickupAt: Date | null
+  deliveryOtp: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +73,7 @@ export type ShipmentMaxAggregateOutputType = {
   deliveryCharge: runtime.Decimal | null
   paymentStatus: $Enums.PaymentStatus | null
   scheduledPickupAt: Date | null
+  deliveryOtp: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -92,6 +94,7 @@ export type ShipmentCountAggregateOutputType = {
   deliveryCharge: number
   paymentStatus: number
   scheduledPickupAt: number
+  deliveryOtp: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -124,6 +127,7 @@ export type ShipmentMinAggregateInputType = {
   deliveryCharge?: true
   paymentStatus?: true
   scheduledPickupAt?: true
+  deliveryOtp?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +148,7 @@ export type ShipmentMaxAggregateInputType = {
   deliveryCharge?: true
   paymentStatus?: true
   scheduledPickupAt?: true
+  deliveryOtp?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -164,6 +169,7 @@ export type ShipmentCountAggregateInputType = {
   deliveryCharge?: true
   paymentStatus?: true
   scheduledPickupAt?: true
+  deliveryOtp?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -271,6 +277,7 @@ export type ShipmentGroupByOutputType = {
   deliveryCharge: runtime.Decimal
   paymentStatus: $Enums.PaymentStatus
   scheduledPickupAt: Date | null
+  deliveryOtp: string | null
   createdAt: Date
   updatedAt: Date
   _count: ShipmentCountAggregateOutputType | null
@@ -314,6 +321,7 @@ export type ShipmentWhereInput = {
   deliveryCharge?: Prisma.DecimalFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Shipment"> | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.DateTimeNullableFilter<"Shipment"> | Date | string | null
+  deliveryOtp?: Prisma.StringNullableFilter<"Shipment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
@@ -346,6 +354,7 @@ export type ShipmentOrderByWithRelationInput = {
   deliveryCharge?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   scheduledPickupAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryOtp?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
@@ -381,6 +390,7 @@ export type ShipmentWhereUniqueInput = Prisma.AtLeast<{
   deliveryCharge?: Prisma.DecimalFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Shipment"> | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.DateTimeNullableFilter<"Shipment"> | Date | string | null
+  deliveryOtp?: Prisma.StringNullableFilter<"Shipment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
@@ -413,6 +423,7 @@ export type ShipmentOrderByWithAggregationInput = {
   deliveryCharge?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   scheduledPickupAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryOtp?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ShipmentCountOrderByAggregateInput
@@ -441,6 +452,7 @@ export type ShipmentScalarWhereWithAggregatesInput = {
   deliveryCharge?: Prisma.DecimalWithAggregatesFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusWithAggregatesFilter<"Shipment"> | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Shipment"> | Date | string | null
+  deliveryOtp?: Prisma.StringNullableWithAggregatesFilter<"Shipment"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Shipment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Shipment"> | Date | string
 }
@@ -456,6 +468,7 @@ export type ShipmentCreateInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -488,6 +501,7 @@ export type ShipmentUncheckedCreateInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -510,6 +524,7 @@ export type ShipmentUpdateInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -542,6 +557,7 @@ export type ShipmentUncheckedUpdateInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -569,6 +585,7 @@ export type ShipmentCreateManyInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -584,6 +601,7 @@ export type ShipmentUpdateManyMutationInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -604,6 +622,7 @@ export type ShipmentUncheckedUpdateManyInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -644,6 +663,7 @@ export type ShipmentCountOrderByAggregateInput = {
   deliveryCharge?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   scheduledPickupAt?: Prisma.SortOrder
+  deliveryOtp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -669,6 +689,7 @@ export type ShipmentMaxOrderByAggregateInput = {
   deliveryCharge?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   scheduledPickupAt?: Prisma.SortOrder
+  deliveryOtp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -689,6 +710,7 @@ export type ShipmentMinOrderByAggregateInput = {
   deliveryCharge?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   scheduledPickupAt?: Prisma.SortOrder
+  deliveryOtp?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1023,6 +1045,7 @@ export type ShipmentCreateWithoutPickupAddressInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1053,6 +1076,7 @@ export type ShipmentUncheckedCreateWithoutPickupAddressInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1085,6 +1109,7 @@ export type ShipmentCreateWithoutDeliveryAddressInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1115,6 +1140,7 @@ export type ShipmentUncheckedCreateWithoutDeliveryAddressInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1171,6 +1197,7 @@ export type ShipmentScalarWhereInput = {
   deliveryCharge?: Prisma.DecimalFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Shipment"> | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.DateTimeNullableFilter<"Shipment"> | Date | string | null
+  deliveryOtp?: Prisma.StringNullableFilter<"Shipment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
 }
@@ -1202,6 +1229,7 @@ export type ShipmentCreateWithoutCourierAssignmentsInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1233,6 +1261,7 @@ export type ShipmentUncheckedCreateWithoutCourierAssignmentsInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1270,6 +1299,7 @@ export type ShipmentUpdateWithoutCourierAssignmentsInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -1301,6 +1331,7 @@ export type ShipmentUncheckedUpdateWithoutCourierAssignmentsInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -1322,6 +1353,7 @@ export type ShipmentCreateWithoutCustomerInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pickupAddress: Prisma.AddressCreateNestedOneWithoutPickupShipmentsInput
@@ -1352,6 +1384,7 @@ export type ShipmentUncheckedCreateWithoutCustomerInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1400,6 +1433,7 @@ export type ShipmentCreateWithoutDeliveryAttemptsInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1431,6 +1465,7 @@ export type ShipmentUncheckedCreateWithoutDeliveryAttemptsInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1468,6 +1503,7 @@ export type ShipmentUpdateWithoutDeliveryAttemptsInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -1499,6 +1535,7 @@ export type ShipmentUncheckedUpdateWithoutDeliveryAttemptsInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -1520,6 +1557,7 @@ export type ShipmentCreateWithoutOriginHubInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1550,6 +1588,7 @@ export type ShipmentUncheckedCreateWithoutOriginHubInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1582,6 +1621,7 @@ export type ShipmentCreateWithoutDestinationHubInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1612,6 +1652,7 @@ export type ShipmentUncheckedCreateWithoutDestinationHubInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1676,6 +1717,7 @@ export type ShipmentCreateWithoutHubTransfersInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1707,6 +1749,7 @@ export type ShipmentUncheckedCreateWithoutHubTransfersInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1744,6 +1787,7 @@ export type ShipmentUpdateWithoutHubTransfersInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -1775,6 +1819,7 @@ export type ShipmentUncheckedUpdateWithoutHubTransfersInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -1796,6 +1841,7 @@ export type ShipmentCreateWithoutNotificationsInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1827,6 +1873,7 @@ export type ShipmentUncheckedCreateWithoutNotificationsInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1864,6 +1911,7 @@ export type ShipmentUpdateWithoutNotificationsInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -1895,6 +1943,7 @@ export type ShipmentUncheckedUpdateWithoutNotificationsInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -1916,6 +1965,7 @@ export type ShipmentCreateWithoutPaymentInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -1947,6 +1997,7 @@ export type ShipmentUncheckedCreateWithoutPaymentInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -1984,6 +2035,7 @@ export type ShipmentUpdateWithoutPaymentInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -2015,6 +2067,7 @@ export type ShipmentUncheckedUpdateWithoutPaymentInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2036,6 +2089,7 @@ export type ShipmentCreateWithoutProofOfDeliveryInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -2067,6 +2121,7 @@ export type ShipmentUncheckedCreateWithoutProofOfDeliveryInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedCreateNestedManyWithoutShipmentInput
@@ -2104,6 +2159,7 @@ export type ShipmentUpdateWithoutProofOfDeliveryInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -2135,6 +2191,7 @@ export type ShipmentUncheckedUpdateWithoutProofOfDeliveryInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2156,6 +2213,7 @@ export type ShipmentCreateWithoutStatusHistoryInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutShipmentsInput
@@ -2187,6 +2245,7 @@ export type ShipmentUncheckedCreateWithoutStatusHistoryInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   courierAssignments?: Prisma.CourierParcelUncheckedCreateNestedManyWithoutShipmentInput
@@ -2224,6 +2283,7 @@ export type ShipmentUpdateWithoutStatusHistoryInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -2255,6 +2315,7 @@ export type ShipmentUncheckedUpdateWithoutStatusHistoryInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   courierAssignments?: Prisma.CourierParcelUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2280,6 +2341,7 @@ export type ShipmentCreateManyPickupAddressInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2299,6 +2361,7 @@ export type ShipmentCreateManyDeliveryAddressInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2314,6 +2377,7 @@ export type ShipmentUpdateWithoutPickupAddressInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -2344,6 +2408,7 @@ export type ShipmentUncheckedUpdateWithoutPickupAddressInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2370,6 +2435,7 @@ export type ShipmentUncheckedUpdateManyWithoutPickupAddressInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2385,6 +2451,7 @@ export type ShipmentUpdateWithoutDeliveryAddressInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -2415,6 +2482,7 @@ export type ShipmentUncheckedUpdateWithoutDeliveryAddressInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2441,6 +2509,7 @@ export type ShipmentUncheckedUpdateManyWithoutDeliveryAddressInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2460,6 +2529,7 @@ export type ShipmentCreateManyCustomerInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2475,6 +2545,7 @@ export type ShipmentUpdateWithoutCustomerInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pickupAddress?: Prisma.AddressUpdateOneRequiredWithoutPickupShipmentsNestedInput
@@ -2505,6 +2576,7 @@ export type ShipmentUncheckedUpdateWithoutCustomerInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2531,6 +2603,7 @@ export type ShipmentUncheckedUpdateManyWithoutCustomerInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2550,6 +2623,7 @@ export type ShipmentCreateManyOriginHubInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2569,6 +2643,7 @@ export type ShipmentCreateManyDestinationHubInput = {
   deliveryCharge?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: $Enums.PaymentStatus
   scheduledPickupAt?: Date | string | null
+  deliveryOtp?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2584,6 +2659,7 @@ export type ShipmentUpdateWithoutOriginHubInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -2614,6 +2690,7 @@ export type ShipmentUncheckedUpdateWithoutOriginHubInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2640,6 +2717,7 @@ export type ShipmentUncheckedUpdateManyWithoutOriginHubInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2655,6 +2733,7 @@ export type ShipmentUpdateWithoutDestinationHubInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutShipmentsNestedInput
@@ -2685,6 +2764,7 @@ export type ShipmentUncheckedUpdateWithoutDestinationHubInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   statusHistory?: Prisma.ShipmentStatusHistoryUncheckedUpdateManyWithoutShipmentNestedInput
@@ -2711,6 +2791,7 @@ export type ShipmentUncheckedUpdateManyWithoutDestinationHubInput = {
   deliveryCharge?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   scheduledPickupAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deliveryOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2798,6 +2879,7 @@ export type ShipmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   deliveryCharge?: boolean
   paymentStatus?: boolean
   scheduledPickupAt?: boolean
+  deliveryOtp?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
@@ -2831,6 +2913,7 @@ export type ShipmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   deliveryCharge?: boolean
   paymentStatus?: boolean
   scheduledPickupAt?: boolean
+  deliveryOtp?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
@@ -2856,6 +2939,7 @@ export type ShipmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   deliveryCharge?: boolean
   paymentStatus?: boolean
   scheduledPickupAt?: boolean
+  deliveryOtp?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
@@ -2881,11 +2965,12 @@ export type ShipmentSelectScalar = {
   deliveryCharge?: boolean
   paymentStatus?: boolean
   scheduledPickupAt?: boolean
+  deliveryOtp?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ShipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trackingNumber" | "customerId" | "pickupAddressId" | "deliveryAddressId" | "originHubId" | "destinationHubId" | "parcelType" | "weight" | "description" | "deliveryType" | "status" | "deliveryCharge" | "paymentStatus" | "scheduledPickupAt" | "createdAt" | "updatedAt", ExtArgs["result"]["shipment"]>
+export type ShipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trackingNumber" | "customerId" | "pickupAddressId" | "deliveryAddressId" | "originHubId" | "destinationHubId" | "parcelType" | "weight" | "description" | "deliveryType" | "status" | "deliveryCharge" | "paymentStatus" | "scheduledPickupAt" | "deliveryOtp" | "createdAt" | "updatedAt", ExtArgs["result"]["shipment"]>
 export type ShipmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   pickupAddress?: boolean | Prisma.AddressDefaultArgs<ExtArgs>
@@ -2948,6 +3033,7 @@ export type $ShipmentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     deliveryCharge: runtime.Decimal
     paymentStatus: $Enums.PaymentStatus
     scheduledPickupAt: Date | null
+    deliveryOtp: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["shipment"]>
@@ -3400,6 +3486,7 @@ export interface ShipmentFieldRefs {
   readonly deliveryCharge: Prisma.FieldRef<"Shipment", 'Decimal'>
   readonly paymentStatus: Prisma.FieldRef<"Shipment", 'PaymentStatus'>
   readonly scheduledPickupAt: Prisma.FieldRef<"Shipment", 'DateTime'>
+  readonly deliveryOtp: Prisma.FieldRef<"Shipment", 'String'>
   readonly createdAt: Prisma.FieldRef<"Shipment", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Shipment", 'DateTime'>
 }

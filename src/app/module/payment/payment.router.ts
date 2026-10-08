@@ -11,28 +11,26 @@ const router = Router();
 // Stripe Customer/Courier Payment Endpoints
 // ==========================================
 
+
+
 router.post(
-	"/create-payment-intent/:shipmentId",
+	"/create-checkout-session/:shipmentId",
 	auth(
 		UserRole.CUSTOMER,
-		UserRole.COURIER,
 		UserRole.ADMIN,
 		UserRole.OPERATIONS_MANAGER,
 	),
-	validateRequest(PaymentValidation.CreatePaymentIntentZodSchema),
-	PaymentController.createPaymentIntent,
+	PaymentController.createCheckoutSession,
 );
 
 router.post(
-	"/confirm/:shipmentId",
+	"/verify-checkout-session/:shipmentId",
 	auth(
 		UserRole.CUSTOMER,
-		UserRole.COURIER,
 		UserRole.ADMIN,
 		UserRole.OPERATIONS_MANAGER,
 	),
-	validateRequest(PaymentValidation.ConfirmPaymentZodSchema),
-	PaymentController.confirmPayment,
+	PaymentController.verifyCheckoutSession,
 );
 
 router.get("/status/:shipmentId", auth(), PaymentController.getPaymentStatus);

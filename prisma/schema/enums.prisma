@@ -71,3 +71,10 @@ enum AuthProvider {
   GOOGLE
   CREDENTIALS
 }
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  @@map("application_status")
+}

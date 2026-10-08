@@ -9,11 +9,13 @@ model User {
   phone         String?                 @unique @db.VarChar(50)
   role          UserRole                @default(CUSTOMER)
   status        UserStatus              @default(ACTIVE)
+  profilePicture String?                 @map("profile_picture") @db.Text
   createdAt     DateTime                @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime                @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
   // Relations (1:1 with Profiles)
   customer      Customer?
   courier       Courier?
+  roleApplications RoleApplication[]
   // Operational Relations
   statusUpdates ShipmentStatusHistory[] @relation("UserStatusUpdates")
   assignedCouriers CourierParcel[]      @relation("UserCourierAssignments")
