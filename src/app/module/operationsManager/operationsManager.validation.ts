@@ -8,6 +8,7 @@ const AssignHubAndCourierZodSchema = z.object({
 		.number()
 		.positive("Delivery charge must be positive")
 		.optional(),
+	note: z.string().max(255).optional(),
 });
 
 const RejectShipmentZodSchema = z.object({

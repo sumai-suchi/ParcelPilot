@@ -6,6 +6,7 @@ import {
 	CourierAvailability,
 	PaymentStatus,
 	ShipmentStatus,
+	TransferStatus,
 } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
@@ -318,20 +319,27 @@ const rejectAssignment = async (
 			},
 		});
 
-		// Revert shipment back to PENDING_APPROVAL so Operations Manager can reassign
+		// Revert shipment back to appropriate stage so Operations Manager can reassign
+		const revertStatus =
+			assignment.shipment.status === ShipmentStatus.IN_TRANSIT
+				? ShipmentStatus.AT_ORIGIN_HUB
+				: assignment.shipment.status === ShipmentStatus.OUT_FOR_DELIVERY
+					? ShipmentStatus.AT_DESTINATION_HUB
+					: ShipmentStatus.PENDING_APPROVAL;
+
 		await tx.shipment.update({
 			where: { id: assignment.shipmentId },
 			data: {
-				status: ShipmentStatus.PENDING_APPROVAL,
+				status: revertStatus,
 			},
 		});
 
 		await tx.shipmentStatusHistory.create({
 			data: {
 				shipmentId: assignment.shipmentId,
-				status: ShipmentStatus.PENDING_APPROVAL,
+				status: revertStatus,
 				location: courier.hub?.name || "Hub Area",
-				note: `Courier rider ${courier.user.name} rejected assignment: ${payload.reason || "No reason provided"}. Returned to pending approval.`,
+				note: `Courier rider ${courier.user.name} rejected assignment: ${payload.reason || "No reason provided"}. Returned to ${revertStatus}.`,
 				updatedBy: userId,
 			},
 		});
@@ -404,7 +412,7 @@ const pickupShipment = async (
 };
 
 /**
- * Courier delivers parcel to Origin Hub -> moves status to AT_ORIGIN_HUB
+ * Courier delivers parcel to Origin Hub (pickup drop-off) or Destination Hub (transit drop-off)
  */
 const deliverToOriginHub = async (
 	userId: string,
@@ -415,25 +423,40 @@ const deliverToOriginHub = async (
 
 	const shipment = await prisma.shipment.findUnique({
 		where: { id: shipmentId },
-		include: { originHub: true },
+		include: { originHub: true, destinationHub: true },
 	});
 
 	if (!shipment) {
 		throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
 	}
 
-	if (shipment.status !== ShipmentStatus.PICKED_UP) {
+	if (
+		shipment.status !== ShipmentStatus.PICKED_UP &&
+		shipment.status !== ShipmentStatus.IN_TRANSIT
+	) {
 		throw new AppError(
 			httpStatus.BAD_REQUEST,
-			`Shipment must be in 'PICKED_UP' status before arriving at Origin Hub (current: '${shipment.status}').`,
+			`Shipment must be in 'PICKED_UP' or 'IN_TRANSIT' status before checking in at a Hub (current: '${shipment.status}').`,
 		);
 	}
+
+	const isTransitDropoff = shipment.status === ShipmentStatus.IN_TRANSIT;
+	const targetStatus = isTransitDropoff
+		? ShipmentStatus.AT_DESTINATION_HUB
+		: ShipmentStatus.AT_ORIGIN_HUB;
+
+	const targetHub = isTransitDropoff
+		? shipment.destinationHub
+		: shipment.originHub;
+
+	const targetHubName =
+		targetHub?.name || (isTransitDropoff ? "Destination Hub" : "Origin Hub");
 
 	const updatedShipment = await prisma.$transaction(async (tx) => {
 		const updated = await tx.shipment.update({
 			where: { id: shipmentId },
 			data: {
-				status: ShipmentStatus.AT_ORIGIN_HUB,
+				status: targetStatus,
 			},
 			include: {
 				pickupAddress: true,
@@ -443,7 +466,7 @@ const deliverToOriginHub = async (
 			},
 		});
 
-		// Mark active pickup assignment as COMPLETED
+		// Mark active pickup or transit courier assignment as COMPLETED
 		await tx.courierParcel.updateMany({
 			where: {
 				shipmentId,
@@ -456,14 +479,36 @@ const deliverToOriginHub = async (
 			},
 		});
 
+		// If this was an inter-hub transfer, update transfer status to RECEIVED
+		if (isTransitDropoff) {
+			await tx.hubTransfer.updateMany({
+				where: {
+					shipmentId,
+					status: {
+						in: [
+							TransferStatus.PENDING,
+							TransferStatus.DISPATCHED,
+							TransferStatus.IN_TRANSIT,
+						],
+					},
+				},
+				data: {
+					status: TransferStatus.RECEIVED,
+					receivedAt: new Date(),
+				},
+			});
+		}
+
 		await tx.shipmentStatusHistory.create({
 			data: {
 				shipmentId,
-				status: ShipmentStatus.AT_ORIGIN_HUB,
-				location: shipment.originHub?.name || "Origin Hub",
+				status: targetStatus,
+				location: targetHubName,
 				note:
 					payload.note ||
-					`Parcel dropped off and checked in at Origin Hub by ${courier.user.name}`,
+					(isTransitDropoff
+						? `Parcel arrived and checked in at Destination Hub (${targetHubName}) by transit driver ${courier.user.name}`
+						: `Parcel dropped off and checked in at Origin Hub (${targetHubName}) by ${courier.user.name}`),
 				updatedBy: userId,
 			},
 		});

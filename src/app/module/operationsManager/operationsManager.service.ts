@@ -195,18 +195,30 @@ const assignHubAndCourier = async (
 		throw new AppError(httpStatus.NOT_FOUND, "Shipment not found.");
 	}
 
-	if (
-		shipment.status !== ShipmentStatus.PENDING_APPROVAL &&
-		shipment.status !== ShipmentStatus.CREATED
-	) {
+	const assignableStatuses: ShipmentStatus[] = [
+		ShipmentStatus.PENDING_APPROVAL,
+		ShipmentStatus.CREATED,
+		ShipmentStatus.AT_ORIGIN_HUB,
+		ShipmentStatus.AT_DESTINATION_HUB,
+	];
+
+	if (!assignableStatuses.includes(shipment.status)) {
 		throw new AppError(
 			httpStatus.BAD_REQUEST,
 			`Shipment is currently in '${shipment.status}' status and cannot be assigned hubs or courier.`,
 		);
 	}
 
+	const originHubId = payload.originHubId || shipment.originHubId;
+	if (!originHubId) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Origin hub ID is required.",
+		);
+	}
+
 	const originHub = await prisma.hub.findUnique({
-		where: { id: payload.originHubId },
+		where: { id: originHubId },
 	});
 	if (!originHub?.isActive) {
 		throw new AppError(
@@ -215,8 +227,10 @@ const assignHubAndCourier = async (
 		);
 	}
 
+	const destinationHubId =
+		payload.destinationHubId || shipment.destinationHubId || originHubId;
 	const destinationHub = await prisma.hub.findUnique({
-		where: { id: payload.destinationHubId },
+		where: { id: destinationHubId },
 	});
 	if (!destinationHub?.isActive) {
 		throw new AppError(
@@ -235,26 +249,79 @@ const assignHubAndCourier = async (
 
 	let deliveryCharge = payload.deliveryCharge;
 	if (deliveryCharge === undefined) {
-		const pricingRule = await prisma.pricingRule.findFirst({
-			where: {
-				zoneId: originHub.zoneId,
-				deliveryType: shipment.deliveryType,
-				isActive: true,
-			},
-		});
-		if (pricingRule) {
-			const baseCharge = Number(pricingRule.baseCharge);
-			const perKgCharge = Number(pricingRule.perKgCharge);
-			const minWeight = Number(pricingRule.minWeight);
-			const weight = Number(shipment.weight);
-			deliveryCharge =
-				weight > minWeight
-					? baseCharge + (weight - minWeight) * perKgCharge
-					: baseCharge;
+		if (shipment.deliveryCharge && Number(shipment.deliveryCharge) > 0) {
+			deliveryCharge = Number(shipment.deliveryCharge);
 		} else {
-			deliveryCharge = Number(shipment.deliveryCharge) || 60.0;
+			const pricingRule = await prisma.pricingRule.findFirst({
+				where: {
+					zoneId: originHub.zoneId,
+					deliveryType: shipment.deliveryType,
+					isActive: true,
+				},
+			});
+			if (pricingRule) {
+				const baseCharge = Number(pricingRule.baseCharge);
+				const perKgCharge = Number(pricingRule.perKgCharge);
+				const minWeight = Number(pricingRule.minWeight);
+				const weight = Number(shipment.weight);
+				deliveryCharge =
+					weight > minWeight
+						? baseCharge + (weight - minWeight) * perKgCharge
+						: baseCharge;
+			} else {
+				deliveryCharge = Number(shipment.deliveryCharge) || 60.0;
+			}
 		}
 	}
+
+	// Determine next status, location, and log note based on current lifecycle stage
+	let nextStatus: ShipmentStatus = ShipmentStatus.COURIER_ASSIGNED;
+	let statusNote =
+		payload.note ||
+		`Assigned origin hub (${originHub.name}), destination hub (${destinationHub.name}), and courier rider (${courier.user.name})`;
+	let statusLocation = originHub.name;
+	let shouldCreateTransfer = false;
+
+	if (
+		shipment.status === ShipmentStatus.PENDING_APPROVAL ||
+		shipment.status === ShipmentStatus.CREATED
+	) {
+		nextStatus = ShipmentStatus.COURIER_ASSIGNED;
+		statusLocation = originHub.name;
+		statusNote =
+			payload.note ||
+			`Assigned origin hub (${originHub.name}), destination hub (${destinationHub.name}), and courier rider (${courier.user.name})`;
+	} else if (shipment.status === ShipmentStatus.AT_ORIGIN_HUB) {
+		if (originHub.id !== destinationHub.id) {
+			// Inter-hub transit: assign truck driver courier
+			nextStatus = ShipmentStatus.IN_TRANSIT;
+			statusLocation = originHub.name;
+			statusNote =
+				payload.note ||
+				`Assigned transit driver (${courier.user.name}) for transfer from ${originHub.name} to ${destinationHub.name}. Status updated to IN_TRANSIT.`;
+			shouldCreateTransfer = true;
+		} else {
+			// Same hub local delivery: parcel moves directly to OUT_FOR_DELIVERY
+			nextStatus = ShipmentStatus.OUT_FOR_DELIVERY;
+			statusLocation = originHub.name;
+			statusNote =
+				payload.note ||
+				`Assigned delivery courier (${courier.user.name}). Parcel is out for local delivery.`;
+		}
+	} else if (shipment.status === ShipmentStatus.AT_DESTINATION_HUB) {
+		// Final delivery dispatch from destination hub
+		nextStatus = ShipmentStatus.OUT_FOR_DELIVERY;
+		statusLocation = destinationHub.name;
+		statusNote =
+			payload.note ||
+			`Assigned delivery courier (${courier.user.name}) from ${destinationHub.name}. Parcel is out for delivery.`;
+	}
+
+	const deliveryOtp =
+		nextStatus === ShipmentStatus.OUT_FOR_DELIVERY
+			? shipment.deliveryOtp ||
+			  Math.floor(100000 + Math.random() * 900000).toString()
+			: shipment.deliveryOtp;
 
 	const result = await prisma.$transaction(async (tx) => {
 		await tx.courierParcel.create({
@@ -266,12 +333,25 @@ const assignHubAndCourier = async (
 			},
 		});
 
+		if (shouldCreateTransfer) {
+			await tx.hubTransfer.create({
+				data: {
+					shipmentId,
+					fromHubId: originHub.id,
+					toHubId: destinationHub.id,
+					status: TransferStatus.DISPATCHED,
+					dispatchedAt: new Date(),
+					createdBy: managerUserId,
+				},
+			});
+		}
+
 		await tx.shipmentStatusHistory.create({
 			data: {
 				shipmentId,
-				status: ShipmentStatus.COURIER_ASSIGNED,
-				location: originHub.name,
-				note: `Assigned origin hub (${originHub.name}), destination hub (${destinationHub.name}), and courier rider (${courier.user.name})`,
+				status: nextStatus,
+				location: statusLocation,
+				note: statusNote,
 				updatedBy: managerUserId,
 			},
 		});
@@ -282,7 +362,8 @@ const assignHubAndCourier = async (
 				originHubId: originHub.id,
 				destinationHubId: destinationHub.id,
 				deliveryCharge,
-				status: ShipmentStatus.COURIER_ASSIGNED,
+				status: nextStatus,
+				...(deliveryOtp ? { deliveryOtp } : {}),
 			},
 			include: {
 				pickupAddress: true,
@@ -290,6 +371,7 @@ const assignHubAndCourier = async (
 				originHub: true,
 				destinationHub: true,
 				courierAssignments: {
+					orderBy: { assignedAt: "desc" },
 					include: {
 						courier: {
 							include: {

@@ -8,6 +8,7 @@ export interface IAssignHubAndCourierPayload {
 	destinationHubId: string;
 	courierId: string;
 	deliveryCharge?: number;
+	note?: string;
 }
 
 export interface IRejectShipmentPayload {
