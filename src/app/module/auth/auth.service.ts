@@ -350,13 +350,12 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 		});
 
 		googleIdTokenPayload = ticket.getPayload();
-	} catch (error) {
-		console.log("Error verifying Google ID token:", error);
-		throw new Error("Failed to verify Google ID token");
-	}
-
-	if (!googleIdTokenPayload) {
-		throw new Error("Failed to verify Google ID token");
+	} catch (error: any) {
+		console.error("Error verifying Google ID token:", error);
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"Failed to verify Google ID token: " + (error?.message || "Invalid token"),
+		);
 	}
 
 	if (!googleIdTokenPayload) {
@@ -376,94 +375,55 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 		);
 	}
 
-	const ifCustomerExistWithGoogleAuth = await prisma.user.findUnique({
+	const normalizedEmail = googleIdTokenPayload.email.trim().toLowerCase();
+
+	// Check if user exists by unique email
+	let user = await prisma.user.findUnique({
 		where: {
-			email: googleIdTokenPayload.email,
-			role: UserRole.CUSTOMER,
-			googleId: googleIdTokenPayload.sub,
+			email: normalizedEmail,
 		},
 	});
 
-	let user = ifCustomerExistWithGoogleAuth;
+	if (user) {
+		if (user.status === UserStatus.SUSPENDED) {
+			throw new AppError(httpStatus.FORBIDDEN, "User Is Suspended");
+		}
 
-	if (!ifCustomerExistWithGoogleAuth) {
-		const ifCustomerExistWithCredentials = await prisma.user.findUnique({
+		if (user.status === UserStatus.INACTIVE) {
+			throw new AppError(httpStatus.FORBIDDEN, "User Is Inactive");
+		}
+
+		// Link Google ID, mark email verified, and attach avatar if not already present
+		user = await prisma.user.update({
 			where: {
-				email: googleIdTokenPayload.email,
-				role: UserRole.CUSTOMER,
-				authProvider: AuthProvider.CREDENTIALS,
+				id: user.id,
+			},
+			data: {
+				googleId: user.googleId || googleIdTokenPayload.sub,
+				emailVerified: true,
+				profilePicture: user.profilePicture || googleIdTokenPayload.picture || null,
 			},
 		});
-
-		if (ifCustomerExistWithCredentials) {
-			if (!ifCustomerExistWithCredentials.emailVerified) {
-				throw new AppError(httpStatus.FORBIDDEN, "Email Not Verified");
-			}
-
-			if (ifCustomerExistWithCredentials.status === UserStatus.SUSPENDED) {
-				throw new AppError(httpStatus.FORBIDDEN, "User Is Suspended");
-			}
-
-			if (ifCustomerExistWithCredentials.status === UserStatus.INACTIVE) {
-				throw new AppError(httpStatus.FORBIDDEN, "User Is Deleted");
-			}
-
-			user = await prisma.user.update({
-				where: {
-					id: ifCustomerExistWithCredentials?.id,
+	} else {
+		// New Google Register as Customer
+		user = await prisma.user.create({
+			data: {
+				name: googleIdTokenPayload.name,
+				email: normalizedEmail,
+				role: UserRole.CUSTOMER,
+				googleId: googleIdTokenPayload.sub,
+				authProvider: AuthProvider.GOOGLE,
+				emailVerified: true,
+				profilePicture: googleIdTokenPayload.picture || null,
+				customer: {
+					create: {},
 				},
-
-				data: {
-					googleId: googleIdTokenPayload.sub,
-				},
-			});
-		} else {
-			// Google Register
-			user = await prisma.user.create({
-				data: {
-					name: googleIdTokenPayload.name,
-					email: googleIdTokenPayload.email,
-					role: UserRole.CUSTOMER,
-					googleId: googleIdTokenPayload.sub,
-					authProvider: AuthProvider.GOOGLE,
-					emailVerified: true,
-					customer: {
-						create: {},
-					},
-				},
-			});
-			// const tempatePath = path.join(
-			// 	process.cwd(),
-			// 	"src/app/templates/patient-welcome-email.ejs",
-			// );
-
-			// const templateData = {
-			// 	name: user.name,
-			// };
-
-			// const html = await ejs.renderFile(tempatePath, templateData);
-
-			// await transporter.sendMail({
-			// 	from: config.email_sender,
-			// 	to: user.email,
-			// 	subject: "Welcome To PH Healthcare System",
-			// 	// text : `Your OTP is ${otp}`
-			// 	// html: `<h1>Your OTP is ${otp}</h1>`
-			// 	html,
-			// });
-		}
+			},
+		});
 	}
 
 	if (!user) {
 		throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
-	}
-
-	if (user.status === UserStatus.INACTIVE) {
-		throw new AppError(httpStatus.FORBIDDEN, "User Is Inactive");
-	}
-
-	if (user.status === UserStatus.SUSPENDED) {
-		throw new AppError(httpStatus.FORBIDDEN, "User Is Suspended");
 	}
 
 	const jwtPayload = {

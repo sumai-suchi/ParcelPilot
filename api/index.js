@@ -2221,11 +2221,11 @@ var googleLogin = async (payload) => {
     });
     googleIdTokenPayload = ticket.getPayload();
   } catch (error) {
-    console.log("Error verifying Google ID token:", error);
-    throw new Error("Failed to verify Google ID token");
-  }
-  if (!googleIdTokenPayload) {
-    throw new Error("Failed to verify Google ID token");
+    console.error("Error verifying Google ID token:", error);
+    throw new AppError(
+      httpStatus6.UNAUTHORIZED,
+      "Failed to verify Google ID token: " + (error?.message || "Invalid token")
+    );
   }
   if (!googleIdTokenPayload) {
     throw new AppError(
@@ -2242,64 +2242,47 @@ var googleLogin = async (payload) => {
       "Google Email User Name Not Found"
     );
   }
-  const ifCustomerExistWithGoogleAuth = await prisma.user.findUnique({
+  const normalizedEmail = googleIdTokenPayload.email.trim().toLowerCase();
+  let user = await prisma.user.findUnique({
     where: {
-      email: googleIdTokenPayload.email,
-      role: UserRole.CUSTOMER,
-      googleId: googleIdTokenPayload.sub
+      email: normalizedEmail
     }
   });
-  let user = ifCustomerExistWithGoogleAuth;
-  if (!ifCustomerExistWithGoogleAuth) {
-    const ifCustomerExistWithCredentials = await prisma.user.findUnique({
+  if (user) {
+    if (user.status === UserStatus.SUSPENDED) {
+      throw new AppError(httpStatus6.FORBIDDEN, "User Is Suspended");
+    }
+    if (user.status === UserStatus.INACTIVE) {
+      throw new AppError(httpStatus6.FORBIDDEN, "User Is Inactive");
+    }
+    user = await prisma.user.update({
       where: {
-        email: googleIdTokenPayload.email,
-        role: UserRole.CUSTOMER,
-        authProvider: AuthProvider.CREDENTIALS
+        id: user.id
+      },
+      data: {
+        googleId: user.googleId || googleIdTokenPayload.sub,
+        emailVerified: true,
+        profilePicture: user.profilePicture || googleIdTokenPayload.picture || null
       }
     });
-    if (ifCustomerExistWithCredentials) {
-      if (!ifCustomerExistWithCredentials.emailVerified) {
-        throw new AppError(httpStatus6.FORBIDDEN, "Email Not Verified");
-      }
-      if (ifCustomerExistWithCredentials.status === UserStatus.SUSPENDED) {
-        throw new AppError(httpStatus6.FORBIDDEN, "User Is Suspended");
-      }
-      if (ifCustomerExistWithCredentials.status === UserStatus.INACTIVE) {
-        throw new AppError(httpStatus6.FORBIDDEN, "User Is Deleted");
-      }
-      user = await prisma.user.update({
-        where: {
-          id: ifCustomerExistWithCredentials?.id
-        },
-        data: {
-          googleId: googleIdTokenPayload.sub
+  } else {
+    user = await prisma.user.create({
+      data: {
+        name: googleIdTokenPayload.name,
+        email: normalizedEmail,
+        role: UserRole.CUSTOMER,
+        googleId: googleIdTokenPayload.sub,
+        authProvider: AuthProvider.GOOGLE,
+        emailVerified: true,
+        profilePicture: googleIdTokenPayload.picture || null,
+        customer: {
+          create: {}
         }
-      });
-    } else {
-      user = await prisma.user.create({
-        data: {
-          name: googleIdTokenPayload.name,
-          email: googleIdTokenPayload.email,
-          role: UserRole.CUSTOMER,
-          googleId: googleIdTokenPayload.sub,
-          authProvider: AuthProvider.GOOGLE,
-          emailVerified: true,
-          customer: {
-            create: {}
-          }
-        }
-      });
-    }
+      }
+    });
   }
   if (!user) {
     throw new AppError(httpStatus6.NOT_FOUND, "User Not Found");
-  }
-  if (user.status === UserStatus.INACTIVE) {
-    throw new AppError(httpStatus6.FORBIDDEN, "User Is Inactive");
-  }
-  if (user.status === UserStatus.SUSPENDED) {
-    throw new AppError(httpStatus6.FORBIDDEN, "User Is Suspended");
   }
   const jwtPayload = {
     userId: user.id.toString(),
@@ -2674,12 +2657,16 @@ var ResetPasswordZodSchema = z2.object({
   newPassword: z2.string().min(8, "Password Must Minimum 8 Characters Long.").regex(/[a-z]/, "Password must contain atleast 1 Lowercase Letter").regex(/[A-Z]/, "Password must contain atleast 1 Uppercase Letter").regex(/[0-9]/, "Password must contain atleast 1 Number").regex(/[^A-Za-z0-9]/, "Password must contain atleast 1 Special Character"),
   otp: z2.string().length(6)
 });
+var GoogleLoginZodSchema = z2.object({
+  idToken: z2.string().min(1, "idToken is required")
+});
 var UserValidation = {
   CustomerRegistrationZodSchema,
   CustomerEmailVerifyZodSchema,
   LoginZodSchema,
   ForgotPasswordZodSchema,
-  ResetPasswordZodSchema
+  ResetPasswordZodSchema,
+  GoogleLoginZodSchema
 };
 
 // src/app/module/auth/auth.router.ts
@@ -2711,7 +2698,11 @@ router2.get(
   AuthController.getMe
 );
 router2.post("/refresh-token", AuthController.refreshToken);
-router2.post("/google", AuthController.googleLogin);
+router2.post(
+  "/google",
+  validateRequest(UserValidation.GoogleLoginZodSchema),
+  AuthController.googleLogin
+);
 router2.post(
   "/forgot-password",
   validateRequest(UserValidation.ForgotPasswordZodSchema),
