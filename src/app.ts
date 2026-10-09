@@ -16,6 +16,7 @@ import { PaymentRoutes } from "./app/module/payment/payment.router";
 import { RoleApplicationRoutes } from "./app/module/roleApplication/roleApplication.router";
 import { UploadRoutes } from "./app/module/upload/upload.router";
 import { UserRoutes } from "./app/module/user/user.router";
+import { redisClient } from "./app/lib/redis";
 
 // Enable BigInt serialization in JSON (res.json, JSON.stringify)
 (BigInt.prototype as any).toJSON = function () {
@@ -33,8 +34,20 @@ app.use(
 
 // Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));
+// Middleware in src/app.ts
+app.use(async (_req, _res, next) => {
+  try {
+    if (!redisClient.isOpen) {
+      await redisClient.connect();
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Middleware to parse JSON bodies while preserving rawBody buffer for Stripe webhooks
+
 app.use(
 	express.json({
 		verify: (req: any, _res, buf) => {
@@ -42,6 +55,7 @@ app.use(
 		},
 	}),
 );
+
 app.use(cookieParser());
 
 app.use("/api/v1/auth", AuthRoutes);
